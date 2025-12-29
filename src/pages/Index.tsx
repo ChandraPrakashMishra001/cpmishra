@@ -1,21 +1,34 @@
 import { HelmetProvider, Helmet } from "react-helmet-async";
 import LiaAvatar from "@/components/LiaAvatar";
 import ChatInterface from "@/components/ChatInterface";
+import CompanionSettingsDialog from "@/components/CompanionSettingsDialog";
 import { useLiaChat } from "@/hooks/useLiaChat";
+import { useCompanionSettings } from "@/hooks/useCompanionSettings";
+import liaAvatar from "@/assets/lia-avatar.png";
 
 const Index = () => {
-  const { messages, sendMessage, isTyping, currentEmotion, isTalking } = useLiaChat();
+  const { settings, updateName, updateAvatar, resetSettings } = useCompanionSettings();
+  const { messages, sendMessage, isTyping, currentEmotion, isTalking } = useLiaChat(settings.name);
 
   return (
     <HelmetProvider>
       <Helmet>
-        <title>Lia - Your Anime AI Companion</title>
-        <meta name="description" content="Chat with Lia, your friendly anime AI companion. Have meaningful conversations with an expressive virtual friend." />
+        <title>{settings.name} - Your Anime AI Companion</title>
+        <meta name="description" content={`Chat with ${settings.name}, your friendly anime AI companion. Have meaningful conversations with an expressive virtual friend.`} />
       </Helmet>
 
       <div className="min-h-screen flex flex-col lg:flex-row">
         {/* Avatar Section */}
         <div className="lg:w-1/2 flex flex-col items-center justify-center p-8 lg:p-12 relative">
+          {/* Settings Button */}
+          <CompanionSettingsDialog
+            settings={settings}
+            onUpdateName={updateName}
+            onUpdateAvatar={updateAvatar}
+            onReset={resetSettings}
+            defaultAvatarUrl={liaAvatar}
+          />
+
           {/* Background decorations */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute top-20 left-10 w-32 h-32 bg-lia-pink/10 rounded-full blur-3xl" />
@@ -26,7 +39,7 @@ const Index = () => {
           {/* Title */}
           <div className="text-center mb-8 z-10">
             <h1 className="text-5xl lg:text-6xl font-display font-bold text-gradient mb-2">
-              Lia
+              {settings.name}
             </h1>
             <p className="text-muted-foreground font-body">
               Your AI Companion ✨
@@ -35,7 +48,11 @@ const Index = () => {
 
           {/* Avatar */}
           <div className="relative z-10">
-            <LiaAvatar emotion={currentEmotion} isTalking={isTalking} />
+            <LiaAvatar 
+              emotion={currentEmotion} 
+              isTalking={isTalking} 
+              customAvatarUrl={settings.avatarUrl}
+            />
           </div>
 
           {/* Status indicator */}
@@ -51,6 +68,7 @@ const Index = () => {
             messages={messages}
             onSendMessage={sendMessage}
             isTyping={isTyping}
+            companionName={settings.name}
           />
         </div>
       </div>

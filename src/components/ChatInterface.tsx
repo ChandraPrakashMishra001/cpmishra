@@ -13,9 +13,10 @@ interface ChatInterfaceProps {
   messages: Message[];
   onSendMessage: (message: string) => void;
   isTyping: boolean;
+  companionName?: string;
 }
 
-const ChatInterface = ({ messages, onSendMessage, isTyping }: ChatInterfaceProps) => {
+const ChatInterface = ({ messages, onSendMessage, isTyping, companionName = "Lia" }: ChatInterfaceProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -33,7 +34,7 @@ const ChatInterface = ({ messages, onSendMessage, isTyping }: ChatInterfaceProps
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center px-4">
             <p className="text-muted-foreground text-lg font-display">
-              Start chatting with Lia! 💖
+              Start chatting with {companionName}! 💖
             </p>
             <p className="text-muted-foreground/60 text-sm mt-2">
               She's excited to meet you~
@@ -57,7 +58,7 @@ const ChatInterface = ({ messages, onSendMessage, isTyping }: ChatInterfaceProps
               <span className="w-2 h-2 bg-lia-pink rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
               <span className="w-2 h-2 bg-lia-pink rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
             </div>
-            <span className="text-sm">Lia is typing...</span>
+            <span className="text-sm">{companionName} is typing...</span>
           </div>
         )}
         
@@ -66,7 +67,7 @@ const ChatInterface = ({ messages, onSendMessage, isTyping }: ChatInterfaceProps
 
       {/* Input area */}
       <div className="p-4 border-t border-border/30">
-        <ChatInput onSend={onSendMessage} disabled={isTyping} />
+        <ChatInput onSend={onSendMessage} disabled={isTyping} companionName={companionName} />
       </div>
     </div>
   );

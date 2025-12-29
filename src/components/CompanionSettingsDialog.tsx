@@ -1,0 +1,155 @@
+import { useState, useRef } from "react";
+import { Settings, Upload, RotateCcw, X } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { CompanionSettings } from "@/hooks/useCompanionSettings";
+
+interface CompanionSettingsDialogProps {
+  settings: CompanionSettings;
+  onUpdateName: (name: string) => void;
+  onUpdateAvatar: (url: string | null) => void;
+  onReset: () => void;
+  defaultAvatarUrl: string;
+}
+
+const CompanionSettingsDialog = ({
+  settings,
+  onUpdateName,
+  onUpdateAvatar,
+  onReset,
+  defaultAvatarUrl,
+}: CompanionSettingsDialogProps) => {
+  const [name, setName] = useState(settings.name);
+  const [open, setOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const result = event.target?.result as string;
+        onUpdateAvatar(result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSave = () => {
+    onUpdateName(name);
+    setOpen(false);
+  };
+
+  const currentAvatar = settings.avatarUrl || defaultAvatarUrl;
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute top-4 right-4 z-20 bg-card/40 backdrop-blur-sm border border-border/30 hover:bg-card/60"
+        >
+          <Settings className="w-5 h-5" />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="bg-card border-border/50 backdrop-blur-xl">
+        <DialogHeader>
+          <DialogTitle className="font-display text-xl text-gradient">
+            Customize Your Companion
+          </DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-6 py-4">
+          {/* Avatar Preview and Upload */}
+          <div className="flex flex-col items-center gap-4">
+            <div className="relative group">
+              <img
+                src={currentAvatar}
+                alt={settings.name}
+                className="w-32 h-32 rounded-full object-cover border-2 border-lia-pink/50 glow-avatar"
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="absolute inset-0 flex items-center justify-center bg-background/60 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+              >
+                <Upload className="w-8 h-8 text-lia-pink" />
+              </button>
+            </div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fileInputRef.current?.click()}
+                className="border-lia-pink/30 hover:bg-lia-pink/10"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Upload Image
+              </Button>
+              {settings.avatarUrl && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onUpdateAvatar(null)}
+                  className="text-muted-foreground"
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Remove
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {/* Name Input */}
+          <div className="space-y-2">
+            <Label htmlFor="companion-name" className="text-foreground">
+              Companion Name
+            </Label>
+            <Input
+              id="companion-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Enter a name..."
+              className="bg-background/50 border-border/50 focus:border-lia-pink"
+            />
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-3 pt-2">
+            <Button
+              variant="outline"
+              onClick={onReset}
+              className="flex-1 border-destructive/30 hover:bg-destructive/10 text-destructive"
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Reset to Default
+            </Button>
+            <Button
+              onClick={handleSave}
+              className="flex-1 bg-lia-pink hover:bg-lia-pink-glow text-primary-foreground"
+            >
+              Save Changes
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default CompanionSettingsDialog;
