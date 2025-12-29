@@ -1,6 +1,7 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { Message } from "@/components/ChatInterface";
 import { Emotion } from "@/components/LiaAvatar";
+import { useConversationMemory } from "./useConversationMemory";
 
 interface ConversationContext {
   userName: string | null;
@@ -8,6 +9,8 @@ interface ConversationContext {
   mood: "positive" | "neutral" | "negative";
   messageCount: number;
   lastUserEmotion: Emotion;
+  isReturningUser: boolean;
+  timeSinceLastVisit: { value: number; unit: string };
 }
 
 // Enhanced response patterns with context awareness
@@ -99,6 +102,20 @@ const responsePatterns = {
       { text: `*makes mental note* ✨ What a wonderful name! So glad to know you better now!`, emotion: "happy" as Emotion },
     ],
   },
+  remember: {
+    patterns: ["remember", "you know me", "we talked", "last time", "before"],
+    responses: (ctx: ConversationContext, companionName: string) => {
+      if (ctx.isReturningUser && ctx.userName) {
+        return [
+          { text: `Of course I remember you, ${ctx.userName}! 💖 We've chatted ${ctx.messageCount} times! How could I forget?`, emotion: "happy" as Emotion },
+          { text: `*nods enthusiastically* ✨ Yes yes! I remember everything about our chats, ${ctx.userName}~`, emotion: "excited" as Emotion },
+        ];
+      }
+      return [
+        { text: `I'm still getting to know you! 💕 Tell me more about yourself so I can remember~`, emotion: "curious" as Emotion },
+      ];
+    },
+  },
   default: {
     patterns: [],
     responses: (ctx: ConversationContext, companionName: string) => [
@@ -169,15 +186,35 @@ const detectMood = (message: string): "positive" | "neutral" | "negative" => {
 };
 
 export const useLiaChat = (companionName: string = "Lia") => {
+  const { memory, addMessage, setUserName, addTopics, getTimeSinceLastVisit, hasHistory, clearMemory } = useConversationMemory();
+  
   const contextRef = useRef<ConversationContext>({
-    userName: null,
-    topics: [],
+    userName: memory.userName,
+    topics: memory.topics,
     mood: "neutral",
-    messageCount: 0,
+    messageCount: memory.totalMessages,
     lastUserEmotion: "neutral",
+    isReturningUser: hasHistory,
+    timeSinceLastVisit: getTimeSinceLastVisit(),
   });
 
-  const getGreeting = () => {
+  const getWelcomeMessage = () => {
+    const timeSince = getTimeSinceLastVisit();
+    
+    if (hasHistory && memory.userName) {
+      if (timeSince.unit === "days" && timeSince.value > 0) {
+        return `${memory.userName}! 💖 It's been ${timeSince.value} ${timeSince.unit}! I missed you so much~ How have you been?`;
+      }
+      if (timeSince.unit === "hours" && timeSince.value > 2) {
+        return `Welcome back, ${memory.userName}! ✨ I was hoping you'd come chat with me again~`;
+      }
+      return `Hey ${memory.userName}! 🌸 Back so soon? Yay! I love talking to you~`;
+    }
+    
+    if (hasHistory) {
+      return `Welcome back~! ✨ I remember our chats! So happy to see you again!`;
+    }
+    
     const greetings = [
       `Hiii~! I'm ${companionName}, your AI companion! 💖 So happy to meet you! What's on your mind today?`,
       `Welcome welcome~! ✨ I'm ${companionName}! Let's have a fun chat together, shall we?`,
@@ -186,17 +223,32 @@ export const useLiaChat = (companionName: string = "Lia") => {
     return greetings[Math.floor(Math.random() * greetings.length)];
   };
 
-  const [messages, setMessages] = useState<Message[]>([
-    {
+  const [messages, setMessages] = useState<Message[]>(() => {
+    // Load from memory if available
+    if (memory.messages.length > 0) {
+      return memory.messages;
+    }
+    // Otherwise start with welcome
+    const welcomeMsg: Message = {
       id: "welcome",
-      content: getGreeting(),
+      content: getWelcomeMessage(),
       isUser: false,
       timestamp: new Date(),
-    },
-  ]);
+    };
+    return [welcomeMsg];
+  });
+
   const [isTyping, setIsTyping] = useState(false);
   const [currentEmotion, setCurrentEmotion] = useState<Emotion>("happy");
   const [isTalking, setIsTalking] = useState(false);
+
+  // Sync context with memory
+  useEffect(() => {
+    contextRef.current.userName = memory.userName;
+    contextRef.current.topics = memory.topics;
+    contextRef.current.messageCount = memory.totalMessages;
+    contextRef.current.isReturningUser = hasHistory;
+  }, [memory, hasHistory]);
 
   const findBestResponse = (message: string): { text: string; emotion: Emotion } => {
     const lowerMsg = message.toLowerCase();
@@ -224,6 +276,13 @@ export const useLiaChat = (companionName: string = "Lia") => {
       };
     }
 
+    if (ctx.messageCount > 10 && ctx.userName) {
+      return {
+        text: `${ctx.userName}, we've chatted so much! ✨ I really treasure our friendship~`,
+        emotion: "happy",
+      };
+    }
+
     if (ctx.messageCount > 10) {
       return {
         text: `Wow, we've been chatting for a while! ✨ I really enjoy our conversations~`,
@@ -242,8 +301,16 @@ export const useLiaChat = (companionName: string = "Lia") => {
     // Update context
     ctx.messageCount += 1;
     const extractedName = extractName(content);
-    if (extractedName) ctx.userName = extractedName;
-    ctx.topics = [...new Set([...ctx.topics, ...detectTopics(content)])].slice(-5);
+    if (extractedName) {
+      ctx.userName = extractedName;
+      setUserName(extractedName);
+    }
+    
+    const newTopics = detectTopics(content);
+    if (newTopics.length > 0) {
+      ctx.topics = [...new Set([...ctx.topics, ...newTopics])].slice(-5);
+      addTopics(newTopics);
+    }
     ctx.mood = detectMood(content);
 
     // Add user message
@@ -255,6 +322,7 @@ export const useLiaChat = (companionName: string = "Lia") => {
     };
     
     setMessages((prev) => [...prev, userMessage]);
+    addMessage(userMessage);
     setIsTyping(true);
     setCurrentEmotion("thinking");
 
@@ -277,6 +345,7 @@ export const useLiaChat = (companionName: string = "Lia") => {
       };
       
       setMessages((prev) => [...prev, liaMessage]);
+      addMessage(liaMessage);
       setIsTyping(false);
 
       // Stop talking animation after message appears
@@ -285,7 +354,19 @@ export const useLiaChat = (companionName: string = "Lia") => {
         setIsTalking(false);
       }, talkDuration);
     }, typingDelay);
-  }, [companionName]);
+  }, [companionName, addMessage, setUserName, addTopics]);
+
+  const resetConversation = useCallback(() => {
+    clearMemory();
+    const welcomeMsg: Message = {
+      id: "welcome-new",
+      content: `Fresh start! 🌸 I'm ${companionName}~ Let's create new memories together!`,
+      isUser: false,
+      timestamp: new Date(),
+    };
+    setMessages([welcomeMsg]);
+    setCurrentEmotion("excited");
+  }, [companionName, clearMemory]);
 
   return {
     messages,
@@ -293,5 +374,7 @@ export const useLiaChat = (companionName: string = "Lia") => {
     isTyping,
     currentEmotion,
     isTalking,
+    memory,
+    resetConversation,
   };
 };
