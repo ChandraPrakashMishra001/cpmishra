@@ -2,13 +2,27 @@ import { HelmetProvider, Helmet } from "react-helmet-async";
 import LiaAvatar from "@/components/LiaAvatar";
 import ChatInterface from "@/components/ChatInterface";
 import CompanionSettingsDialog from "@/components/CompanionSettingsDialog";
+import FallingPetals from "@/components/FallingPetals";
 import { useLiaChat } from "@/hooks/useLiaChat";
 import { useCompanionSettings } from "@/hooks/useCompanionSettings";
 import liaAvatar from "@/assets/lia-avatar.png";
+import { Trash2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const Index = () => {
   const { settings, updateName, updateAvatar, resetSettings } = useCompanionSettings();
-  const { messages, sendMessage, isTyping, currentEmotion, isTalking } = useLiaChat(settings.name);
+  const { messages, sendMessage, isTyping, currentEmotion, isTalking, memory, resetConversation } = useLiaChat(settings.name);
 
   return (
     <HelmetProvider>
@@ -17,7 +31,10 @@ const Index = () => {
         <meta name="description" content={`Chat with ${settings.name}, your friendly anime AI companion. Have meaningful conversations with an expressive virtual friend.`} />
       </Helmet>
 
-      <div className="min-h-screen flex flex-col lg:flex-row">
+      {/* Falling petals background */}
+      <FallingPetals />
+
+      <div className="min-h-screen flex flex-col lg:flex-row relative z-10">
         {/* Avatar Section */}
         <div className="lg:w-1/2 flex flex-col items-center justify-center p-8 lg:p-12 relative">
           {/* Settings Button */}
@@ -28,6 +45,33 @@ const Index = () => {
             onReset={resetSettings}
             defaultAvatarUrl={liaAvatar}
           />
+
+          {/* Clear Memory Button */}
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="absolute top-4 right-16 z-20 bg-card/40 backdrop-blur-sm border border-border/30 hover:bg-destructive/20"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent className="bg-card border-border/50">
+              <AlertDialogHeader>
+                <AlertDialogTitle>Clear Memory?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will erase all conversation history and {settings.name} will forget everything about you. This cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={resetConversation} className="bg-destructive hover:bg-destructive/80">
+                  Clear Memory
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
 
           {/* Background decorations */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -44,6 +88,11 @@ const Index = () => {
             <p className="text-muted-foreground font-body">
               Your AI Companion ✨
             </p>
+            {memory.userName && (
+              <p className="text-sm text-lia-pink mt-2">
+                💖 Remembers: {memory.userName}
+              </p>
+            )}
           </div>
 
           {/* Avatar */}
@@ -60,6 +109,16 @@ const Index = () => {
             <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
             <span>Online & Ready to chat</span>
           </div>
+
+          {/* Memory stats */}
+          {memory.totalMessages > 0 && (
+            <div className="mt-4 flex items-center gap-4 text-xs text-muted-foreground/70 z-10">
+              <span>💬 {memory.totalMessages} messages</span>
+              {memory.topics.length > 0 && (
+                <span>🏷️ {memory.topics.slice(0, 3).join(", ")}</span>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Chat Section */}
