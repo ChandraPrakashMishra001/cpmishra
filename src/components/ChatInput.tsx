@@ -4,9 +4,10 @@ import { Send, Sparkles } from "lucide-react";
 interface ChatInputProps {
   onSend: (message: string) => void;
   disabled?: boolean;
+  companionName?: string;
 }
 
-const ChatInput = ({ onSend, disabled }: ChatInputProps) => {
+const ChatInput = ({ onSend, disabled, companionName = "Lia" }: ChatInputProps) => {
   const [message, setMessage] = useState("");
 
   const handleSend = () => {
@@ -31,7 +32,7 @@ const ChatInput = ({ onSend, disabled }: ChatInputProps) => {
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Say something to Lia..."
+            placeholder={`Say something to ${companionName}...`}
             disabled={disabled}
             rows={1}
             className="w-full bg-transparent resize-none outline-none placeholder:text-muted-foreground text-foreground font-body"
