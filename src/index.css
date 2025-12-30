@@ -141,9 +141,128 @@
   95% { transform: scaleY(0.1); }
 }
 
+/* Emotion-specific animations */
 @keyframes talking {
-  0%, 100% { transform: scaleY(1); }
-  50% { transform: scaleY(0.7); }
+  0%, 100% { transform: translateY(0) scale(1); }
+  15% { transform: translateY(-2px) scale(1.02); }
+  30% { transform: translateY(1px) scale(0.99); }
+  45% { transform: translateY(-3px) scale(1.01); }
+  60% { transform: translateY(2px) scale(0.98); }
+  75% { transform: translateY(-1px) scale(1.01); }
+  90% { transform: translateY(1px) scale(1); }
+}
+
+@keyframes bounce-excited {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  20% { transform: translateY(-15px) rotate(3deg); }
+  40% { transform: translateY(-5px) rotate(-2deg); }
+  60% { transform: translateY(-12px) rotate(2deg); }
+  80% { transform: translateY(-3px) rotate(-1deg); }
+}
+
+@keyframes happy-sway {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-5px) rotate(2deg); }
+  50% { transform: translateY(-8px) rotate(0deg); }
+  75% { transform: translateY(-5px) rotate(-2deg); }
+}
+
+@keyframes sad-droop {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(5px) rotate(-2deg); }
+}
+
+@keyframes sleepy-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  30% { transform: translateY(3px) rotate(-3deg); }
+  70% { transform: translateY(2px) rotate(2deg); }
+}
+
+@keyframes loving-pulse {
+  0%, 100% { transform: scale(1); }
+  25% { transform: scale(1.05); }
+  50% { transform: scale(1.02); }
+  75% { transform: scale(1.06); }
+}
+
+@keyframes curious-tilt {
+  0%, 100% { transform: translateY(0) rotate(0deg) translateX(0); }
+  25% { transform: translateY(-5px) rotate(5deg) translateX(3px); }
+  50% { transform: translateY(-3px) rotate(3deg) translateX(2px); }
+  75% { transform: translateY(-5px) rotate(6deg) translateX(4px); }
+}
+
+@keyframes thinking-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-3px) rotate(-1deg); }
+  50% { transform: translateY(-6px) rotate(1deg); }
+  75% { transform: translateY(-2px) rotate(-1deg); }
+}
+
+@keyframes surprised-jump {
+  0%, 100% { transform: translateY(0) scale(1); }
+  10% { transform: translateY(-20px) scale(1.1); }
+  30% { transform: translateY(-5px) scale(1.02); }
+  50% { transform: translateY(-10px) scale(1.05); }
+  70% { transform: translateY(-3px) scale(1.01); }
+}
+
+@keyframes confused-wobble {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-5deg); }
+  50% { transform: rotate(5deg); }
+  75% { transform: rotate(-3deg); }
+}
+
+@keyframes shy-hide {
+  0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+  25% { transform: translateY(3px) rotate(-5deg) scale(0.98); }
+  50% { transform: translateY(5px) rotate(-8deg) scale(0.97); }
+  75% { transform: translateY(3px) rotate(-5deg) scale(0.98); }
+}
+
+@keyframes annoyed-shake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  10% { transform: translateX(-3px) rotate(-1deg); }
+  20% { transform: translateX(3px) rotate(1deg); }
+  30% { transform: translateX(-2px) rotate(-1deg); }
+  40% { transform: translateX(2px) rotate(1deg); }
+  50% { transform: translateX(0) rotate(0deg); }
+}
+
+@keyframes particle-float {
+  0% { 
+    opacity: 0; 
+    transform: translateY(0) scale(0.5); 
+  }
+  20% { 
+    opacity: 1; 
+    transform: translateY(-10px) scale(1); 
+  }
+  80% { 
+    opacity: 1; 
+    transform: translateY(-30px) scale(1); 
+  }
+  100% { 
+    opacity: 0; 
+    transform: translateY(-50px) scale(0.5); 
+  }
+}
+
+@keyframes emotion-pop {
+  0% { transform: translateX(-50%) scale(0.8); opacity: 0; }
+  50% { transform: translateX(-50%) scale(1.1); }
+  100% { transform: translateX(-50%) scale(1); opacity: 1; }
+}
+
+@keyframes emoji-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+@keyframes ping-slow {
+  0% { transform: scale(1); opacity: 1; }
+  75%, 100% { transform: scale(1.5); opacity: 0; }
 }
 
 .animate-float {
@@ -166,18 +285,68 @@
   animation: blink 4s ease-in-out infinite;
 }
 
-@keyframes talking-bounce {
-  0%, 100% { transform: translateY(0) scale(1); }
-  25% { transform: translateY(-3px) scale(1.01); }
-  75% { transform: translateY(2px) scale(0.99); }
-}
-
-.animate-talking-bounce {
-  animation: talking-bounce 0.4s ease-in-out infinite;
-}
-
 .animate-talking {
-  animation: talking 0.15s ease-in-out infinite;
+  animation: talking 0.3s ease-in-out infinite;
+}
+
+.animate-bounce-excited {
+  animation: bounce-excited 0.6s ease-in-out infinite;
+}
+
+.animate-happy-sway {
+  animation: happy-sway 2s ease-in-out infinite;
+}
+
+.animate-sad-droop {
+  animation: sad-droop 3s ease-in-out infinite;
+}
+
+.animate-sleepy-bob {
+  animation: sleepy-bob 4s ease-in-out infinite;
+}
+
+.animate-loving-pulse {
+  animation: loving-pulse 1.5s ease-in-out infinite;
+}
+
+.animate-curious-tilt {
+  animation: curious-tilt 2s ease-in-out infinite;
+}
+
+.animate-thinking-bob {
+  animation: thinking-bob 2.5s ease-in-out infinite;
+}
+
+.animate-surprised-jump {
+  animation: surprised-jump 0.8s ease-out;
+}
+
+.animate-confused-wobble {
+  animation: confused-wobble 1s ease-in-out infinite;
+}
+
+.animate-shy-hide {
+  animation: shy-hide 3s ease-in-out infinite;
+}
+
+.animate-annoyed-shake {
+  animation: annoyed-shake 0.5s ease-in-out infinite;
+}
+
+.animate-particle-float {
+  animation: particle-float 2.5s ease-out infinite;
+}
+
+.animate-emotion-pop {
+  animation: emotion-pop 0.4s ease-out forwards;
+}
+
+.animate-emoji-bounce {
+  animation: emoji-bounce 1s ease-in-out infinite;
+}
+
+.animate-ping-slow {
+  animation: ping-slow 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
 /* Message animations */
