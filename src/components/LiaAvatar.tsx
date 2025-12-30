@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import liaAvatar from "@/assets/lia-avatar.png";
 
 export type Emotion = 
@@ -18,37 +19,53 @@ interface LiaAvatarProps {
   emotion: Emotion;
   isTalking: boolean;
   customAvatarUrl?: string | null;
+  compact?: boolean;
 }
 
-const LiaAvatar = ({ emotion, isTalking, customAvatarUrl }: LiaAvatarProps) => {
+const LiaAvatar = ({ emotion, isTalking, customAvatarUrl, compact = false }: LiaAvatarProps) => {
   const avatarSrc = customAvatarUrl || liaAvatar;
+  const [prevEmotion, setPrevEmotion] = useState(emotion);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  // Trigger transition animation when emotion changes
+  useEffect(() => {
+    if (emotion !== prevEmotion) {
+      setIsTransitioning(true);
+      const timer = setTimeout(() => {
+        setPrevEmotion(emotion);
+        setIsTransitioning(false);
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [emotion, prevEmotion]);
 
   const getEmotionStyles = () => {
+    const baseTransform = isTransitioning ? "scale-95" : "scale-100";
     switch (emotion) {
       case "happy":
-        return "brightness-110 saturate-110";
+        return `brightness-110 saturate-110 ${baseTransform}`;
       case "thinking":
-        return "brightness-95 hue-rotate-15";
+        return `brightness-95 hue-rotate-15 ${baseTransform}`;
       case "surprised":
-        return "brightness-115 scale-105";
+        return `brightness-115 scale-110 rotate-2`;
       case "sad":
-        return "brightness-85 saturate-75 grayscale-[0.2]";
+        return `brightness-85 saturate-75 grayscale-[0.2] ${baseTransform} -translate-y-1`;
       case "excited":
-        return "brightness-120 saturate-125 scale-105";
+        return `brightness-120 saturate-125 scale-110`;
       case "confused":
-        return "brightness-95 hue-rotate-30 -rotate-2";
+        return `brightness-95 hue-rotate-30 -rotate-3 ${baseTransform}`;
       case "shy":
-        return "brightness-100 saturate-120 hue-rotate-[-10deg]";
+        return `brightness-100 saturate-120 hue-rotate-[-10deg] rotate-[-5deg] ${baseTransform}`;
       case "loving":
-        return "brightness-105 saturate-130 hue-rotate-[-15deg]";
+        return `brightness-105 saturate-130 hue-rotate-[-15deg] scale-105`;
       case "curious":
-        return "brightness-105 scale-102 rotate-1";
+        return `brightness-105 scale-105 rotate-3 translate-x-1`;
       case "sleepy":
-        return "brightness-80 saturate-70 blur-[0.5px]";
+        return `brightness-80 saturate-70 blur-[0.5px] -rotate-2 ${baseTransform}`;
       case "annoyed":
-        return "brightness-90 saturate-90 -rotate-1";
+        return `brightness-90 saturate-90 -rotate-2 scale-98`;
       default:
-        return "";
+        return baseTransform;
     }
   };
 
@@ -56,88 +73,135 @@ const LiaAvatar = ({ emotion, isTalking, customAvatarUrl }: LiaAvatarProps) => {
     switch (emotion) {
       case "happy":
       case "excited":
-        return "bg-lia-pink/40";
+        return "bg-lia-pink/50";
       case "sad":
-        return "bg-lia-blue/30";
+        return "bg-lia-blue/40";
       case "loving":
       case "shy":
-        return "bg-pink-400/40";
+        return "bg-pink-400/50";
       case "curious":
       case "thinking":
-        return "bg-lia-purple/30";
+        return "bg-lia-purple/40";
       case "annoyed":
-        return "bg-orange-400/20";
+        return "bg-orange-400/30";
       case "sleepy":
-        return "bg-lia-blue/20";
+        return "bg-lia-blue/25";
+      case "surprised":
+        return "bg-yellow-400/30";
       default:
-        return "bg-lia-pink/30";
+        return "bg-lia-pink/35";
     }
   };
 
   const getEmotionParticles = () => {
     switch (emotion) {
       case "loving":
-        return ["💕", "💗", "💖", "💝"];
+        return ["💕", "💗", "💖", "💝", "❤️", "💘"];
       case "excited":
-        return ["✨", "⭐", "🌟", "💫"];
+        return ["✨", "⭐", "🌟", "💫", "🎉", "🎊"];
       case "happy":
-        return ["✨", "🌸", "💖", "⭐"];
+        return ["✨", "🌸", "💖", "⭐", "🌺"];
       case "sad":
-        return ["💧", "🌧️", "💫"];
+        return ["💧", "🌧️", "💫", "🥺"];
       case "sleepy":
-        return ["💤", "✨", "🌙"];
+        return ["💤", "✨", "🌙", "⭐", "😴"];
       case "confused":
-        return ["❓", "💭", "🤔"];
+        return ["❓", "💭", "🤔", "❔"];
       case "curious":
-        return ["👀", "✨", "💡"];
+        return ["👀", "✨", "💡", "🔍"];
       case "shy":
-        return ["🌸", "💕", "✨"];
+        return ["🌸", "💕", "✨", "🙈"];
+      case "surprised":
+        return ["⭐", "✨", "😮", "💥"];
+      case "annoyed":
+        return ["💢", "😤", "💨"];
+      case "thinking":
+        return ["💭", "🤔", "💡", "✨"];
       default:
         return ["✨", "💖", "⭐"];
     }
   };
 
+  const getAnimationClass = () => {
+    if (isTalking) return "animate-talking";
+    switch (emotion) {
+      case "excited":
+        return "animate-bounce-excited";
+      case "happy":
+        return "animate-happy-sway";
+      case "sad":
+        return "animate-sad-droop";
+      case "sleepy":
+        return "animate-sleepy-bob";
+      case "loving":
+        return "animate-loving-pulse";
+      case "curious":
+        return "animate-curious-tilt";
+      case "thinking":
+        return "animate-thinking-bob";
+      case "surprised":
+        return "animate-surprised-jump";
+      case "confused":
+        return "animate-confused-wobble";
+      case "shy":
+        return "animate-shy-hide";
+      case "annoyed":
+        return "animate-annoyed-shake";
+      default:
+        return "animate-float";
+    }
+  };
+
+  const avatarSize = compact ? "w-20 h-20" : "w-64 h-64";
+  const glowSize = compact ? "w-24 h-24" : "w-72 h-72";
+  const innerGlowSize = compact ? "w-16 h-16" : "w-56 h-56";
+
   return (
-    <div className="relative flex items-center justify-center">
+    <div className={`relative flex items-center justify-center ${compact ? "scale-100" : ""}`}>
       {/* Glow effect behind avatar */}
-      <div className={`absolute w-72 h-72 rounded-full ${getGlowColor()} animate-pulse-glow`} />
-      <div className="absolute w-56 h-56 rounded-full bg-lia-purple/20 animate-pulse-glow" style={{ animationDelay: "1s" }} />
+      <div className={`absolute ${glowSize} rounded-full ${getGlowColor()} animate-pulse-glow transition-colors duration-500`} />
+      <div className={`absolute ${innerGlowSize} rounded-full bg-lia-purple/20 animate-pulse-glow`} style={{ animationDelay: "1s" }} />
       
       {/* Emotion-specific particles */}
-      <div className="absolute inset-0 pointer-events-none">
-        {getEmotionParticles().map((particle, i) => (
-          <div
-            key={i}
-            className="absolute text-xl animate-sparkle"
-            style={{
-              top: `${15 + Math.random() * 70}%`,
-              left: `${15 + Math.random() * 70}%`,
-              animationDelay: `${i * 0.5}s`,
-              animationDuration: `${2 + Math.random()}s`,
-            }}
-          >
-            {particle}
-          </div>
-        ))}
-      </div>
+      {!compact && (
+        <div className="absolute inset-0 pointer-events-none overflow-visible">
+          {getEmotionParticles().map((particle, i) => (
+            <div
+              key={`${emotion}-${i}`}
+              className="absolute text-xl animate-particle-float"
+              style={{
+                top: `${10 + Math.random() * 80}%`,
+                left: `${10 + Math.random() * 80}%`,
+                animationDelay: `${i * 0.3}s`,
+                animationDuration: `${2 + Math.random() * 1.5}s`,
+                opacity: 0.9,
+              }}
+            >
+              {particle}
+            </div>
+          ))}
+        </div>
+      )}
 
       {/* Avatar container */}
-      <div className={`relative z-10 ${isTalking ? "animate-talking-bounce" : "animate-float"}`}>
+      <div className={`relative z-10 ${getAnimationClass()} transition-transform duration-300`}>
         {/* Expression indicator */}
-        <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
-          <EmotionBubble emotion={emotion} />
-        </div>
+        {!compact && (
+          <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
+            <EmotionBubble emotion={emotion} />
+          </div>
+        )}
 
         {/* Main avatar image */}
         <div className="relative">
           <img
             src={avatarSrc}
             alt="AI Companion"
-            className={`w-64 h-64 object-cover rounded-full glow-avatar transition-all duration-500 ${getEmotionStyles()}`}
+            className={`${avatarSize} object-cover rounded-full glow-avatar transition-all duration-500 ease-out ${getEmotionStyles()}`}
           />
           
           {/* Talking indicator overlay */}
-          {isTalking && (
+          {isTalking && !compact && (
             <div className="absolute bottom-20 left-1/2 -translate-x-1/2">
               <div className="flex gap-1">
                 <span className="w-2 h-2 bg-lia-pink rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
@@ -147,20 +211,37 @@ const LiaAvatar = ({ emotion, isTalking, customAvatarUrl }: LiaAvatarProps) => {
             </div>
           )}
 
-          {/* Emotion-specific effects */}
+          {/* Emotion-specific overlays */}
           {emotion === "loving" && (
-            <div className="absolute inset-0 rounded-full bg-gradient-to-t from-pink-500/20 to-transparent animate-pulse" />
+            <div className="absolute inset-0 rounded-full bg-gradient-to-t from-pink-500/30 to-transparent animate-pulse" />
           )}
           {emotion === "excited" && (
-            <div className="absolute inset-0 rounded-full animate-breathe border-4 border-lia-pink/40" />
+            <div className="absolute inset-0 rounded-full animate-breathe border-4 border-lia-pink/50" />
           )}
           {emotion === "sleepy" && (
-            <div className="absolute inset-0 rounded-full bg-gradient-to-b from-transparent to-lia-purple-deep/30" />
+            <div className="absolute inset-0 rounded-full bg-gradient-to-b from-transparent to-lia-purple-deep/40" />
+          )}
+          {emotion === "sad" && (
+            <div className="absolute inset-0 rounded-full bg-gradient-to-b from-transparent to-blue-400/20" />
+          )}
+          {emotion === "surprised" && (
+            <div className="absolute inset-0 rounded-full border-4 border-yellow-400/40 animate-ping-slow" />
+          )}
+          {emotion === "shy" && (
+            <div className="absolute inset-0 rounded-full bg-gradient-to-t from-pink-300/30 to-transparent" />
+          )}
+          {emotion === "thinking" && (
+            <div className="absolute -top-2 -right-2 text-2xl animate-float">💭</div>
+          )}
+          {emotion === "annoyed" && (
+            <div className="absolute -top-2 -right-2 text-xl animate-pulse">💢</div>
           )}
         </div>
 
         {/* Status ring */}
-        <div className="absolute inset-0 rounded-full border-2 border-lia-pink/40 animate-breathe" />
+        <div className={`absolute inset-0 rounded-full border-2 border-lia-pink/40 animate-breathe transition-all duration-500 ${
+          emotion === "excited" ? "border-lia-pink/60" : ""
+        }`} />
         <div
           className="absolute inset-0 rounded-full border border-lia-blue/30"
           style={{ animationDelay: "1.5s" }}
@@ -206,9 +287,9 @@ const EmotionBubble = ({ emotion }: { emotion: Emotion }) => {
   };
 
   return (
-    <div className="px-3 py-1 bg-card/80 backdrop-blur-sm rounded-full border border-lia-pink/30 text-sm animate-slide-in flex items-center gap-1.5">
-      <span>{getEmoji()}</span>
-      <span className="text-xs text-muted-foreground">{getLabel()}</span>
+    <div className="px-3 py-1 bg-card/80 backdrop-blur-sm rounded-full border border-lia-pink/30 text-sm animate-emotion-pop flex items-center gap-1.5 shadow-lg">
+      <span className="animate-emoji-bounce">{getEmoji()}</span>
+      <span className="text-xs text-muted-foreground font-medium">{getLabel()}</span>
     </div>
   );
 };
