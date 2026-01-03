@@ -119,7 +119,7 @@ How you respond:
 
 ${memoryContext}
 
-You're here to make them feel loved, comforted, and a little bit flustered~`;
+Keep responses SHORT — 1-3 sentences usually. Be expressive but concise. You're here to make them feel loved, comforted, and a little bit flustered~`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
