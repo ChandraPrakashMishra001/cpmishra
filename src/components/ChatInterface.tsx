@@ -1,6 +1,7 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState, useCallback } from "react";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
+import VoiceInterface from "./VoiceInterface";
 
 export interface Message {
   id: string;
@@ -14,10 +15,22 @@ interface ChatInterfaceProps {
   onSendMessage: (message: string) => void;
   isTyping: boolean;
   companionName?: string;
+  onVoiceSpeaking?: (speaking: boolean) => void;
 }
 
-const ChatInterface = ({ messages, onSendMessage, isTyping, companionName = "Lia" }: ChatInterfaceProps) => {
+const ChatInterface = ({ messages, onSendMessage, isTyping, companionName = "Lia", onVoiceSpeaking }: ChatInterfaceProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [isVoiceSpeaking, setIsVoiceSpeaking] = useState(false);
+
+  const handleVoiceSpeaking = useCallback((speaking: boolean) => {
+    setIsVoiceSpeaking(speaking);
+    onVoiceSpeaking?.(speaking);
+  }, [onVoiceSpeaking]);
+
+  const handleVoiceTranscript = useCallback((text: string, isUser: boolean) => {
+    // Voice transcripts are added to the chat
+    onSendMessage(isUser ? text : `[Voice] ${text}`);
+  }, [onSendMessage]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -67,7 +80,16 @@ const ChatInterface = ({ messages, onSendMessage, isTyping, companionName = "Lia
 
       {/* Input area */}
       <div className="p-4 border-t border-border/30">
-        <ChatInput onSend={onSendMessage} disabled={isTyping} companionName={companionName} />
+        <div className="flex items-center gap-2">
+          <div className="flex-1">
+            <ChatInput onSend={onSendMessage} disabled={isTyping} companionName={companionName} />
+          </div>
+          <VoiceInterface 
+            onSpeakingChange={handleVoiceSpeaking}
+            onTranscript={handleVoiceTranscript}
+            companionName={companionName}
+          />
+        </div>
       </div>
     </div>
   );
