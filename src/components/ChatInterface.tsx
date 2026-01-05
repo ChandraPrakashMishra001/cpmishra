@@ -13,7 +13,7 @@ export interface Message {
 
 interface ChatInterfaceProps {
   messages: Message[];
-  onSendMessage: (message: string) => void;
+  onSendMessage: (message: string, imageUrl?: string) => void;
   isTyping: boolean;
   companionName?: string;
   onVoiceSpeaking?: (speaking: boolean) => void;
