@@ -15,8 +15,12 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["favicon.ico", "lia-icon-192.png", "lia-icon-512.png"],
+      devOptions: {
+        enabled: true,
+      },
+      includeAssets: ["favicon.ico", "lia-icon-192.png", "lia-icon-512.png", "robots.txt"],
       manifest: {
+        id: "/",
         name: "Lia - AI Companion",
         short_name: "Lia",
         description: "Your sweet, caring anime AI companion",
@@ -25,6 +29,8 @@ export default defineConfig(({ mode }) => ({
         display: "standalone",
         orientation: "portrait",
         start_url: "/",
+        scope: "/",
+        categories: ["entertainment", "lifestyle"],
         icons: [
           {
             src: "/lia-icon-192.png",
@@ -43,9 +49,18 @@ export default defineConfig(({ mode }) => ({
             purpose: "maskable",
           },
         ],
+        screenshots: [
+          {
+            src: "/lia-icon-512.png",
+            sizes: "512x512",
+            type: "image/png",
+            form_factor: "narrow",
+          },
+        ],
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+        cleanupOutdatedCaches: true,
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/ai\.gateway\.lovable\.dev\/.*/i,
