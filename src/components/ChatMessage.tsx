@@ -2,9 +2,10 @@ interface ChatMessageProps {
   content: string;
   isUser: boolean;
   timestamp?: Date;
+  imageUrl?: string;
 }
 
-const ChatMessage = ({ content, isUser, timestamp }: ChatMessageProps) => {
+const ChatMessage = ({ content, isUser, timestamp, imageUrl }: ChatMessageProps) => {
   return (
     <div
       className={`flex ${isUser ? "justify-end" : "justify-start"} animate-slide-in`}
@@ -16,6 +17,16 @@ const ChatMessage = ({ content, isUser, timestamp }: ChatMessageProps) => {
             : "bg-card/60 border border-lia-purple/20 rounded-bl-md backdrop-blur-sm"
         }`}
       >
+        {imageUrl && (
+          <div className="mb-2">
+            <img 
+              src={imageUrl} 
+              alt="Generated image" 
+              className="rounded-xl max-w-full h-auto shadow-lg"
+              loading="lazy"
+            />
+          </div>
+        )}
         <p className="text-foreground leading-relaxed">{content}</p>
         {timestamp && (
           <p className="text-xs text-muted-foreground mt-1 opacity-60">

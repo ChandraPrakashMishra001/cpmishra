@@ -5,7 +5,38 @@ import { useConversationMemory } from "./useConversationMemory";
 import { toast } from "sonner";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+const IMAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-image`;
 
+// Detect if user is asking for image generation
+const isImageRequest = (message: string): boolean => {
+  const lowerMsg = message.toLowerCase();
+  const imageKeywords = [
+    "draw", "create an image", "generate an image", "make an image",
+    "create a picture", "generate a picture", "make a picture",
+    "draw me", "can you draw", "show me an image", "create art",
+    "make art", "paint", "illustrate", "sketch", "generate art"
+  ];
+  return imageKeywords.some(keyword => lowerMsg.includes(keyword));
+};
+
+// Extract the image prompt from the message
+const extractImagePrompt = (message: string): string => {
+  const lowerMsg = message.toLowerCase();
+  const prefixes = [
+    "draw ", "create an image of ", "generate an image of ", "make an image of ",
+    "create a picture of ", "generate a picture of ", "make a picture of ",
+    "draw me ", "can you draw ", "show me an image of ", "create art of ",
+    "make art of ", "paint ", "illustrate ", "sketch ", "generate art of "
+  ];
+  
+  for (const prefix of prefixes) {
+    const idx = lowerMsg.indexOf(prefix);
+    if (idx !== -1) {
+      return message.slice(idx + prefix.length).trim();
+    }
+  }
+  return message;
+};
 // Emotion detection from AI response
 const detectEmotionFromResponse = (text: string): Emotion => {
   const lowerText = text.toLowerCase();
@@ -197,6 +228,32 @@ export const useLiaChat = (companionName: string = "Lia") => {
     onDone();
   };
 
+  const generateImage = async (prompt: string, signal: AbortSignal): Promise<{ imageUrl: string; text: string }> => {
+    const resp = await fetch(IMAGE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      },
+      body: JSON.stringify({ prompt }),
+      signal,
+    });
+
+    if (!resp.ok) {
+      const errorData = await resp.json().catch(() => ({}));
+      if (resp.status === 429) {
+        toast.error("Rate limit reached! Please wait a moment~ 💫");
+      } else if (resp.status === 402) {
+        toast.error("Usage limit reached. Please add credits to continue! 💖");
+      } else {
+        toast.error(errorData.error || "Couldn't create the image... 😢");
+      }
+      throw new Error(errorData.error || "Failed to generate image");
+    }
+
+    return await resp.json();
+  };
+
   const sendMessage = useCallback(async (content: string) => {
     // Cancel any ongoing request
     if (abortControllerRef.current) {
@@ -229,7 +286,55 @@ export const useLiaChat = (companionName: string = "Lia") => {
     setIsTyping(true);
     setCurrentEmotion("thinking");
 
-    // Build conversation history - exclude welcome messages and only keep recent context
+    const assistantMsgId = `assistant-${Date.now()}`;
+
+    // Check if this is an image generation request
+    if (isImageRequest(content)) {
+      const imagePrompt = extractImagePrompt(content);
+      
+      try {
+        // Add a "creating" message
+        setMessages(prev => [...prev, {
+          id: assistantMsgId,
+          content: "Ooh, let me create that for you~ 🎨✨",
+          isUser: false,
+          timestamp: new Date(),
+        }]);
+
+        const { imageUrl, text } = await generateImage(imagePrompt, abortControllerRef.current.signal);
+        
+        setIsTyping(false);
+        setIsTalking(false);
+        setCurrentEmotion("excited");
+
+        const imageMessage: Message = {
+          id: assistantMsgId,
+          content: text || "Here you go! I hope you like it~ 💖",
+          isUser: false,
+          timestamp: new Date(),
+          imageUrl,
+        };
+        
+        setMessages(prev => prev.map(m => m.id === assistantMsgId ? imageMessage : m));
+        addMessage(imageMessage);
+        return;
+      } catch (error) {
+        if ((error as Error).name === 'AbortError') return;
+        console.error("Image generation error:", error);
+        setIsTyping(false);
+        setIsTalking(false);
+        setCurrentEmotion("sad");
+        
+        setMessages(prev => prev.map(m => 
+          m.id === assistantMsgId 
+            ? { ...m, content: "I couldn't create that image... 😢 Maybe try describing it differently?" }
+            : m
+        ));
+        return;
+      }
+    }
+
+    // Regular chat flow
     const recentMessages = messages
       .filter(msg => !msg.id.startsWith("welcome") && !msg.id.startsWith("error"))
       .slice(-8);
@@ -241,7 +346,6 @@ export const useLiaChat = (companionName: string = "Lia") => {
     conversationHistory.push({ role: "user", content });
 
     let assistantContent = "";
-    const assistantMsgId = `assistant-${Date.now()}`;
 
     const updateAssistantMessage = (nextChunk: string) => {
       assistantContent += nextChunk;

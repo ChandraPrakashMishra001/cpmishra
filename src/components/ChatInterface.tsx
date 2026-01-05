@@ -8,6 +8,7 @@ export interface Message {
   content: string;
   isUser: boolean;
   timestamp: Date;
+  imageUrl?: string;
 }
 
 interface ChatInterfaceProps {
@@ -61,6 +62,7 @@ const ChatInterface = ({ messages, onSendMessage, isTyping, companionName = "Lia
             content={msg.content}
             isUser={msg.isUser}
             timestamp={msg.timestamp}
+            imageUrl={msg.imageUrl}
           />
         ))}
         
