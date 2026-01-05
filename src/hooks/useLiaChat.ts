@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const IMAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-image`;
+const ANALYZE_IMAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/analyze-image`;
 
 // Detect if user is asking for image generation
 const isImageRequest = (message: string): boolean => {
@@ -254,7 +255,27 @@ export const useLiaChat = (companionName: string = "Lia") => {
     return await resp.json();
   };
 
-  const sendMessage = useCallback(async (content: string) => {
+  const analyzeImage = async (imageUrl: string, message: string, signal: AbortSignal): Promise<string> => {
+    const resp = await fetch(ANALYZE_IMAGE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+      },
+      body: JSON.stringify({ imageUrl, message, companionName }),
+      signal,
+    });
+
+    if (!resp.ok) {
+      const errorData = await resp.json().catch(() => ({}));
+      throw new Error(errorData.error || "Failed to analyze image");
+    }
+
+    const data = await resp.json();
+    return data.text;
+  };
+
+  const sendMessage = useCallback(async (content: string, sharedImageUrl?: string) => {
     // Cancel any ongoing request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -276,9 +297,10 @@ export const useLiaChat = (companionName: string = "Lia") => {
     // Add user message
     const userMessage: Message = {
       id: `user-${Date.now()}`,
-      content,
+      content: content || (sharedImageUrl ? "Shared an image" : ""),
       isUser: true,
       timestamp: new Date(),
+      imageUrl: sharedImageUrl,
     };
     
     setMessages((prev) => [...prev, userMessage]);
@@ -287,6 +309,48 @@ export const useLiaChat = (companionName: string = "Lia") => {
     setCurrentEmotion("thinking");
 
     const assistantMsgId = `assistant-${Date.now()}`;
+
+    // Handle shared image analysis
+    if (sharedImageUrl) {
+      try {
+        setMessages(prev => [...prev, {
+          id: assistantMsgId,
+          content: "Let me take a look~ 👀✨",
+          isUser: false,
+          timestamp: new Date(),
+        }]);
+
+        const analysisText = await analyzeImage(sharedImageUrl, content, abortControllerRef.current.signal);
+        
+        setIsTyping(false);
+        setIsTalking(false);
+        setCurrentEmotion(detectEmotionFromResponse(analysisText));
+
+        const analysisMessage: Message = {
+          id: assistantMsgId,
+          content: analysisText,
+          isUser: false,
+          timestamp: new Date(),
+        };
+        
+        setMessages(prev => prev.map(m => m.id === assistantMsgId ? analysisMessage : m));
+        addMessage(analysisMessage);
+        return;
+      } catch (error) {
+        if ((error as Error).name === 'AbortError') return;
+        console.error("Image analysis error:", error);
+        setIsTyping(false);
+        setIsTalking(false);
+        setCurrentEmotion("sad");
+        
+        setMessages(prev => prev.map(m => 
+          m.id === assistantMsgId 
+            ? { ...m, content: "Hmm, I couldn't quite see that image... 😢 Can you try again?" }
+            : m
+        ));
+        return;
+      }
+    }
 
     // Check if this is an image generation request
     if (isImageRequest(content)) {
