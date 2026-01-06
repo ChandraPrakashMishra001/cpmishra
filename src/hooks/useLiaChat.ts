@@ -135,7 +135,15 @@ const detectTopics = (message: string): string[] => {
   return topics;
 };
 
-export const useLiaChat = (companionName: string = "Lia") => {
+interface GoalsSummary {
+  totalGoals: number;
+  activeGoals: number;
+  completedGoals: number;
+  activeGoalsList: string;
+  categories: string[];
+}
+
+export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSummary) => {
   const { memory, addMessage, setUserName, addTopics, getTimeSinceLastVisit, hasHistory, clearMemory } = useConversationMemory();
   const abortControllerRef = useRef<AbortController | null>(null);
   
@@ -178,7 +186,8 @@ export const useLiaChat = (companionName: string = "Lia") => {
           userName: memory.userName,
           topics: memory.topics,
           totalMessages: memory.totalMessages,
-        }
+        },
+        goals: goalsSummary,
       }),
       signal,
     });
@@ -480,7 +489,7 @@ export const useLiaChat = (companionName: string = "Lia") => {
       };
       setMessages(prev => [...prev, errorMessage]);
     }
-  }, [messages, companionName, memory, addMessage, setUserName, addTopics]);
+  }, [messages, companionName, memory, goalsSummary, addMessage, setUserName, addTopics]);
 
   const resetConversation = useCallback(() => {
     if (abortControllerRef.current) {
