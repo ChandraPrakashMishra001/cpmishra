@@ -45,6 +45,12 @@ const extractImagePrompt = (message: string): string => {
 const detectEmotionFromResponse = (text: string): Emotion => {
   const lowerText = text.toLowerCase();
   
+  // New emotions first - angry, stressed, motivational
+  if (lowerText.includes("angry") || lowerText.includes("furious") || lowerText.includes("rage") || lowerText.includes("🔥") && lowerText.includes("mad")) return "angry";
+  if (lowerText.includes("stressed") || lowerText.includes("overwhelmed") || lowerText.includes("anxious") || lowerText.includes("pressure") || lowerText.includes("😰")) return "stressed";
+  if (lowerText.includes("you can do") || lowerText.includes("believe in you") || lowerText.includes("proud of you") || lowerText.includes("you got this") || lowerText.includes("💪") || lowerText.includes("keep going") || lowerText.includes("don't give up") || lowerText.includes("grow") || lowerText.includes("achieve") || lowerText.includes("potential") || lowerText.includes("🚀")) return "motivational";
+  
+  // Existing emotions
   if (lowerText.includes("blush") || lowerText.includes("shy") || lowerText.includes("embarrass")) return "shy";
   if (lowerText.includes("yay") || lowerText.includes("excited") || lowerText.includes("!!!") || lowerText.includes("amazing")) return "excited";
   if (lowerText.includes("hug") || lowerText.includes("love") || lowerText.includes("heart") || lowerText.includes("💕") || lowerText.includes("💖")) return "loving";

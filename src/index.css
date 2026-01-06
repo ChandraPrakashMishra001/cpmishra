@@ -265,6 +265,49 @@
   75%, 100% { transform: scale(1.5); opacity: 0; }
 }
 
+@keyframes angry-shake {
+  0%, 100% { transform: translateX(0) rotate(0deg); }
+  10% { transform: translateX(-3px) rotate(-2deg); }
+  20% { transform: translateX(3px) rotate(2deg); }
+  30% { transform: translateX(-3px) rotate(-1deg); }
+  40% { transform: translateX(3px) rotate(1deg); }
+  50% { transform: translateX(-2px) rotate(-1deg); }
+  60% { transform: translateX(2px) rotate(1deg); }
+  70% { transform: translateX(-1px) rotate(0deg); }
+  80% { transform: translateX(1px) rotate(0deg); }
+  90% { transform: translateX(0) rotate(0deg); }
+}
+
+@keyframes stressed-pulse {
+  0%, 100% { 
+    transform: scale(1); 
+    filter: brightness(1);
+  }
+  25% { 
+    transform: scale(0.98); 
+    filter: brightness(0.95);
+  }
+  50% { 
+    transform: scale(1.01); 
+    filter: brightness(1.02);
+  }
+  75% { 
+    transform: scale(0.99); 
+    filter: brightness(0.97);
+  }
+}
+
+@keyframes motivational-glow {
+  0%, 100% { 
+    transform: scale(1) translateY(0); 
+    filter: brightness(1.1) saturate(1.1);
+  }
+  50% { 
+    transform: scale(1.03) translateY(-2px); 
+    filter: brightness(1.2) saturate(1.2);
+  }
+}
+
 .animate-float {
   animation: float 4s ease-in-out infinite;
 }
@@ -331,6 +374,18 @@
 
 .animate-annoyed-shake {
   animation: annoyed-shake 0.5s ease-in-out infinite;
+}
+
+.animate-angry-shake {
+  animation: angry-shake 0.4s ease-in-out infinite;
+}
+
+.animate-stressed-pulse {
+  animation: stressed-pulse 2s ease-in-out infinite;
+}
+
+.animate-motivational-glow {
+  animation: motivational-glow 1.5s ease-in-out infinite;
 }
 
 .animate-particle-float {
