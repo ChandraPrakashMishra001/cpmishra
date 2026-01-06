@@ -13,7 +13,10 @@ export type Emotion =
   | "loving" 
   | "curious" 
   | "sleepy" 
-  | "annoyed";
+  | "annoyed"
+  | "angry"
+  | "stressed"
+  | "motivational";
 
 interface LiaAvatarProps {
   emotion: Emotion;
@@ -64,6 +67,12 @@ const LiaAvatar = ({ emotion, isTalking, customAvatarUrl, compact = false }: Lia
         return `brightness-80 saturate-70 blur-[0.5px] -rotate-2 ${baseTransform}`;
       case "annoyed":
         return `brightness-90 saturate-90 -rotate-2 scale-98`;
+      case "angry":
+        return `brightness-85 saturate-130 hue-rotate-[10deg] scale-105 -rotate-1`;
+      case "stressed":
+        return `brightness-90 saturate-80 scale-98 blur-[0.3px]`;
+      case "motivational":
+        return `brightness-115 saturate-120 scale-108`;
       default:
         return baseTransform;
     }
@@ -84,6 +93,12 @@ const LiaAvatar = ({ emotion, isTalking, customAvatarUrl, compact = false }: Lia
         return "bg-lia-purple/40";
       case "annoyed":
         return "bg-orange-400/30";
+      case "angry":
+        return "bg-red-500/40";
+      case "stressed":
+        return "bg-purple-500/35";
+      case "motivational":
+        return "bg-amber-400/45";
       case "sleepy":
         return "bg-lia-blue/25";
       case "surprised":
@@ -115,6 +130,12 @@ const LiaAvatar = ({ emotion, isTalking, customAvatarUrl, compact = false }: Lia
         return ["⭐", "✨", "😮", "💥"];
       case "annoyed":
         return ["💢", "😤", "💨"];
+      case "angry":
+        return ["🔥", "💢", "😠", "⚡"];
+      case "stressed":
+        return ["😰", "💫", "🌀", "💭"];
+      case "motivational":
+        return ["💪", "🌟", "🔥", "✨", "🚀", "⭐"];
       case "thinking":
         return ["💭", "🤔", "💡", "✨"];
       default:
@@ -147,6 +168,12 @@ const LiaAvatar = ({ emotion, isTalking, customAvatarUrl, compact = false }: Lia
         return "animate-shy-hide";
       case "annoyed":
         return "animate-annoyed-shake";
+      case "angry":
+        return "animate-angry-shake";
+      case "stressed":
+        return "animate-stressed-pulse";
+      case "motivational":
+        return "animate-motivational-glow";
       default:
         return "animate-float";
     }
@@ -236,6 +263,15 @@ const LiaAvatar = ({ emotion, isTalking, customAvatarUrl, compact = false }: Lia
           {emotion === "annoyed" && (
             <div className="absolute -top-2 -right-2 text-xl animate-pulse">💢</div>
           )}
+          {emotion === "angry" && (
+            <div className="absolute inset-0 rounded-full border-4 border-red-500/40 animate-pulse" />
+          )}
+          {emotion === "stressed" && (
+            <div className="absolute inset-0 rounded-full bg-gradient-to-b from-purple-400/20 to-transparent animate-pulse" />
+          )}
+          {emotion === "motivational" && (
+            <div className="absolute inset-0 rounded-full bg-gradient-to-t from-amber-400/30 to-transparent animate-breathe" />
+          )}
         </div>
 
         {/* Status ring */}
@@ -265,6 +301,9 @@ const EmotionBubble = ({ emotion }: { emotion: Emotion }) => {
       case "curious": return "👀";
       case "sleepy": return "💤";
       case "annoyed": return "😤";
+      case "angry": return "🔥";
+      case "stressed": return "😰";
+      case "motivational": return "💪";
       default: return "💖";
     }
   };
@@ -282,6 +321,9 @@ const EmotionBubble = ({ emotion }: { emotion: Emotion }) => {
       case "curious": return "Curious!";
       case "sleepy": return "Sleepy...";
       case "annoyed": return "Hmph!";
+      case "angry": return "Really upset!";
+      case "stressed": return "Stressed...";
+      case "motivational": return "You got this!";
       default: return "";
     }
   };
