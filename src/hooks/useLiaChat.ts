@@ -15,7 +15,10 @@ const isImageRequest = (message: string): boolean => {
     "draw", "create an image", "generate an image", "make an image",
     "create a picture", "generate a picture", "make a picture",
     "draw me", "can you draw", "show me an image", "create art",
-    "make art", "paint", "illustrate", "sketch", "generate art"
+    "make art", "paint", "illustrate", "sketch", "generate art",
+    "image of", "picture of", "photo of", "artwork of", "render",
+    "visualize", "depict", "design an image", "make me an image",
+    "show me a picture", "create a visual", "generate a visual"
   ];
   return imageKeywords.some(keyword => lowerMsg.includes(keyword));
 };
