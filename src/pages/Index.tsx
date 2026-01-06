@@ -3,10 +3,12 @@ import LiaAvatar from "@/components/LiaAvatar";
 import ChatInterface from "@/components/ChatInterface";
 import CompanionSettingsDialog from "@/components/CompanionSettingsDialog";
 import FallingPetals from "@/components/FallingPetals";
+import { GoalsDialog } from "@/components/GoalsDialog";
 import { useLiaChat } from "@/hooks/useLiaChat";
 import { useCompanionSettings } from "@/hooks/useCompanionSettings";
+import { useGoals } from "@/hooks/useGoals";
 import liaAvatar from "@/assets/lia-avatar.png";
-import { Trash2 } from "lucide-react";
+import { Trash2, Target } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -22,7 +24,9 @@ import {
 
 const Index = () => {
   const { settings, updateName, updateAvatar, resetSettings } = useCompanionSettings();
-  const { messages, sendMessage, isTyping, currentEmotion, isTalking, memory, resetConversation } = useLiaChat(settings.name);
+  const { getGoalsSummary } = useGoals();
+  const goalsSummary = getGoalsSummary();
+  const { messages, sendMessage, isTyping, currentEmotion, isTalking, memory, resetConversation } = useLiaChat(settings.name, goalsSummary);
 
   return (
     <HelmetProvider>
@@ -57,6 +61,17 @@ const Index = () => {
               </div>
             </div>
             <div className="flex gap-2">
+              <GoalsDialog 
+                trigger={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="bg-card/40 backdrop-blur-sm border border-border/30 hover:bg-lia-pink/20"
+                  >
+                    <Target className="w-4 h-4 text-lia-pink" />
+                  </Button>
+                }
+              />
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
@@ -104,6 +119,19 @@ const Index = () => {
               onUpdateAvatar={updateAvatar}
               onReset={resetSettings}
               defaultAvatarUrl={liaAvatar}
+            />
+
+            {/* Goals Button */}
+            <GoalsDialog 
+              trigger={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-4 right-28 z-20 bg-card/40 backdrop-blur-sm border border-border/30 hover:bg-lia-pink/20"
+                >
+                  <Target className="w-4 h-4 text-lia-pink" />
+                </Button>
+              }
             />
 
             {/* Clear Memory Button */}

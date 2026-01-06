@@ -61,7 +61,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { messages, companionName, memory } = body;
+    const { messages, companionName, memory, goals } = body;
 
     // Validate input
     if (!validateMessages(messages)) {
@@ -96,6 +96,26 @@ serve(async (req) => {
 The user's name is: ${safeMemory.userName}
 Topics they've discussed: ${safeMemory.topics.join(", ") || "none yet"}
 Total messages exchanged: ${safeMemory.totalMessages}
+` : "";
+
+    // Build goals context
+    const safeGoals = {
+      activeGoals: typeof goals?.activeGoals === 'number' ? goals.activeGoals : 0,
+      completedGoals: typeof goals?.completedGoals === 'number' ? goals.completedGoals : 0,
+      activeGoalsList: typeof goals?.activeGoalsList === 'string' ? goals.activeGoalsList.slice(0, 500) : "",
+    };
+
+    const goalsContext = safeGoals.activeGoals > 0 ? `
+## User's Current Goals
+They have ${safeGoals.activeGoals} active goal(s) and have completed ${safeGoals.completedGoals} goal(s).
+Active goals: ${safeGoals.activeGoalsList || "none specified"}
+
+You should occasionally:
+- Ask about their progress on these goals
+- Celebrate small wins and milestones
+- Offer encouragement when they seem stuck
+- Suggest breaking down goals into smaller steps
+- Remind them you believe in them 💪
 ` : "";
 
     const safeCompanionName = typeof companionName === 'string' ? companionName.slice(0, 30) : "Lia";
@@ -141,6 +161,7 @@ Total messages exchanged: ${safeMemory.totalMessages}
 - When appropriate, encourage them to pursue their goals and become their best self
 
 ${memoryContext}
+${goalsContext}
 
 Keep responses SHORT — 1-3 sentences for casual chat, slightly longer (3-5 sentences) when explaining something or providing emotional support. Be expressive but concise. You're here to make them feel loved, comforted, informed, motivated, and a little bit flustered~`;
 
