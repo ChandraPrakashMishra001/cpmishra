@@ -53,18 +53,23 @@ const ChatInput = ({ onSend, disabled, companionName = "Lia" }: ChatInputProps) 
   return (
     <div className="relative">
       {imagePreview && (
-        <div className="mb-2 relative inline-block">
-          <img 
-            src={imagePreview} 
-            alt="Preview" 
-            className="h-20 w-auto rounded-lg border border-lia-pink/30"
-          />
-          <button
-            onClick={removeImage}
-            className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center hover:bg-destructive/80 transition-colors"
-          >
-            <X className="w-4 h-4" />
-          </button>
+        <div className="mb-2 space-y-2">
+          <div className="relative inline-block">
+            <img 
+              src={imagePreview} 
+              alt="Preview" 
+              className="h-20 w-auto rounded-lg border border-lia-pink/30"
+            />
+            <button
+              onClick={removeImage}
+              className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center hover:bg-destructive/80 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+          <p className="text-xs text-muted-foreground/70">
+            💡 Tip: Add "solve" or "help me with" to get step-by-step homework help!
+          </p>
         </div>
       )}
       
@@ -81,7 +86,7 @@ const ChatInput = ({ onSend, disabled, companionName = "Lia" }: ChatInputProps) 
           onClick={() => fileInputRef.current?.click()}
           disabled={disabled}
           className="flex items-center justify-center w-10 h-10 rounded-xl bg-lia-purple/20 hover:bg-lia-purple/40 disabled:opacity-40 transition-all duration-300"
-          title="Share an image"
+          title="Upload homework or share an image"
         >
           <ImagePlus className="w-5 h-5 text-lia-purple" />
         </button>
@@ -91,7 +96,7 @@ const ChatInput = ({ onSend, disabled, companionName = "Lia" }: ChatInputProps) 
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder={imagePreview ? `Say something about this image...` : `Say something to ${companionName}...`}
+            placeholder={imagePreview ? `Ask me to solve, explain, or help with this problem...` : `Say something to ${companionName}...`}
             disabled={disabled}
             rows={1}
             className="w-full bg-transparent resize-none outline-none placeholder:text-muted-foreground text-foreground font-body"
