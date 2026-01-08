@@ -4,11 +4,12 @@ import ChatInterface from "@/components/ChatInterface";
 import CompanionSettingsDialog from "@/components/CompanionSettingsDialog";
 import FallingPetals from "@/components/FallingPetals";
 import { GoalsDialog } from "@/components/GoalsDialog";
+import { NotificationsDialog } from "@/components/NotificationsDialog";
 import { useLiaChat } from "@/hooks/useLiaChat";
 import { useCompanionSettings } from "@/hooks/useCompanionSettings";
 import { useGoals } from "@/hooks/useGoals";
 import liaAvatar from "@/assets/lia-avatar.png";
-import { Trash2, Target } from "lucide-react";
+import { Trash2, Target, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -61,6 +62,7 @@ const Index = () => {
               </div>
             </div>
             <div className="flex gap-2">
+              <NotificationsDialog companionName={settings.name} />
               <GoalsDialog 
                 trigger={
                   <Button
@@ -119,6 +121,20 @@ const Index = () => {
               onUpdateAvatar={updateAvatar}
               onReset={resetSettings}
               defaultAvatarUrl={liaAvatar}
+            />
+
+            {/* Notifications Button */}
+            <NotificationsDialog 
+              companionName={settings.name}
+              trigger={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-4 right-40 z-20 bg-card/40 backdrop-blur-sm border border-border/30 hover:bg-lia-pink/20"
+                >
+                  <Bell className="w-4 h-4 text-lia-pink" />
+                </Button>
+              }
             />
 
             {/* Goals Button */}
