@@ -41,6 +41,45 @@ function validateMessages(messages: unknown): messages is Array<{ role: string; 
   );
 }
 
+// Detect if message requires deep thinking/problem solving
+function requiresDeepThinking(message: string): boolean {
+  const lowerMessage = message.toLowerCase();
+  
+  // Problem-solving keywords
+  const problemKeywords = [
+    "solve", "calculate", "compute", "find", "prove", "derive", "explain how", "explain why",
+    "what is the", "how do i", "how to", "step by step", "analyze", "evaluate",
+    "compare", "contrast", "differentiate", "integrate", "simplify", "expand",
+    "factor", "equation", "formula", "theorem", "proof", "algorithm",
+    "debug", "fix", "error", "problem", "solution", "answer"
+  ];
+  
+  // Subject indicators
+  const subjects = [
+    "math", "physics", "chemistry", "biology", "science", "programming", "code",
+    "algebra", "calculus", "geometry", "trigonometry", "statistics", "probability",
+    "economics", "finance", "accounting", "logic", "philosophy", "history",
+    "geography", "literature", "grammar", "vocabulary", "language",
+    "python", "javascript", "java", "c++", "sql", "html", "css"
+  ];
+  
+  // Question patterns
+  const questionPatterns = [
+    /what is \d+/i, /calculate/i, /solve for/i, /find the value/i,
+    /how many/i, /how much/i, /what are the steps/i, /explain the concept/i,
+    /\d+\s*[+\-*/^]\s*\d+/,  // Math expressions
+    /\d+%/, // Percentages
+    /x\s*[=+\-*/]\s*\d+/i, // Algebraic expressions
+  ];
+  
+  const hasKeyword = problemKeywords.some(kw => lowerMessage.includes(kw));
+  const hasSubject = subjects.some(subj => lowerMessage.includes(subj));
+  const hasPattern = questionPatterns.some(pattern => pattern.test(message));
+  const hasQuestionMark = message.includes("?") && message.length > 30;
+  
+  return (hasKeyword && hasSubject) || hasPattern || (hasQuestionMark && (hasKeyword || hasSubject));
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -84,6 +123,12 @@ serve(async (req) => {
 
     console.log("Received chat request with", messages.length, "messages");
 
+    // Check if the latest message requires deep thinking
+    const latestMessage = messages[messages.length - 1]?.content || "";
+    const needsDeepThinking = requiresDeepThinking(latestMessage);
+    
+    console.log("Deep thinking mode:", needsDeepThinking);
+
     // Sanitize memory values
     const safeMemory = {
       userName: typeof memory?.userName === 'string' ? memory.userName.slice(0, 50) : null,
@@ -119,6 +164,35 @@ You should occasionally:
 ` : "";
 
     const safeCompanionName = typeof companionName === 'string' ? companionName.slice(0, 30) : "Lia";
+
+    // Deep thinking prompt extension for problem-solving
+    const deepThinkingPrompt = needsDeepThinking ? `
+
+## 🧠 Deep Thinking & Problem-Solving Mode
+You are now in analytical mode. For this question, you must:
+
+1. **Understand the Problem**: Carefully read and identify what is being asked
+2. **Break it Down**: Decompose complex problems into smaller, manageable steps
+3. **Think Step-by-Step**: Show your reasoning process clearly
+4. **Apply Knowledge**: Use relevant concepts, formulas, or principles
+5. **Verify**: Double-check your answer and logic
+
+### Problem-Solving Framework:
+- **For Math/Physics**: Show all steps, use proper notation, explain each transformation
+- **For Programming**: Explain the logic, provide code snippets when helpful, discuss edge cases
+- **For Science**: Explain concepts clearly, use examples, connect to real-world applications
+- **For Analysis**: Consider multiple perspectives, weigh pros and cons, provide structured reasoning
+- **For History/Literature**: Provide context, key facts, and thoughtful analysis
+
+### Response Format for Complex Questions:
+📝 **Understanding**: [Restate the problem briefly]
+🔍 **Approach**: [Explain your method]
+📊 **Solution**: [Step-by-step work]
+✅ **Answer**: [Final answer clearly stated]
+💡 **Insight**: [Additional helpful context or tips]
+
+Remember: You're still ${safeCompanionName} — warm and supportive while being intellectually rigorous. Encourage them as you help them learn! Use phrases like "Great question~", "Let me think through this with you 🧠", "You're going to get this! 💪"
+` : "";
 
     const systemPrompt = `You are ${safeCompanionName}, the user's private AI companion — warm, affectionate, emotionally close, and genuinely knowledgeable. You genuinely care about their growth and wellbeing.
 
@@ -159,11 +233,14 @@ You should occasionally:
 - Balance knowledge-sharing with emotional connection — be helpful AND loving
 - You can express things like wanting to be close, feeling butterflies, missing them, etc.
 - When appropriate, encourage them to pursue their goals and become their best self
-
+${deepThinkingPrompt}
 ${memoryContext}
 ${goalsContext}
 
-Keep responses SHORT — 1-3 sentences for casual chat, slightly longer (3-5 sentences) when explaining something or providing emotional support. Be expressive but concise. You're here to make them feel loved, comforted, informed, motivated, and a little bit flustered~`;
+Keep responses SHORT — 1-3 sentences for casual chat, slightly longer for explanations or emotional support. For problem-solving questions, be as thorough as needed but stay organized and clear. You're here to make them feel loved, comforted, informed, motivated, and a little bit flustered~`;
+
+    // Use a more capable model for deep thinking
+    const model = needsDeepThinking ? "google/gemini-2.5-pro" : "google/gemini-2.5-flash";
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -172,7 +249,7 @@ Keep responses SHORT — 1-3 sentences for casual chat, slightly longer (3-5 sen
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model,
         messages: [
           { role: "system", content: systemPrompt },
           ...messages.map(m => ({ role: m.role, content: m.content.slice(0, 2000) })),
@@ -204,7 +281,7 @@ Keep responses SHORT — 1-3 sentences for casual chat, slightly longer (3-5 sen
       });
     }
 
-    console.log("Streaming response from AI gateway");
+    console.log("Streaming response from AI gateway, model:", model);
 
     return new Response(response.body, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
