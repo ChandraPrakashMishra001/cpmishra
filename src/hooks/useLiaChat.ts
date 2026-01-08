@@ -330,10 +330,19 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
 
     // Handle shared image analysis
     if (sharedImageUrl) {
+      // Detect if this is a homework request
+      const lowerContent = content.toLowerCase();
+      const isHomework = ["solve", "help", "answer", "explain", "calculate", "what is", "how to", 
+        "homework", "problem", "question", "exercise", "math", "physics", "chemistry", "step"].some(kw => lowerContent.includes(kw));
+      
+      const thinkingMessage = isHomework 
+        ? "Let me analyze this problem... 🧠✨" 
+        : "Let me take a look~ 👀✨";
+      
       try {
         setMessages(prev => [...prev, {
           id: assistantMsgId,
-          content: "Let me take a look~ 👀✨",
+          content: thinkingMessage,
           isUser: false,
           timestamp: new Date(),
         }]);
