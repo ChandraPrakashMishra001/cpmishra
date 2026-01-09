@@ -107,6 +107,70 @@
   animation: cloud-float linear infinite;
 }
 
+/* Sun animations */
+@keyframes sun-pulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+  }
+}
+
+@keyframes sun-glow-outer {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.5;
+  }
+}
+
+@keyframes sun-glow-middle {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.6;
+  }
+}
+
+@keyframes sun-rays {
+  0%, 100% {
+    transform: rotate(0deg);
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: rotate(45deg);
+    opacity: 0.6;
+  }
+}
+
+.animate-sun-pulse {
+  animation: sun-pulse 4s ease-in-out infinite;
+}
+
+.animate-sun-glow-outer {
+  animation: sun-glow-outer 5s ease-in-out infinite;
+}
+
+.animate-sun-glow-middle {
+  animation: sun-glow-middle 4s ease-in-out infinite 0.5s;
+}
+
+.animate-sun-rays {
+  animation: sun-rays 20s linear infinite;
+}
+
 /* Avatar animations */
 @keyframes float {
   0%, 100% { transform: translateY(0px) scale(1); }
