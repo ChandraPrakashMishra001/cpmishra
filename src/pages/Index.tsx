@@ -8,8 +8,9 @@ import { NotificationsDialog } from "@/components/NotificationsDialog";
 import { useLiaChat } from "@/hooks/useLiaChat";
 import { useCompanionSettings } from "@/hooks/useCompanionSettings";
 import { useGoals } from "@/hooks/useGoals";
+import { useTheme } from "@/hooks/useTheme";
 import liaAvatar from "@/assets/lia-avatar.png";
-import { Trash2, Target, Bell } from "lucide-react";
+import { Trash2, Target, Bell, Sun, Moon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -26,6 +27,7 @@ import {
 const Index = () => {
   const { settings, updateName, updateAvatar, resetSettings } = useCompanionSettings();
   const { getGoalsSummary } = useGoals();
+  const { theme, toggleTheme, isNight } = useTheme();
   const goalsSummary = getGoalsSummary();
   const { messages, sendMessage, isTyping, currentEmotion, isTalking, memory, resetConversation } = useLiaChat(settings.name, goalsSummary);
 
@@ -37,7 +39,7 @@ const Index = () => {
       </Helmet>
 
       {/* Floating clouds background */}
-      <FloatingClouds />
+      <FloatingClouds isNight={isNight} />
 
       <div className="min-h-screen flex flex-col relative z-10">
         {/* Mobile: Sticky header with compact avatar */}
@@ -62,8 +64,21 @@ const Index = () => {
               </div>
             </div>
             <div className="flex gap-2">
+              {/* Day/Night Toggle */}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleTheme}
+                className="bg-card/80 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm transition-all duration-300"
+              >
+                {isNight ? (
+                  <Sun className="w-4 h-4 text-yellow-500" />
+                ) : (
+                  <Moon className="w-4 h-4 text-primary" />
+                )}
+              </Button>
               <NotificationsDialog companionName={settings.name} />
-              <GoalsDialog 
+              <GoalsDialog
                 trigger={
                   <Button
                     variant="ghost"
@@ -123,6 +138,20 @@ const Index = () => {
               defaultAvatarUrl={liaAvatar}
             />
 
+            {/* Day/Night Toggle Button */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={toggleTheme}
+              className="absolute top-4 right-52 z-20 bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm transition-all duration-300"
+            >
+              {isNight ? (
+                <Sun className="w-4 h-4 text-yellow-500" />
+              ) : (
+                <Moon className="w-4 h-4 text-primary" />
+              )}
+            </Button>
+
             {/* Notifications Button */}
             <NotificationsDialog 
               companionName={settings.name}
@@ -130,9 +159,9 @@ const Index = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute top-4 right-40 z-20 bg-card/40 backdrop-blur-sm border border-border/30 hover:bg-lia-pink/20"
+                  className="absolute top-4 right-40 z-20 bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm"
                 >
-                  <Bell className="w-4 h-4 text-lia-pink" />
+                  <Bell className="w-4 h-4 text-primary" />
                 </Button>
               }
             />
@@ -143,9 +172,9 @@ const Index = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute top-4 right-28 z-20 bg-card/40 backdrop-blur-sm border border-border/30 hover:bg-lia-pink/20"
+                  className="absolute top-4 right-28 z-20 bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm"
                 >
-                  <Target className="w-4 h-4 text-lia-pink" />
+                  <Target className="w-4 h-4 text-primary" />
                 </Button>
               }
             />
@@ -156,7 +185,7 @@ const Index = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute top-4 right-16 z-20 bg-card/40 backdrop-blur-sm border border-border/30 hover:bg-destructive/20"
+                  className="absolute top-4 right-16 z-20 bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-destructive/20 shadow-sm"
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
