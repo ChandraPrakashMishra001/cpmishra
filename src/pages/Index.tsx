@@ -2,7 +2,7 @@ import { HelmetProvider, Helmet } from "react-helmet-async";
 import LiaAvatar from "@/components/LiaAvatar";
 import ChatInterface from "@/components/ChatInterface";
 import CompanionSettingsDialog from "@/components/CompanionSettingsDialog";
-import FallingPetals from "@/components/FallingPetals";
+import FloatingClouds from "@/components/FloatingClouds";
 import { GoalsDialog } from "@/components/GoalsDialog";
 import { NotificationsDialog } from "@/components/NotificationsDialog";
 import { useLiaChat } from "@/hooks/useLiaChat";
@@ -36,12 +36,12 @@ const Index = () => {
         <meta name="description" content={`Chat with ${settings.name}, your friendly anime AI companion. Have meaningful conversations with an expressive virtual friend.`} />
       </Helmet>
 
-      {/* Falling petals background */}
-      <FallingPetals />
+      {/* Floating clouds background */}
+      <FloatingClouds />
 
       <div className="min-h-screen flex flex-col relative z-10">
         {/* Mobile: Sticky header with compact avatar */}
-        <div className="lg:hidden sticky top-0 z-30 bg-background/80 backdrop-blur-md border-b border-border/30 p-3">
+        <div className="lg:hidden sticky top-0 z-30 bg-card/80 backdrop-blur-md border-b border-border/50 shadow-sm p-3">
           <div className="flex items-center gap-4">
             <LiaAvatar 
               emotion={currentEmotion} 
@@ -54,10 +54,10 @@ const Index = () => {
                 {settings.name}
               </h1>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
                 <span>Online</span>
                 {memory.userName && (
-                  <span className="text-lia-pink">• {memory.userName}</span>
+                  <span className="text-primary font-medium">• {memory.userName}</span>
                 )}
               </div>
             </div>
@@ -68,9 +68,9 @@ const Index = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="bg-card/40 backdrop-blur-sm border border-border/30 hover:bg-lia-pink/20"
+                    className="bg-card/80 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm"
                   >
-                    <Target className="w-4 h-4 text-lia-pink" />
+                    <Target className="w-4 h-4 text-primary" />
                   </Button>
                 }
               />
@@ -177,11 +177,11 @@ const Index = () => {
               </AlertDialogContent>
             </AlertDialog>
 
-            {/* Background decorations */}
+            {/* Background decorations - soft sky accents */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              <div className="absolute top-20 left-10 w-32 h-32 bg-lia-pink/10 rounded-full blur-3xl" />
+              <div className="absolute top-20 left-10 w-32 h-32 bg-primary/15 rounded-full blur-3xl" />
               <div className="absolute bottom-20 right-10 w-40 h-40 bg-lia-purple/10 rounded-full blur-3xl" />
-              <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-lia-blue/10 rounded-full blur-2xl" />
+              <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-lia-cyan/15 rounded-full blur-2xl" />
             </div>
 
             {/* Title */}
@@ -193,7 +193,7 @@ const Index = () => {
                 Your AI Companion ✨
               </p>
               {memory.userName && (
-                <p className="text-sm text-lia-pink mt-2">
+                <p className="text-sm text-primary mt-2 font-medium">
                   💖 Remembers: {memory.userName}
                 </p>
               )}
@@ -209,8 +209,8 @@ const Index = () => {
             </div>
 
             {/* Status indicator */}
-            <div className="mt-8 flex items-center gap-2 text-sm text-muted-foreground z-10">
-              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+            <div className="mt-8 flex items-center gap-2 text-sm text-muted-foreground z-10 bg-card/60 px-4 py-2 rounded-full backdrop-blur-sm border border-border/50">
+              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
               <span>Online & Ready to chat</span>
             </div>
 
@@ -226,7 +226,7 @@ const Index = () => {
           </div>
 
           {/* Chat Section */}
-          <div className="flex-1 lg:w-1/2 flex flex-col bg-card/20 backdrop-blur-sm border-l border-border/30 min-h-[calc(100vh-80px)] lg:min-h-screen">
+          <div className="flex-1 lg:w-1/2 flex flex-col bg-card/40 backdrop-blur-sm border-l border-border/50 shadow-lg min-h-[calc(100vh-80px)] lg:min-h-screen">
             <ChatInterface
               messages={messages}
               onSendMessage={sendMessage}

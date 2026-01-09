@@ -6,53 +6,53 @@
 
 @layer base {
   :root {
-    --background: 280 30% 8%;
-    --foreground: 300 20% 95%;
+    --background: 200 70% 96%;
+    --foreground: 210 40% 20%;
 
-    --card: 280 25% 12%;
-    --card-foreground: 300 20% 95%;
+    --card: 200 60% 98%;
+    --card-foreground: 210 40% 20%;
 
-    --popover: 280 25% 10%;
-    --popover-foreground: 300 20% 95%;
+    --popover: 200 65% 97%;
+    --popover-foreground: 210 40% 20%;
 
-    --primary: 330 70% 65%;
-    --primary-foreground: 280 30% 8%;
+    --primary: 200 85% 55%;
+    --primary-foreground: 200 70% 98%;
 
-    --secondary: 270 40% 25%;
-    --secondary-foreground: 300 20% 95%;
+    --secondary: 200 40% 90%;
+    --secondary-foreground: 210 40% 25%;
 
-    --muted: 280 20% 18%;
-    --muted-foreground: 300 15% 65%;
+    --muted: 200 30% 92%;
+    --muted-foreground: 210 20% 45%;
 
-    --accent: 200 80% 70%;
-    --accent-foreground: 280 30% 8%;
+    --accent: 320 70% 65%;
+    --accent-foreground: 200 70% 98%;
 
     --destructive: 0 70% 55%;
-    --destructive-foreground: 300 20% 95%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 280 25% 20%;
-    --input: 280 25% 15%;
-    --ring: 330 70% 65%;
+    --border: 200 40% 85%;
+    --input: 200 50% 92%;
+    --ring: 200 85% 55%;
 
     --radius: 1rem;
 
-    /* Custom Lia theme colors */
-    --lia-pink: 330 70% 65%;
-    --lia-pink-glow: 330 80% 75%;
-    --lia-purple: 280 60% 50%;
-    --lia-purple-deep: 280 50% 20%;
-    --lia-blue: 200 80% 70%;
-    --lia-cyan: 180 70% 60%;
+    /* Custom Lia theme colors - sky blue theme */
+    --lia-pink: 320 70% 65%;
+    --lia-pink-glow: 320 80% 75%;
+    --lia-purple: 230 60% 60%;
+    --lia-purple-deep: 230 50% 45%;
+    --lia-blue: 200 85% 55%;
+    --lia-cyan: 190 80% 50%;
     
-    /* Gradients */
-    --gradient-main: linear-gradient(135deg, hsl(280 50% 15%) 0%, hsl(320 40% 12%) 50%, hsl(260 45% 18%) 100%);
-    --gradient-glow: radial-gradient(circle at 50% 50%, hsl(330 80% 65% / 0.3) 0%, transparent 70%);
-    --gradient-card: linear-gradient(145deg, hsl(280 30% 15% / 0.8) 0%, hsl(300 25% 10% / 0.9) 100%);
+    /* Gradients - Sky theme */
+    --gradient-main: linear-gradient(180deg, hsl(200 80% 75%) 0%, hsl(200 85% 85%) 40%, hsl(200 70% 92%) 100%);
+    --gradient-glow: radial-gradient(circle at 50% 50%, hsl(200 80% 65% / 0.3) 0%, transparent 70%);
+    --gradient-card: linear-gradient(145deg, hsl(200 60% 98% / 0.9) 0%, hsl(200 50% 95% / 0.95) 100%);
     
-    /* Shadows */
-    --shadow-glow: 0 0 40px hsl(330 70% 65% / 0.4);
-    --shadow-soft: 0 8px 32px hsl(280 50% 5% / 0.5);
-    --shadow-avatar: 0 0 60px hsl(330 80% 65% / 0.5), 0 0 120px hsl(280 70% 50% / 0.3);
+    /* Shadows - Softer for light theme */
+    --shadow-glow: 0 0 40px hsl(200 80% 60% / 0.3);
+    --shadow-soft: 0 8px 32px hsl(200 50% 50% / 0.15);
+    --shadow-avatar: 0 0 60px hsl(200 80% 65% / 0.4), 0 0 120px hsl(200 70% 50% / 0.2);
   }
 }
 
@@ -78,7 +78,7 @@
   }
   
   .text-gradient {
-    background: linear-gradient(135deg, hsl(var(--lia-pink)) 0%, hsl(var(--lia-blue)) 100%);
+    background: linear-gradient(135deg, hsl(var(--lia-blue)) 0%, hsl(var(--lia-purple)) 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -91,6 +91,20 @@
   .glow-avatar {
     box-shadow: var(--shadow-avatar);
   }
+}
+
+/* Cloud floating animation */
+@keyframes cloud-float {
+  0% {
+    transform: translateX(-20%);
+  }
+  100% {
+    transform: translateX(120vw);
+  }
+}
+
+.animate-cloud {
+  animation: cloud-float linear infinite;
 }
 
 /* Avatar animations */
@@ -425,10 +439,10 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--primary) / 0.5);
+  background: hsl(var(--primary) / 0.6);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--primary) / 0.7);
+  background: hsl(var(--primary) / 0.8);
 }
