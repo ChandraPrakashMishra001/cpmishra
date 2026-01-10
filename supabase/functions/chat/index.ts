@@ -27,18 +27,34 @@ function isRateLimited(clientIp: string): boolean {
   return false;
 }
 
-// Input validation
+// Input validation - more lenient to handle edge cases
 function validateMessages(messages: unknown): messages is Array<{ role: string; content: string }> {
-  if (!Array.isArray(messages)) return false;
-  if (messages.length === 0 || messages.length > 50) return false;
+  if (!Array.isArray(messages)) {
+    console.log("Messages is not an array:", typeof messages);
+    return false;
+  }
+  if (messages.length === 0) {
+    console.log("Messages array is empty");
+    return false;
+  }
+  if (messages.length > 50) {
+    console.log("Too many messages:", messages.length);
+    return false;
+  }
   
-  return messages.every(msg => 
-    typeof msg === 'object' && 
-    msg !== null &&
-    typeof (msg as Record<string, unknown>).role === 'string' &&
-    typeof (msg as Record<string, unknown>).content === 'string' &&
-    ((msg as Record<string, unknown>).content as string).length <= 2000
-  );
+  const valid = messages.every((msg, i) => {
+    const isValid = typeof msg === 'object' && 
+      msg !== null &&
+      typeof (msg as Record<string, unknown>).role === 'string' &&
+      typeof (msg as Record<string, unknown>).content === 'string';
+    
+    if (!isValid) {
+      console.log(`Invalid message at index ${i}:`, JSON.stringify(msg).slice(0, 100));
+    }
+    return isValid;
+  });
+  
+  return valid;
 }
 
 // Detect if message requires deep thinking/problem solving
