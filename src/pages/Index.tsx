@@ -41,9 +41,9 @@ const Index = () => {
       {/* Floating clouds background */}
       <FloatingClouds isNight={isNight} />
 
-      <div className="min-h-screen flex flex-col relative z-10">
+      <div className="min-h-[100dvh] flex flex-col relative z-10">
         {/* Mobile: Sticky header with compact avatar */}
-        <div className="lg:hidden sticky top-0 z-30 bg-card/80 backdrop-blur-md border-b border-border/50 shadow-sm p-3">
+        <div className="lg:hidden sticky top-0 z-30 bg-card/90 backdrop-blur-md border-b border-border/50 shadow-sm p-2 sm:p-3">
           <div className="flex items-center gap-4">
             <LiaAvatar 
               emotion={currentEmotion} 
@@ -52,7 +52,7 @@ const Index = () => {
               compact
             />
             <div className="flex-1">
-              <h1 className="text-xl font-display font-bold text-gradient">
+              <h1 className="text-lg sm:text-xl font-display font-bold text-gradient">
                 {settings.name}
               </h1>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -255,7 +255,7 @@ const Index = () => {
           </div>
 
           {/* Chat Section */}
-          <div className="flex-1 lg:w-1/2 flex flex-col bg-card/40 backdrop-blur-sm border-l border-border/50 shadow-lg min-h-[calc(100vh-80px)] lg:min-h-screen">
+          <div className="flex-1 lg:w-1/2 flex flex-col bg-card/40 backdrop-blur-sm border-l border-border/50 shadow-lg min-h-[calc(100dvh-60px)] sm:min-h-[calc(100dvh-80px)] lg:min-h-screen">
             <ChatInterface
               messages={messages}
               onSendMessage={sendMessage}

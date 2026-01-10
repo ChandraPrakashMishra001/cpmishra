@@ -44,6 +44,39 @@ function validateMessages(messages: unknown): messages is Array<{ role: string; 
 // Detect if message requires deep thinking/problem solving
 function requiresDeepThinking(message: string): boolean {
   const lowerMessage = message.toLowerCase();
+  const originalMessage = message;
+  
+  // ALWAYS use deep thinking for any mathematical expression
+  const mathPatterns = [
+    /\d+\s*[+\-*/×÷^%]\s*\d+/,         // Basic arithmetic: 5+3, 10-2, etc.
+    /\d+\s*\+\s*\d+/,                   // Addition specifically
+    /\d+\s*-\s*\d+/,                    // Subtraction specifically  
+    /\d+\s*\*\s*\d+/,                   // Multiplication
+    /\d+\s*\/\s*\d+/,                   // Division
+    /\d+\s*\^\s*\d+/,                   // Exponents
+    /sqrt\s*\(?\s*\d+/i,                // Square root
+    /\d+\s*%\s*(of\s*)?\d*/i,           // Percentages
+    /\(\s*\d+/,                         // Expressions in parentheses
+    /=\s*\?/,                           // Solve for unknown
+    /x\s*[+\-*/=]\s*\d+/i,              // Algebraic: x+5, x=10
+    /\d+\s*x/i,                         // Coefficient: 5x
+    /what\s*(is|'s|are)\s*\d+/i,        // "what is 5+3"
+    /\d+\s*(plus|minus|times|divided|multiplied)/i,  // Word math
+    /(plus|minus|times|divided|multiplied)\s*\d+/i,  // Word math
+    /solve|calculate|compute|evaluate/i, // Direct solve requests
+    /how\s+much\s+(is|are)/i,           // "how much is"
+    /how\s+many/i,                      // "how many"
+    /\d+\s*°/,                          // Degrees/angles
+    /sin|cos|tan|log|ln\s*\(?/i,        // Trig/log functions
+    /integral|derivative|limit/i,        // Calculus
+    /factorial|\d+!/,                   // Factorial
+  ];
+  
+  // Check for any math pattern - if found, use deep thinking
+  if (mathPatterns.some(pattern => pattern.test(originalMessage))) {
+    console.log("Math pattern detected, using deep thinking");
+    return true;
+  }
   
   // Problem-solving keywords
   const problemKeywords = [
@@ -51,7 +84,8 @@ function requiresDeepThinking(message: string): boolean {
     "what is the", "how do i", "how to", "step by step", "analyze", "evaluate",
     "compare", "contrast", "differentiate", "integrate", "simplify", "expand",
     "factor", "equation", "formula", "theorem", "proof", "algorithm",
-    "debug", "fix", "error", "problem", "solution", "answer"
+    "debug", "fix", "error", "problem", "solution", "answer",
+    "help me with", "can you solve", "figure out", "work out"
   ];
   
   // Subject indicators
@@ -60,24 +94,27 @@ function requiresDeepThinking(message: string): boolean {
     "algebra", "calculus", "geometry", "trigonometry", "statistics", "probability",
     "economics", "finance", "accounting", "logic", "philosophy", "history",
     "geography", "literature", "grammar", "vocabulary", "language",
-    "python", "javascript", "java", "c++", "sql", "html", "css"
+    "python", "javascript", "java", "c++", "sql", "html", "css",
+    "number", "equation", "fraction", "decimal", "percentage"
   ];
   
-  // Question patterns
+  // Direct question patterns
   const questionPatterns = [
-    /what is \d+/i, /calculate/i, /solve for/i, /find the value/i,
-    /how many/i, /how much/i, /what are the steps/i, /explain the concept/i,
-    /\d+\s*[+\-*/^]\s*\d+/,  // Math expressions
-    /\d+%/, // Percentages
-    /x\s*[=+\-*/]\s*\d+/i, // Algebraic expressions
+    /what\s+(is|are|was|were)\s+/i,
+    /how\s+(do|does|can|would|should)\s+/i,
+    /why\s+(is|are|do|does|did)\s+/i,
+    /explain\s+/i,
+    /tell\s+me\s+(about|how|why|what)/i,
   ];
   
   const hasKeyword = problemKeywords.some(kw => lowerMessage.includes(kw));
   const hasSubject = subjects.some(subj => lowerMessage.includes(subj));
-  const hasPattern = questionPatterns.some(pattern => pattern.test(message));
-  const hasQuestionMark = message.includes("?") && message.length > 30;
+  const hasPattern = questionPatterns.some(pattern => pattern.test(originalMessage));
+  const hasQuestionMark = message.includes("?");
+  const isLongQuestion = message.length > 20 && hasQuestionMark;
   
-  return (hasKeyword && hasSubject) || hasPattern || (hasQuestionMark && (hasKeyword || hasSubject));
+  // More lenient: any combination triggers deep thinking
+  return hasKeyword || (hasSubject && hasQuestionMark) || hasPattern || isLongQuestion;
 }
 
 serve(async (req) => {
