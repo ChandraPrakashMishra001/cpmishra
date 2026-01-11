@@ -76,6 +76,10 @@ const ChatInput = ({ onSend, disabled, companionName = "Lia" }: ChatInputProps) 
     setImagePreview(null);
   };
 
+  const charCount = message.length;
+  const isNearLimit = charCount > MAX_MESSAGE_LENGTH * 0.8;
+  const isOverLimit = charCount > MAX_MESSAGE_LENGTH;
+
   return (
     <div className="relative">
       {imagePreview && (
@@ -99,7 +103,7 @@ const ChatInput = ({ onSend, disabled, companionName = "Lia" }: ChatInputProps) 
         </div>
       )}
       
-      <div className="flex items-end gap-2 sm:gap-3 p-2.5 sm:p-4 bg-card/40 backdrop-blur-md rounded-2xl border border-lia-pink/20">
+      <div className="flex items-end gap-2 sm:gap-3 p-2.5 sm:p-4 bg-card/40 backdrop-blur-md rounded-2xl border border-lia-pink/20 transition-all duration-300 hover:border-lia-pink/40">
         <input
           type="file"
           ref={fileInputRef}
@@ -125,14 +129,28 @@ const ChatInput = ({ onSend, disabled, companionName = "Lia" }: ChatInputProps) 
             placeholder={imagePreview ? `What should I solve?` : `Message ${companionName}...`}
             disabled={disabled}
             rows={1}
-            className="w-full bg-transparent resize-none outline-none placeholder:text-muted-foreground text-foreground font-body text-sm sm:text-base"
+            className="w-full bg-transparent resize-none outline-none placeholder:text-muted-foreground text-foreground font-body text-sm sm:text-base pr-12"
             style={{ minHeight: "24px", maxHeight: "100px" }}
           />
+          {/* Character counter - only show when typing */}
+          {message.length > 0 && (
+            <div 
+              className={`absolute right-0 bottom-0 text-[10px] sm:text-xs transition-colors duration-200 ${
+                isOverLimit 
+                  ? 'text-destructive font-medium' 
+                  : isNearLimit 
+                    ? 'text-amber-500' 
+                    : 'text-muted-foreground/50'
+              }`}
+            >
+              {charCount}/{MAX_MESSAGE_LENGTH}
+            </div>
+          )}
         </div>
         
         <button
           onClick={handleSend}
-          disabled={(!message.trim() && !imagePreview) || disabled}
+          disabled={(!message.trim() && !imagePreview) || disabled || isOverLimit}
           className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-lia-pink hover:bg-lia-pink-glow active:scale-95 disabled:opacity-40 disabled:hover:bg-lia-pink transition-all duration-300 glow-pink touch-manipulation shrink-0"
         >
           {disabled ? (
