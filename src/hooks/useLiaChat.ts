@@ -342,6 +342,20 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
   };
 
   const sendMessage = useCallback(async (content: string, sharedImageUrl?: string) => {
+    // Input validation - max 2000 characters to match server-side limit
+    const MAX_MESSAGE_LENGTH = 2000;
+    const trimmedContent = content.trim();
+    
+    if (trimmedContent.length > MAX_MESSAGE_LENGTH) {
+      toast.error(`Message too long! Please keep it under ${MAX_MESSAGE_LENGTH} characters~ 💕`);
+      return;
+    }
+    
+    // Validate message is not empty (unless sharing an image)
+    if (!trimmedContent && !sharedImageUrl) {
+      return;
+    }
+
     // Cancel any ongoing request
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -349,13 +363,13 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
     abortControllerRef.current = new AbortController();
 
     // Extract name if mentioned
-    const extractedName = extractName(content);
+    const extractedName = extractName(trimmedContent);
     if (extractedName) {
       setUserName(extractedName);
     }
     
     // Detect topics
-    const newTopics = detectTopics(content);
+    const newTopics = detectTopics(trimmedContent);
     if (newTopics.length > 0) {
       addTopics(newTopics);
     }
@@ -363,7 +377,7 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
     // Add user message
     const userMessage: Message = {
       id: `user-${Date.now()}`,
-      content: content || (sharedImageUrl ? "Shared an image" : ""),
+      content: trimmedContent || (sharedImageUrl ? "Shared an image" : ""),
       isUser: true,
       timestamp: new Date(),
       imageUrl: sharedImageUrl,
