@@ -5,13 +5,66 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+// Enhance prompt for better image generation
+function enhancePrompt(userPrompt: string): string {
+  const lowerPrompt = userPrompt.toLowerCase();
+  
+  // Detect art style requests
+  const hasStyleKeyword = [
+    "anime", "realistic", "cartoon", "painting", "sketch", "3d", "pixel",
+    "watercolor", "oil painting", "digital art", "photo", "cinematic"
+  ].some(style => lowerPrompt.includes(style));
+  
+  // Detect quality keywords already present
+  const hasQualityKeyword = [
+    "detailed", "high quality", "hd", "4k", "beautiful", "stunning",
+    "professional", "masterpiece", "best quality"
+  ].some(q => lowerPrompt.includes(q));
+  
+  // Build enhanced prompt
+  let enhanced = userPrompt.trim();
+  
+  // Add default style if none specified
+  if (!hasStyleKeyword) {
+    // Detect subject to choose appropriate default style
+    if (lowerPrompt.includes("person") || lowerPrompt.includes("girl") || 
+        lowerPrompt.includes("boy") || lowerPrompt.includes("woman") || 
+        lowerPrompt.includes("man") || lowerPrompt.includes("character")) {
+      enhanced = `${enhanced}, anime style, beautiful illustration`;
+    } else if (lowerPrompt.includes("landscape") || lowerPrompt.includes("nature") ||
+               lowerPrompt.includes("sunset") || lowerPrompt.includes("mountain")) {
+      enhanced = `${enhanced}, scenic, atmospheric lighting, digital art`;
+    } else if (lowerPrompt.includes("cat") || lowerPrompt.includes("dog") ||
+               lowerPrompt.includes("animal") || lowerPrompt.includes("pet")) {
+      enhanced = `${enhanced}, cute, adorable, soft lighting`;
+    } else {
+      enhanced = `${enhanced}, high quality digital art`;
+    }
+  }
+  
+  // Add quality enhancement if not present
+  if (!hasQualityKeyword) {
+    enhanced = `${enhanced}, detailed, vibrant colors, professional quality`;
+  }
+  
+  // Add composition hints
+  enhanced = `${enhanced}, well-composed, aesthetically pleasing`;
+  
+  return enhanced;
+}
+
+// Detect negative aspects to avoid
+function getNegativeGuidance(prompt: string): string {
+  return "Avoid: blurry, low quality, distorted, bad anatomy, ugly, poorly drawn, text, watermark, signature";
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { prompt } = await req.json();
+    const { prompt, style, size } = await req.json();
 
     if (!prompt || typeof prompt !== "string" || prompt.length > 1000) {
       return new Response(JSON.stringify({ error: "Invalid prompt" }), {
@@ -30,7 +83,23 @@ serve(async (req) => {
       });
     }
 
-    console.log("Generating image for prompt:", prompt.slice(0, 100));
+    // Enhance the prompt for better results
+    const enhancedPrompt = enhancePrompt(prompt);
+    const negativeGuidance = getNegativeGuidance(prompt);
+    
+    console.log("Original prompt:", prompt.slice(0, 100));
+    console.log("Enhanced prompt:", enhancedPrompt.slice(0, 150));
+
+    // Build the generation instruction
+    const generationInstruction = `Create an image with the following description:
+
+${enhancedPrompt}
+
+Important guidelines:
+- Focus on the main subject clearly
+- Use appealing composition and framing
+- Ensure good lighting and contrast
+- ${negativeGuidance}`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -43,7 +112,7 @@ serve(async (req) => {
         messages: [
           {
             role: "user",
-            content: `Generate an image: ${prompt}`,
+            content: generationInstruction,
           },
         ],
         modalities: ["image", "text"],

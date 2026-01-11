@@ -12,13 +12,36 @@ const ANALYZE_IMAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ana
 const isImageRequest = (message: string): boolean => {
   const lowerMsg = message.toLowerCase();
   const imageKeywords = [
-    "draw", "create an image", "generate an image", "make an image",
-    "create a picture", "generate a picture", "make a picture",
-    "draw me", "can you draw", "show me an image", "create art",
-    "make art", "paint", "illustrate", "sketch", "generate art",
-    "image of", "picture of", "photo of", "artwork of", "render",
-    "visualize", "depict", "design an image", "make me an image",
-    "show me a picture", "create a visual", "generate a visual"
+    // Direct requests
+    "draw", "draw me", "draw a", "draw an",
+    "create an image", "create a image", "create image",
+    "generate an image", "generate a image", "generate image",
+    "make an image", "make a image", "make image",
+    "create a picture", "create picture", "make a picture", "make picture",
+    "generate a picture", "generate picture",
+    // Art requests
+    "create art", "make art", "generate art",
+    "paint", "paint me", "paint a",
+    "illustrate", "illustration of",
+    "sketch", "sketch me", "sketch a",
+    "render", "render me", "render a",
+    // Show/give requests
+    "show me an image", "show me a picture", "show me a photo",
+    "give me an image", "give me a picture",
+    // Descriptive requests
+    "image of", "picture of", "photo of", "artwork of",
+    "visualize", "depict",
+    "design an image", "design a picture",
+    "create a visual", "generate a visual", "make a visual",
+    // Casual requests
+    "can you draw", "could you draw", "would you draw",
+    "can you create", "could you create",
+    "can you make", "could you make",
+    "i want an image", "i want a picture", "i want a photo",
+    "i'd like an image", "i'd like a picture",
+    // Selfie/portrait requests  
+    "selfie", "your picture", "pic of you", "photo of you", "image of you",
+    "show yourself", "what do you look like"
   ];
   return imageKeywords.some(keyword => lowerMsg.includes(keyword));
 };
@@ -26,11 +49,34 @@ const isImageRequest = (message: string): boolean => {
 // Extract the image prompt from the message
 const extractImagePrompt = (message: string): string => {
   const lowerMsg = message.toLowerCase();
+  
+  // Ordered from most specific to least specific
   const prefixes = [
-    "draw ", "create an image of ", "generate an image of ", "make an image of ",
+    // Full phrases first
+    "can you draw me ", "could you draw me ", "would you draw me ",
+    "can you draw ", "could you draw ", "would you draw ",
+    "can you create ", "could you create ", "can you make ", "could you make ",
+    "i want an image of ", "i want a picture of ", "i want a photo of ",
+    "i'd like an image of ", "i'd like a picture of ",
+    "show me an image of ", "show me a picture of ", "show me a photo of ",
+    "give me an image of ", "give me a picture of ",
+    // Standard prefixes
+    "create an image of ", "generate an image of ", "make an image of ",
     "create a picture of ", "generate a picture of ", "make a picture of ",
-    "draw me ", "can you draw ", "show me an image of ", "create art of ",
-    "make art of ", "paint ", "illustrate ", "sketch ", "generate art of "
+    "create art of ", "make art of ", "generate art of ",
+    "draw me a ", "draw me an ", "draw me ",
+    "draw a ", "draw an ", "draw ",
+    "paint me a ", "paint me an ", "paint me ",
+    "paint a ", "paint an ", "paint ",
+    "illustrate ", "illustration of ",
+    "sketch me a ", "sketch me an ", "sketch me ",
+    "sketch a ", "sketch an ", "sketch ",
+    "render me a ", "render me an ", "render me ",
+    "render a ", "render an ", "render ",
+    "visualize ", "depict ",
+    // Short phrases
+    "image of ", "picture of ", "photo of ", "artwork of ",
+    "a picture of ", "a photo of ", "an image of ",
   ];
   
   for (const prefix of prefixes) {
@@ -39,7 +85,9 @@ const extractImagePrompt = (message: string): string => {
       return message.slice(idx + prefix.length).trim();
     }
   }
-  return message;
+  
+  // If no prefix found, return the whole message cleaned up
+  return message.replace(/^(please |pls |plz )/i, '').trim();
 };
 // Emotion detection from AI response
 const detectEmotionFromResponse = (text: string): Emotion => {
