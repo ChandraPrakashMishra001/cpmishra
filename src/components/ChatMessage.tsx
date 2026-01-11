@@ -5,18 +5,63 @@ interface ChatMessageProps {
   imageUrl?: string;
 }
 
+// Format mathematical expressions for better readability
+const formatMathExpression = (text: string): string => {
+  return text
+    // Fractions: a/b → a ÷ b or keep as fraction notation
+    .replace(/(\d+)\s*\/\s*(\d+)/g, '$1/$2')
+    // Exponents: x^2 → x²
+    .replace(/\^2\b/g, '²')
+    .replace(/\^3\b/g, '³')
+    .replace(/\^4\b/g, '⁴')
+    .replace(/\^5\b/g, '⁵')
+    .replace(/\^6\b/g, '⁶')
+    .replace(/\^7\b/g, '⁷')
+    .replace(/\^8\b/g, '⁸')
+    .replace(/\^9\b/g, '⁹')
+    .replace(/\^0\b/g, '⁰')
+    .replace(/\^1\b/g, '¹')
+    // Square root
+    .replace(/sqrt\(([^)]+)\)/gi, '√($1)')
+    .replace(/√(\d+)/g, '√$1')
+    // Multiplication
+    .replace(/\s*\*\s*/g, ' × ')
+    .replace(/(\d)\s*[xX]\s*(\d)/g, '$1 × $2')
+    // Division symbol
+    .replace(/\s*÷\s*/g, ' ÷ ')
+    // Plus/minus with spacing
+    .replace(/\s*\+\s*/g, ' + ')
+    .replace(/\s*-\s*/g, ' − ')
+    // Equals with spacing
+    .replace(/\s*=\s*/g, ' = ')
+    // Pi
+    .replace(/\bpi\b/gi, 'π')
+    // Infinity
+    .replace(/\binfinity\b/gi, '∞')
+    // Plus or minus
+    .replace(/\+-/g, '±')
+    // Subscripts for common cases
+    .replace(/_(\d)/g, (_, d) => {
+      const subs = '₀₁₂₃₄₅₆₇₈₉';
+      return subs[parseInt(d)] || `_${d}`;
+    });
+};
+
 // Simple markdown-like formatting for problem solutions
 const formatContent = (text: string): React.ReactNode => {
   // Split by line and process each
   const lines = text.split('\n');
   
   return lines.map((line, i) => {
+    // Apply math formatting first
+    let processedLine = formatMathExpression(line);
+    
     // Bold text: **text**
-    let formattedLine: React.ReactNode = line;
+    let formattedLine: React.ReactNode = processedLine;
     
     // Handle headers/bold markers like **Problem**: or 📝 **Problem**:
-    if (line.includes('**')) {
-      const parts = line.split(/(\*\*[^*]+\*\*)/g);
+    if (processedLine.includes('**')) {
+      const parts = processedLine.split(/(\*\*[^*]+\*\*)/g);
       formattedLine = parts.map((part, j) => {
         if (part.startsWith('**') && part.endsWith('**')) {
           return <strong key={j} className="font-semibold text-primary">{part.slice(2, -2)}</strong>;
@@ -25,8 +70,12 @@ const formatContent = (text: string): React.ReactNode => {
       });
     }
     
+    // Check if this is a math equation line (contains = or math operators)
+    const isMathLine = /[=×÷√²³⁴⁵⁶⁷⁸⁹⁰¹±∞π]/.test(processedLine) || 
+                       /^\s*[\d\s+\-×÷=()]+\s*$/.test(processedLine);
+    
     return (
-      <span key={i}>
+      <span key={i} className={isMathLine ? 'font-mono tracking-wide' : ''}>
         {formattedLine}
         {i < lines.length - 1 && <br />}
       </span>
