@@ -3,6 +3,7 @@ import LiaAvatar from "@/components/LiaAvatar";
 import ChatInterface from "@/components/ChatInterface";
 import CompanionSettingsDialog from "@/components/CompanionSettingsDialog";
 import FloatingClouds from "@/components/FloatingClouds";
+import FloatingSparkles from "@/components/FloatingSparkles";
 import { GoalsDialog } from "@/components/GoalsDialog";
 import { NotificationsDialog } from "@/components/NotificationsDialog";
 import { useLiaChat } from "@/hooks/useLiaChat";
@@ -40,6 +41,9 @@ const Index = () => {
 
       {/* Floating clouds background */}
       <FloatingClouds isNight={isNight} />
+      
+      {/* Magical floating sparkles */}
+      <FloatingSparkles />
 
       <div className="min-h-[100dvh] flex flex-col relative z-10">
         {/* Mobile: Sticky header with compact avatar */}

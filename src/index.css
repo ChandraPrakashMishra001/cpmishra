@@ -590,6 +590,30 @@
   animation: ping-slow 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
+/* Floating sparkles animation */
+@keyframes sparkle-float {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(0) scale(0.8);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(-5px) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-15px) scale(1.1) rotate(180deg);
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(-25px) scale(1);
+  }
+}
+
+.animate-sparkle-float {
+  animation: sparkle-float ease-in-out infinite;
+}
+
 /* Message animations */
 @keyframes slideIn {
   from { opacity: 0; transform: translateY(10px); }
