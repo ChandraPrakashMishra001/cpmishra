@@ -1,5 +1,11 @@
 import { useState, KeyboardEvent, useRef } from "react";
 import { Send, Sparkles, ImagePlus, X } from "lucide-react";
+import { toast } from "sonner";
+
+// Constants for validation
+const MAX_MESSAGE_LENGTH = 2000;
+const MAX_IMAGE_SIZE_MB = 3; // Lower limit to account for base64 overhead (~33% increase)
+const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
 
 interface ChatInputProps {
   onSend: (message: string, imageUrl?: string) => void;
@@ -13,8 +19,16 @@ const ChatInput = ({ onSend, disabled, companionName = "Lia" }: ChatInputProps) 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSend = () => {
-    if ((message.trim() || imagePreview) && !disabled) {
-      onSend(message.trim(), imagePreview || undefined);
+    const trimmedMessage = message.trim();
+    
+    // Validate message length
+    if (trimmedMessage.length > MAX_MESSAGE_LENGTH) {
+      toast.error(`Message too long! Please keep it under ${MAX_MESSAGE_LENGTH} characters~ 💕`);
+      return;
+    }
+    
+    if ((trimmedMessage || imagePreview) && !disabled) {
+      onSend(trimmedMessage, imagePreview || undefined);
       setMessage("");
       setImagePreview(null);
     }
@@ -30,14 +44,26 @@ const ChatInput = ({ onSend, disabled, companionName = "Lia" }: ChatInputProps) 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        alert("Image too large! Please use an image under 5MB.");
+      // Check file size with base64 overhead consideration
+      // Base64 increases size by ~33%, so we use a lower limit
+      if (file.size > MAX_IMAGE_SIZE_BYTES) {
+        toast.error(`Image too large! Please use an image under ${MAX_IMAGE_SIZE_MB}MB~ 📷`);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
         return;
       }
       
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
+        const result = reader.result as string;
+        // Double-check base64 size (should not exceed ~4MB after encoding)
+        const base64Size = result.length * 0.75; // Approximate actual bytes
+        if (base64Size > 4 * 1024 * 1024) {
+          toast.error("Image too large after processing. Please use a smaller image~ 📷");
+          return;
+        }
+        setImagePreview(result);
       };
       reader.readAsDataURL(file);
     }

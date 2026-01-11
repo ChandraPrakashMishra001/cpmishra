@@ -11,6 +11,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CompanionSettings } from "@/hooks/useCompanionSettings";
+import { toast } from "sonner";
+
+// Constants for avatar validation
+const MAX_AVATAR_SIZE_MB = 2; // Smaller limit for avatars stored in localStorage
+const MAX_AVATAR_SIZE_BYTES = MAX_AVATAR_SIZE_MB * 1024 * 1024;
 
 interface CompanionSettingsDialogProps {
   settings: CompanionSettings;
@@ -34,12 +39,30 @@ const CompanionSettingsDialog = ({
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      // Validate file size before processing
+      if (file.size > MAX_AVATAR_SIZE_BYTES) {
+        toast.error(`Avatar too large! Please use an image under ${MAX_AVATAR_SIZE_MB}MB~ 📷`);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        return;
+      }
+      
       const reader = new FileReader();
       reader.onload = (event) => {
         const result = event.target?.result as string;
+        // Verify base64 size doesn't exceed safe limit for localStorage
+        const base64Size = result.length * 0.75;
+        if (base64Size > 3 * 1024 * 1024) {
+          toast.error("Avatar too large after processing. Please use a smaller image~ 📷");
+          return;
+        }
         onUpdateAvatar(result);
       };
       reader.readAsDataURL(file);
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
