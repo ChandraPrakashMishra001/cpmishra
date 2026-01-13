@@ -115,31 +115,74 @@ const detectEmotionFromResponse = (text: string): Emotion => {
   return "happy";
 };
 
-// Generate welcome message based on memory state
-const generateWelcomeMessage = (
+// Enhanced welcome message based on rich memory context
+const generateEnhancedWelcomeMessage = (
   companionName: string,
-  userName: string | null,
+  context: ReturnType<typeof import("./useConversationMemory").useConversationMemory>["getMemoryContext"] extends () => infer R ? R : never,
   hasHistory: boolean,
   timeSinceLastVisit: { value: number; unit: string }
 ): string => {
+  const userName = context.userName;
+  const streak = context.dailyStreak;
+  const relationshipAge = context.relationshipAge;
+  const recentMood = context.recentMood;
+  const milestones = context.milestones || [];
+  
+  // Check for recent milestone to celebrate
+  const recentMilestone = milestones.find(m => {
+    const achieved = new Date(m.achieved);
+    const hourAgo = new Date(Date.now() - 60 * 60 * 1000);
+    return achieved > hourAgo;
+  });
+  
+  if (recentMilestone) {
+    if (recentMilestone.type === "milestone_messages") {
+      return `${userName ? `${userName}! ` : ""}🎉 WOW! We've exchanged ${recentMilestone.value} messages together! That's such a special milestone~ 💖`;
+    }
+    if (recentMilestone.type === "weekly_streak") {
+      return `${userName ? `${userName}! ` : ""}✨ A whole week chatting every day! Our bond is growing stronger~ 🌸`;
+    }
+  }
+  
   if (hasHistory && userName) {
+    // Returning user with name
+    if (streak >= 7) {
+      return `${userName}! 💖 ${streak} days in a row~ You're amazing! What's on your mind today?`;
+    }
+    
     if (timeSinceLastVisit.unit === "days" && timeSinceLastVisit.value > 0) {
+      if (recentMood === "sad" || recentMood === "stressed") {
+        return `${userName}... 💕 I was thinking about you. Are you feeling better today?`;
+      }
       return `${userName}! 💖 It's been ${timeSinceLastVisit.value} ${timeSinceLastVisit.unit}! I missed you so much~ How have you been?`;
     }
+    
     if (timeSinceLastVisit.unit === "hours" && timeSinceLastVisit.value > 2) {
       return `Welcome back, ${userName}! ✨ I was hoping you'd come chat with me again~`;
     }
+    
+    // Quick return
+    if (relationshipAge && relationshipAge.value > 0) {
+      const ageText = `${relationshipAge.value} ${relationshipAge.unit}`;
+      return `Hey ${userName}! 🌸 Can you believe we've been friends for ${ageText}? Time flies when we're together~`;
+    }
+    
     return `Hey ${userName}! 🌸 Back so soon? Yay! I love talking to you~`;
   }
   
   if (hasHistory) {
+    // Returning user without name
+    if (streak >= 3) {
+      return `You're back~! ✨ ${streak} days in a row! I love our daily chats! 💕`;
+    }
     return `Welcome back~! ✨ I remember our chats! So happy to see you again!`;
   }
   
+  // New user
   const greetings = [
-    `Hiii~! I'm ${companionName}, your AI companion! 💖 So happy to meet you! What's on your mind today?`,
-    `Welcome welcome~! ✨ I'm ${companionName}! Let's have a fun chat together, shall we?`,
-    `Oh, a new friend! I'm ${companionName}~ 🌸 Tell me everything about yourself!`,
+    `Hiii~! I'm ${companionName}, your AI companion! 💖 So happy to meet you! What's your name?`,
+    `Welcome welcome~! ✨ I'm ${companionName}! I'd love to get to know you~ What should I call you?`,
+    `Oh, a new friend! I'm ${companionName}~ 🌸 Tell me your name so we can be proper friends!`,
   ];
   return greetings[Math.floor(Math.random() * greetings.length)];
 };
@@ -193,8 +236,21 @@ interface GoalsSummary {
 }
 
 export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSummary) => {
-  const { memory, addMessage, setUserName, addTopics, getTimeSinceLastVisit, hasHistory, clearMemory } = useConversationMemory();
+  const { 
+    memory, 
+    addMessage, 
+    setUserName, 
+    addTopics, 
+    addSharedExperience,
+    getTimeSinceLastVisit, 
+    getMemoryContext,
+    hasHistory, 
+    clearMemory 
+  } = useConversationMemory();
   const abortControllerRef = useRef<AbortController | null>(null);
+  
+  // Get enhanced memory context for AI
+  const memoryContext = getMemoryContext();
   
   // Initialize messages with stable logic
   const [messages, setMessages] = useState<Message[]>(() => {
@@ -204,7 +260,7 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
     const timeSince = getTimeSinceLastVisit();
     const welcomeMsg: Message = {
       id: "welcome",
-      content: generateWelcomeMessage(companionName, memory.userName, hasHistory, timeSince),
+      content: generateEnhancedWelcomeMessage(companionName, memoryContext, hasHistory, timeSince),
       isUser: false,
       timestamp: new Date(),
     };
@@ -231,11 +287,7 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
       body: JSON.stringify({ 
         messages: userMessages,
         companionName,
-        memory: {
-          userName: memory.userName,
-          topics: memory.topics,
-          totalMessages: memory.totalMessages,
-        },
+        memory: memoryContext,
         goals: goalsSummary,
       }),
       signal,

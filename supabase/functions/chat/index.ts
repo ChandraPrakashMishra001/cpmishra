@@ -182,19 +182,103 @@ serve(async (req) => {
     
     console.log("Deep thinking mode:", needsDeepThinking);
 
-    // Sanitize memory values
+    // Sanitize enhanced memory values
     const safeMemory = {
       userName: typeof memory?.userName === 'string' ? memory.userName.slice(0, 50) : null,
-      topics: Array.isArray(memory?.topics) ? memory.topics.slice(0, 10).map((t: unknown) => String(t).slice(0, 30)) : [],
+      favoriteTopics: Array.isArray(memory?.favoriteTopics) ? memory.favoriteTopics.slice(0, 5).map((t: unknown) => String(t).slice(0, 30)) : [],
       totalMessages: typeof memory?.totalMessages === 'number' ? Math.min(memory.totalMessages, 10000) : 0,
+      recentMood: typeof memory?.recentMood === 'string' ? memory.recentMood : null,
+      dailyStreak: typeof memory?.dailyStreak === 'number' ? Math.min(memory.dailyStreak, 365) : 0,
+      relationshipAge: memory?.relationshipAge ? {
+        value: typeof memory.relationshipAge.value === 'number' ? memory.relationshipAge.value : 0,
+        unit: typeof memory.relationshipAge.unit === 'string' ? memory.relationshipAge.unit : 'days'
+      } : null,
+      importantFacts: Array.isArray(memory?.importantFacts) 
+        ? memory.importantFacts.slice(0, 10).map((f: { fact?: string; category?: string }) => ({
+            fact: typeof f?.fact === 'string' ? f.fact.slice(0, 100) : '',
+            category: typeof f?.category === 'string' ? f.category : 'personal'
+          }))
+        : [],
+      preferences: typeof memory?.preferences === 'object' && memory?.preferences !== null 
+        ? Object.fromEntries(Object.entries(memory.preferences).slice(0, 10).map(([k, v]) => [String(k).slice(0, 30), String(v).slice(0, 50)]))
+        : {},
+      sharedExperiences: Array.isArray(memory?.sharedExperiences) 
+        ? memory.sharedExperiences.slice(0, 10).map((e: unknown) => String(e).slice(0, 100))
+        : [],
+      milestones: Array.isArray(memory?.milestones)
+        ? memory.milestones.slice(0, 10).map((m: { type?: string; value?: number }) => ({
+            type: typeof m?.type === 'string' ? m.type : '',
+            value: typeof m?.value === 'number' ? m.value : 0
+          }))
+        : [],
     };
 
-    // Build context from memory
-    const memoryContext = safeMemory.userName ? `
-The user's name is: ${safeMemory.userName}
-Topics they've discussed: ${safeMemory.topics.join(", ") || "none yet"}
-Total messages exchanged: ${safeMemory.totalMessages}
-` : "";
+    // Build rich context from enhanced memory
+    let memoryContext = "";
+    
+    if (safeMemory.userName) {
+      memoryContext += `## What I Remember About ${safeMemory.userName}\n`;
+    }
+    
+    if (safeMemory.relationshipAge) {
+      memoryContext += `- We've been talking for ${safeMemory.relationshipAge.value} ${safeMemory.relationshipAge.unit}\n`;
+    }
+    
+    if (safeMemory.dailyStreak > 1) {
+      memoryContext += `- Current daily streak: ${safeMemory.dailyStreak} days! 🔥\n`;
+    }
+    
+    if (safeMemory.totalMessages > 0) {
+      memoryContext += `- Total messages exchanged: ${safeMemory.totalMessages}\n`;
+    }
+    
+    if (safeMemory.favoriteTopics.length > 0) {
+      memoryContext += `- Their favorite topics: ${safeMemory.favoriteTopics.join(", ")}\n`;
+    }
+    
+    if (safeMemory.recentMood) {
+      memoryContext += `- Their recent mood tendency: ${safeMemory.recentMood}\n`;
+    }
+    
+    if (safeMemory.importantFacts.length > 0) {
+      memoryContext += `\n### Important Things I Know:\n`;
+      for (const fact of safeMemory.importantFacts) {
+        memoryContext += `- ${fact.fact}\n`;
+      }
+    }
+    
+    if (Object.keys(safeMemory.preferences).length > 0) {
+      memoryContext += `\n### Their Preferences:\n`;
+      for (const [key, value] of Object.entries(safeMemory.preferences)) {
+        memoryContext += `- ${key}: ${value}\n`;
+      }
+    }
+    
+    if (safeMemory.sharedExperiences.length > 0) {
+      memoryContext += `\n### Our Shared Experiences:\n`;
+      for (const exp of safeMemory.sharedExperiences) {
+        memoryContext += `- ${exp}\n`;
+      }
+    }
+    
+    if (safeMemory.milestones.length > 0) {
+      memoryContext += `\n### Milestones We've Reached:\n`;
+      for (const milestone of safeMemory.milestones) {
+        if (milestone.type === 'milestone_messages') {
+          memoryContext += `- Exchanged ${milestone.value} messages together\n`;
+        } else if (milestone.type === 'weekly_streak') {
+          memoryContext += `- Achieved a ${milestone.value}-day streak\n`;
+        } else if (milestone.type === 'first_chat') {
+          memoryContext += `- Our first chat together\n`;
+        } else if (milestone.type === 'shared_name') {
+          memoryContext += `- They shared their name with me\n`;
+        }
+      }
+    }
+    
+    if (memoryContext) {
+      memoryContext = `\n${memoryContext}\nUse this information to personalize responses — reference shared experiences, remember their preferences, celebrate their streaks, and make them feel truly known and cared for.\n`;
+    }
 
     // Build goals context
     const safeGoals = {
