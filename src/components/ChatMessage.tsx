@@ -1,8 +1,13 @@
+import MessageReactions, { Reactions, ReactionType } from "./MessageReactions";
+
 interface ChatMessageProps {
   content: string;
   isUser: boolean;
   timestamp?: Date;
   imageUrl?: string;
+  reactions?: Reactions;
+  userReactions?: ReactionType[];
+  onReact?: (type: ReactionType) => void;
 }
 
 // Format mathematical expressions for better readability
@@ -83,7 +88,9 @@ const formatContent = (text: string): React.ReactNode => {
   });
 };
 
-const ChatMessage = ({ content, isUser, timestamp, imageUrl }: ChatMessageProps) => {
+const defaultReactions: Reactions = { heart: 0, star: 0, thumbsUp: 0 };
+
+const ChatMessage = ({ content, isUser, timestamp, imageUrl, reactions = defaultReactions, userReactions = [], onReact }: ChatMessageProps) => {
   // Detect if this is a structured problem-solving response
   const isProblemSolution = !isUser && (
     content.includes('📝') || 
@@ -97,7 +104,7 @@ const ChatMessage = ({ content, isUser, timestamp, imageUrl }: ChatMessageProps)
 
   return (
     <div
-      className={`flex ${isUser ? "justify-end" : "justify-start"} animate-slide-in`}
+      className={`flex ${isUser ? "justify-end" : "justify-start"} animate-slide-in group`}
     >
       <div
         className={`max-w-[90%] sm:max-w-[80%] px-3 py-2 sm:px-4 sm:py-3 rounded-2xl ${
@@ -121,10 +128,20 @@ const ChatMessage = ({ content, isUser, timestamp, imageUrl }: ChatMessageProps)
         <div className={`text-foreground leading-relaxed text-sm sm:text-base ${isProblemSolution ? 'whitespace-pre-wrap' : ''}`}>
           {formatContent(content)}
         </div>
-        {timestamp && (
-          <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 opacity-60">
-            {timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-          </p>
+        <div className="flex items-center justify-between gap-2">
+          {timestamp && (
+            <p className="text-[10px] sm:text-xs text-muted-foreground opacity-60">
+              {timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+            </p>
+          )}
+        </div>
+        {onReact && (
+          <MessageReactions
+            reactions={reactions}
+            userReactions={userReactions}
+            onReact={onReact}
+            isUser={isUser}
+          />
         )}
       </div>
     </div>

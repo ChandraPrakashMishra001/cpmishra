@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef } from "react";
 import { Message } from "@/components/ChatInterface";
+import { ReactionType, Reactions } from "@/components/MessageReactions";
 import { Emotion } from "@/components/LiaAvatar";
 import { useConversationMemory } from "./useConversationMemory";
 import { toast } from "sonner";
@@ -562,6 +563,33 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
     }
   }, [messages, companionName, memory, goalsSummary, addMessage, setUserName, addTopics]);
 
+  const handleReaction = useCallback((messageId: string, reactionType: ReactionType) => {
+    setMessages(prev => prev.map(msg => {
+      if (msg.id !== messageId) return msg;
+      
+      const currentReactions: Reactions = msg.reactions || { heart: 0, star: 0, thumbsUp: 0 };
+      const currentUserReactions: ReactionType[] = msg.userReactions || [];
+      const hasReaction = currentUserReactions.includes(reactionType);
+      
+      const newUserReactions = hasReaction
+        ? currentUserReactions.filter(r => r !== reactionType)
+        : [...currentUserReactions, reactionType];
+      
+      const newReactions: Reactions = {
+        ...currentReactions,
+        [reactionType]: hasReaction 
+          ? Math.max(0, currentReactions[reactionType] - 1)
+          : currentReactions[reactionType] + 1,
+      };
+      
+      return {
+        ...msg,
+        reactions: newReactions,
+        userReactions: newUserReactions,
+      };
+    }));
+  }, []);
+
   const resetConversation = useCallback(() => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -585,5 +613,6 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
     isTalking,
     memory,
     resetConversation,
+    handleReaction,
   };
 };

@@ -3,23 +3,28 @@ import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import VoiceInterface from "./VoiceInterface";
 
+import { Reactions, ReactionType } from "./MessageReactions";
+
 export interface Message {
   id: string;
   content: string;
   isUser: boolean;
   timestamp: Date;
   imageUrl?: string;
+  reactions?: Reactions;
+  userReactions?: ReactionType[];
 }
 
 interface ChatInterfaceProps {
   messages: Message[];
   onSendMessage: (message: string, imageUrl?: string) => void;
+  onReact?: (messageId: string, reactionType: ReactionType) => void;
   isTyping: boolean;
   companionName?: string;
   onVoiceSpeaking?: (speaking: boolean) => void;
 }
 
-const ChatInterface = ({ messages, onSendMessage, isTyping, companionName = "Lia", onVoiceSpeaking }: ChatInterfaceProps) => {
+const ChatInterface = ({ messages, onSendMessage, onReact, isTyping, companionName = "Lia", onVoiceSpeaking }: ChatInterfaceProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isVoiceSpeaking, setIsVoiceSpeaking] = useState(false);
 
@@ -63,6 +68,9 @@ const ChatInterface = ({ messages, onSendMessage, isTyping, companionName = "Lia
             isUser={msg.isUser}
             timestamp={msg.timestamp}
             imageUrl={msg.imageUrl}
+            reactions={msg.reactions}
+            userReactions={msg.userReactions}
+            onReact={onReact ? (type) => onReact(msg.id, type) : undefined}
           />
         ))}
         
