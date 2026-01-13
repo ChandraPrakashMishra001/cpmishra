@@ -30,7 +30,7 @@ const Index = () => {
   const { getGoalsSummary } = useGoals();
   const { theme, toggleTheme, isNight } = useTheme();
   const goalsSummary = getGoalsSummary();
-  const { messages, sendMessage, isTyping, currentEmotion, isTalking, memory, resetConversation } = useLiaChat(settings.name, goalsSummary);
+  const { messages, sendMessage, isTyping, currentEmotion, isTalking, memory, resetConversation, handleReaction } = useLiaChat(settings.name, goalsSummary);
 
   return (
     <HelmetProvider>
@@ -263,6 +263,7 @@ const Index = () => {
             <ChatInterface
               messages={messages}
               onSendMessage={sendMessage}
+              onReact={handleReaction}
               isTyping={isTyping}
               companionName={settings.name}
             />
