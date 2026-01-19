@@ -1,4 +1,6 @@
+import { Download } from "lucide-react";
 import MessageReactions, { Reactions, ReactionType } from "./MessageReactions";
+import { Button } from "./ui/button";
 
 interface ChatMessageProps {
   content: string;
@@ -116,13 +118,38 @@ const ChatMessage = ({ content, isUser, timestamp, imageUrl, reactions = default
         }`}
       >
         {imageUrl && (
-          <div className="mb-2">
+          <div className="mb-2 relative group/image">
             <img 
               src={imageUrl} 
               alt="Generated image" 
               className="rounded-xl max-w-full h-auto shadow-lg"
               loading="lazy"
             />
+            <Button
+              variant="secondary"
+              size="sm"
+              className="absolute top-2 right-2 opacity-0 group-hover/image:opacity-100 transition-opacity duration-200 bg-background/80 backdrop-blur-sm hover:bg-background"
+              onClick={() => {
+                const link = document.createElement('a');
+                link.href = imageUrl;
+                link.download = `lia-image-${Date.now()}.png`;
+                link.target = '_blank';
+                fetch(imageUrl)
+                  .then(res => res.blob())
+                  .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    link.href = url;
+                    link.click();
+                    URL.revokeObjectURL(url);
+                  })
+                  .catch(() => {
+                    window.open(imageUrl, '_blank');
+                  });
+              }}
+            >
+              <Download className="h-4 w-4 mr-1" />
+              Save
+            </Button>
           </div>
         )}
         <div className={`text-foreground leading-relaxed text-sm sm:text-base ${isProblemSolution ? 'whitespace-pre-wrap' : ''}`}>
