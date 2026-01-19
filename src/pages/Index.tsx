@@ -4,6 +4,8 @@ import ChatInterface from "@/components/ChatInterface";
 import CompanionSettingsDialog from "@/components/CompanionSettingsDialog";
 import FloatingClouds from "@/components/FloatingClouds";
 import FloatingSparkles from "@/components/FloatingSparkles";
+import ConfettiCelebration from "@/components/ConfettiCelebration";
+import MoodIndicator from "@/components/MoodIndicator";
 import { GoalsDialog } from "@/components/GoalsDialog";
 import { NotificationsDialog } from "@/components/NotificationsDialog";
 import { useLiaChat } from "@/hooks/useLiaChat";
@@ -30,7 +32,20 @@ const Index = () => {
   const { getGoalsSummary } = useGoals();
   const { theme, toggleTheme, isNight } = useTheme();
   const goalsSummary = getGoalsSummary();
-  const { messages, sendMessage, isTyping, currentEmotion, isTalking, memory, resetConversation, handleReaction } = useLiaChat(settings.name, goalsSummary);
+  const { 
+    messages, 
+    sendMessage, 
+    isTyping, 
+    currentEmotion, 
+    isTalking, 
+    memory, 
+    resetConversation, 
+    handleReaction,
+    handleBookmark,
+    quickReplies,
+    showCelebration,
+    setShowCelebration,
+  } = useLiaChat(settings.name, goalsSummary);
 
   return (
     <HelmetProvider>
@@ -38,6 +53,12 @@ const Index = () => {
         <title>{settings.name} - Your Anime AI Companion</title>
         <meta name="description" content={`Chat with ${settings.name}, your friendly anime AI companion. Have meaningful conversations with an expressive virtual friend.`} />
       </Helmet>
+
+      {/* Confetti celebration for milestones */}
+      <ConfettiCelebration 
+        trigger={showCelebration} 
+        onComplete={() => setShowCelebration(false)} 
+      />
 
       {/* Floating clouds background */}
       <FloatingClouds isNight={isNight} />
@@ -241,10 +262,11 @@ const Index = () => {
               />
             </div>
 
-            {/* Status indicator */}
-            <div className="mt-8 flex items-center gap-2 text-sm text-muted-foreground z-10 bg-card/60 px-4 py-2 rounded-full backdrop-blur-sm border border-border/50">
+            {/* Status indicator with mood */}
+            <div className="mt-8 flex items-center gap-3 text-sm text-muted-foreground z-10 bg-card/60 px-4 py-2 rounded-full backdrop-blur-sm border border-border/50">
               <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-              <span>Online & Ready to chat</span>
+              <span>Online</span>
+              <MoodIndicator mood={currentEmotion} />
             </div>
 
             {/* Memory stats */}
@@ -264,8 +286,11 @@ const Index = () => {
               messages={messages}
               onSendMessage={sendMessage}
               onReact={handleReaction}
+              onBookmark={handleBookmark}
               isTyping={isTyping}
               companionName={settings.name}
+              quickReplies={quickReplies}
+              currentMood={currentEmotion}
             />
           </div>
         </div>

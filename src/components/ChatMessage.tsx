@@ -1,5 +1,6 @@
 import { Download } from "lucide-react";
 import MessageReactions, { Reactions, ReactionType } from "./MessageReactions";
+import BookmarkButton from "./BookmarkButton";
 import { Button } from "./ui/button";
 
 interface ChatMessageProps {
@@ -9,7 +10,9 @@ interface ChatMessageProps {
   imageUrl?: string;
   reactions?: Reactions;
   userReactions?: ReactionType[];
+  isBookmarked?: boolean;
   onReact?: (type: ReactionType) => void;
+  onBookmark?: () => void;
 }
 
 // Format mathematical expressions for better readability
@@ -92,7 +95,7 @@ const formatContent = (text: string): React.ReactNode => {
 
 const defaultReactions: Reactions = { heart: 0, star: 0, thumbsUp: 0 };
 
-const ChatMessage = ({ content, isUser, timestamp, imageUrl, reactions = defaultReactions, userReactions = [], onReact }: ChatMessageProps) => {
+const ChatMessage = ({ content, isUser, timestamp, imageUrl, reactions = defaultReactions, userReactions = [], isBookmarked = false, onReact, onBookmark }: ChatMessageProps) => {
   // Detect if this is a structured problem-solving response
   const isProblemSolution = !isUser && (
     content.includes('📝') || 
@@ -109,14 +112,21 @@ const ChatMessage = ({ content, isUser, timestamp, imageUrl, reactions = default
       className={`flex ${isUser ? "justify-end" : "justify-start"} animate-slide-in group`}
     >
       <div
-        className={`max-w-[90%] sm:max-w-[80%] px-3 py-2 sm:px-4 sm:py-3 rounded-2xl ${
+        className={`max-w-[90%] sm:max-w-[80%] px-3 py-2 sm:px-4 sm:py-3 rounded-2xl relative ${
           isUser
             ? "bg-lia-pink/20 border border-lia-pink/30 rounded-br-md"
             : isProblemSolution 
               ? "bg-card/80 border border-primary/30 rounded-bl-md backdrop-blur-sm shadow-sm"
               : "bg-card/60 border border-lia-purple/20 rounded-bl-md backdrop-blur-sm"
-        }`}
+        } ${isBookmarked ? "ring-2 ring-primary/40" : ""}`}
       >
+        {/* Bookmark button - appears on hover */}
+        {onBookmark && (
+          <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+            <BookmarkButton isBookmarked={isBookmarked} onToggle={onBookmark} />
+          </div>
+        )}
+
         {imageUrl && (
           <div className="mb-2 relative group/image">
             <img 

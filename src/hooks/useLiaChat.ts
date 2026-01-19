@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { Message } from "@/components/ChatInterface";
 import { ReactionType, Reactions } from "@/components/MessageReactions";
 import { Emotion } from "@/components/LiaAvatar";
@@ -642,6 +642,73 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
     }));
   }, []);
 
+  const handleBookmark = useCallback((messageId: string) => {
+    setMessages(prev => prev.map(msg => {
+      if (msg.id !== messageId) return msg;
+      return {
+        ...msg,
+        isBookmarked: !msg.isBookmarked,
+      };
+    }));
+    toast.success(messages.find(m => m.id === messageId)?.isBookmarked 
+      ? "Bookmark removed~ 📌" 
+      : "Message bookmarked! 💖"
+    );
+  }, [messages]);
+
+  // Generate quick reply suggestions based on last assistant message
+  const generateQuickReplies = useCallback((): string[] => {
+    const lastAssistantMessage = [...messages].reverse().find(m => !m.isUser);
+    if (!lastAssistantMessage) return [];
+    
+    const content = lastAssistantMessage.content.toLowerCase();
+    
+    // Context-aware suggestions
+    if (content.includes("how are you") || content.includes("how have you been")) {
+      return ["I'm doing great! 😊", "Could be better...", "Tell me about your day!"];
+    }
+    if (content.includes("what's your name") || content.includes("call you")) {
+      return ["My name is...", "What's your name?", "Nice to meet you!"];
+    }
+    if (content.includes("help") || content.includes("homework") || content.includes("problem")) {
+      return ["Explain more", "Show me step by step", "Thanks, I get it now!"];
+    }
+    if (content.includes("draw") || content.includes("image") || content.includes("created")) {
+      return ["Draw something else", "That's beautiful! 💖", "Can you modify it?"];
+    }
+    if (content.includes("goal") || content.includes("achieve")) {
+      return ["Show my goals", "Add a new goal", "I need motivation!"];
+    }
+    if (content.includes("?")) {
+      return ["Yes!", "No, not really", "Tell me more"];
+    }
+    
+    // Default suggestions
+    return ["Tell me a fun fact", "How was your day?", "Draw me something cute"];
+  }, [messages]);
+
+  const [quickReplies, setQuickReplies] = useState<string[]>([]);
+  const [showCelebration, setShowCelebration] = useState(false);
+
+  // Update quick replies when messages change
+  useEffect(() => {
+    if (!isTyping && messages.length > 0) {
+      const suggestions = generateQuickReplies();
+      setQuickReplies(suggestions);
+    } else {
+      setQuickReplies([]);
+    }
+  }, [messages, isTyping, generateQuickReplies]);
+
+  // Check for milestone celebrations
+  useEffect(() => {
+    const totalMessages = memory.totalMessages;
+    const celebrateMilestones = [10, 50, 100, 250, 500, 1000];
+    if (celebrateMilestones.includes(totalMessages)) {
+      setShowCelebration(true);
+    }
+  }, [memory.totalMessages]);
+
   const resetConversation = useCallback(() => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -666,5 +733,9 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
     memory,
     resetConversation,
     handleReaction,
+    handleBookmark,
+    quickReplies,
+    showCelebration,
+    setShowCelebration,
   };
 };

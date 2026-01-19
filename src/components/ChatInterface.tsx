@@ -2,6 +2,9 @@ import { useRef, useEffect, useState, useCallback } from "react";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import VoiceInterface from "./VoiceInterface";
+import QuickReplies from "./QuickReplies";
+import MoodIndicator from "./MoodIndicator";
+import { Emotion } from "./LiaAvatar";
 
 import { Reactions, ReactionType } from "./MessageReactions";
 
@@ -13,18 +16,32 @@ export interface Message {
   imageUrl?: string;
   reactions?: Reactions;
   userReactions?: ReactionType[];
+  isBookmarked?: boolean;
 }
 
 interface ChatInterfaceProps {
   messages: Message[];
   onSendMessage: (message: string, imageUrl?: string) => void;
   onReact?: (messageId: string, reactionType: ReactionType) => void;
+  onBookmark?: (messageId: string) => void;
   isTyping: boolean;
   companionName?: string;
   onVoiceSpeaking?: (speaking: boolean) => void;
+  quickReplies?: string[];
+  currentMood?: Emotion;
 }
 
-const ChatInterface = ({ messages, onSendMessage, onReact, isTyping, companionName = "Lia", onVoiceSpeaking }: ChatInterfaceProps) => {
+const ChatInterface = ({ 
+  messages, 
+  onSendMessage, 
+  onReact, 
+  onBookmark,
+  isTyping, 
+  companionName = "Lia", 
+  onVoiceSpeaking,
+  quickReplies = [],
+  currentMood = "happy"
+}: ChatInterfaceProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [isVoiceSpeaking, setIsVoiceSpeaking] = useState(false);
 
@@ -45,6 +62,10 @@ const ChatInterface = ({ messages, onSendMessage, onReact, isTyping, companionNa
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  const handleQuickReply = (suggestion: string) => {
+    onSendMessage(suggestion);
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -70,7 +91,9 @@ const ChatInterface = ({ messages, onSendMessage, onReact, isTyping, companionNa
             imageUrl={msg.imageUrl}
             reactions={msg.reactions}
             userReactions={msg.userReactions}
+            isBookmarked={msg.isBookmarked}
             onReact={onReact ? (type) => onReact(msg.id, type) : undefined}
+            onBookmark={onBookmark ? () => onBookmark(msg.id) : undefined}
           />
         ))}
         
@@ -82,11 +105,19 @@ const ChatInterface = ({ messages, onSendMessage, onReact, isTyping, companionNa
               <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-lia-pink rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
             </div>
             <span className="text-xs sm:text-sm">{companionName} is thinking...</span>
+            <MoodIndicator mood={currentMood} />
           </div>
         )}
         
         <div ref={messagesEndRef} />
       </div>
+
+      {/* Quick replies */}
+      <QuickReplies
+        suggestions={quickReplies}
+        onSelect={handleQuickReply}
+        visible={!isTyping && quickReplies.length > 0}
+      />
 
       {/* Input area - optimized for mobile */}
       <div className="p-2 sm:p-4 border-t border-border/30 bg-background/50 backdrop-blur-sm safe-area-inset-bottom">
