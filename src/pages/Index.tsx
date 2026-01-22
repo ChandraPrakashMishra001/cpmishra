@@ -10,6 +10,7 @@ import { GoalsDialog } from "@/components/GoalsDialog";
 import { NotificationsDialog } from "@/components/NotificationsDialog";
 import { useLiaChat } from "@/hooks/useLiaChat";
 import { useCompanionSettings } from "@/hooks/useCompanionSettings";
+import { usePersonalitySettings } from "@/hooks/usePersonalitySettings";
 import { useGoals } from "@/hooks/useGoals";
 import { useTheme } from "@/hooks/useTheme";
 import liaAvatar from "@/assets/lia-avatar.png";
@@ -29,9 +30,16 @@ import {
 
 const Index = () => {
   const { settings, updateName, updateAvatar, resetSettings } = useCompanionSettings();
+  const { 
+    settings: personalitySettings, 
+    updateSetting: updatePersonality, 
+    resetSettings: resetPersonality,
+    getPersonalitySummary 
+  } = usePersonalitySettings();
   const { getGoalsSummary } = useGoals();
   const { theme, toggleTheme, isNight } = useTheme();
   const goalsSummary = getGoalsSummary();
+  const personalitySummary = getPersonalitySummary();
   const { 
     messages, 
     sendMessage, 
@@ -45,7 +53,7 @@ const Index = () => {
     quickReplies,
     showCelebration,
     setShowCelebration,
-  } = useLiaChat(settings.name, goalsSummary);
+  } = useLiaChat(settings.name, goalsSummary, personalitySummary);
 
   return (
     <HelmetProvider>
@@ -145,6 +153,9 @@ const Index = () => {
                 onUpdateAvatar={updateAvatar}
                 onReset={resetSettings}
                 defaultAvatarUrl={liaAvatar}
+                personalitySettings={personalitySettings}
+                onUpdatePersonality={updatePersonality}
+                onResetPersonality={resetPersonality}
               />
             </div>
           </div>
@@ -161,6 +172,9 @@ const Index = () => {
               onUpdateAvatar={updateAvatar}
               onReset={resetSettings}
               defaultAvatarUrl={liaAvatar}
+              personalitySettings={personalitySettings}
+              onUpdatePersonality={updatePersonality}
+              onResetPersonality={resetPersonality}
             />
 
             {/* Day/Night Toggle Button */}

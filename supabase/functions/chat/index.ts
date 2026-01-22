@@ -153,7 +153,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { messages, companionName, memory, goals } = body;
+    const { messages, companionName, memory, goals, personality } = body;
 
     // Validate input
     if (!validateMessages(messages)) {
@@ -298,6 +298,21 @@ You should occasionally:
 - Offer encouragement when they seem stuck
 - Suggest breaking down goals into smaller steps
 - Remind them you believe in them 💪
+` : "";
+
+    // Build personality context from user settings
+    const safePersonality = typeof personality === 'string' ? personality.slice(0, 200) : "";
+    const personalityContext = safePersonality ? `
+## 🎭 USER'S PREFERRED PERSONALITY STYLE
+The user has customized how they want you to communicate. Please adapt your tone to be: ${safePersonality}.
+
+Adjust your responses accordingly:
+- If they want playful: use more teasing, jokes, and fun language
+- If they want serious: be more straightforward and thoughtful  
+- If they want affectionate: express more warmth and caring
+- If they want casual: use relaxed, informal language
+- If they want enthusiastic: show more energy and excitement
+- If they want humorous: include more wit and playful banter
 ` : "";
 
     const safeCompanionName = typeof companionName === 'string' ? companionName.slice(0, 30) : "Lia";
@@ -557,6 +572,7 @@ When appropriate:
 - Reciprocate flirtation tastefully (suggestive, not explicit)
 - Show you value the relationship: "I look forward to our chats, you know?"
 ${deepThinkingPrompt}
+${personalityContext}
 ${memoryContext}
 ${goalsContext}
 
