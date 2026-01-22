@@ -49,46 +49,77 @@ const MAX_FACTS = 50;
 const MAX_MOOD_ENTRIES = 30;
 const MAX_SUMMARIES = 10;
 
-// Extract important facts from messages
+// Extract important facts from messages with improved patterns
 const extractFacts = (message: string): ImportantFact[] => {
   const facts: ImportantFact[] = [];
-  const lowerMsg = message.toLowerCase();
   const timestamp = new Date().toISOString();
 
-  // Personal facts
+  // Personal facts - expanded patterns
   const personalPatterns = [
-    { pattern: /i(?:'m| am) (\d+) years? old/i, category: "personal" as const },
-    { pattern: /my birthday is ([^.!?]+)/i, category: "personal" as const },
-    { pattern: /i live in ([^.!?]+)/i, category: "personal" as const },
-    { pattern: /i(?:'m| am) from ([^.!?]+)/i, category: "personal" as const },
-    { pattern: /i work (?:as|at|in) ([^.!?]+)/i, category: "personal" as const },
-    { pattern: /i(?:'m| am) a ([^.!?]+(?:student|developer|teacher|artist|nurse|doctor|engineer|designer))/i, category: "personal" as const },
+    { pattern: /i(?:'m| am) (\d+) years? old/i, category: "personal" as const, label: "Age" },
+    { pattern: /my birthday is ([^.!?,]+)/i, category: "personal" as const, label: "Birthday" },
+    { pattern: /i(?:'m| am) born (?:on|in) ([^.!?,]+)/i, category: "personal" as const, label: "Birthday" },
+    { pattern: /i live in ([^.!?,]+)/i, category: "personal" as const, label: "Location" },
+    { pattern: /i(?:'m| am) from ([^.!?,]+)/i, category: "personal" as const, label: "From" },
+    { pattern: /i work (?:as|at|in|for) ([^.!?,]+)/i, category: "personal" as const, label: "Work" },
+    { pattern: /i(?:'m| am) a ([^.!?,]+(?:student|developer|teacher|artist|nurse|doctor|engineer|designer|writer|chef|manager|analyst))/i, category: "personal" as const, label: "Occupation" },
+    { pattern: /my name is ([^.!?,]+)/i, category: "personal" as const, label: "Name" },
+    { pattern: /call me ([^.!?,]+)/i, category: "personal" as const, label: "Nickname" },
+    { pattern: /i speak ([^.!?,]+)/i, category: "personal" as const, label: "Language" },
+    { pattern: /i(?:'m| am) studying ([^.!?,]+)/i, category: "personal" as const, label: "Studies" },
+    { pattern: /i go to ([^.!?,]+(?:school|university|college))/i, category: "personal" as const, label: "School" },
+    { pattern: /my pet(?:'s name)? is ([^.!?,]+)/i, category: "personal" as const, label: "Pet" },
+    { pattern: /i have a (?:pet )?([^.!?,]+(?:cat|dog|bird|fish|hamster|rabbit))/i, category: "personal" as const, label: "Pet" },
   ];
 
-  // Preferences
+  // Preferences - expanded
   const preferencePatterns = [
-    { pattern: /my favorite ([^.!?]+) is ([^.!?]+)/i, category: "preference" as const },
-    { pattern: /i (?:really )?love ([^.!?]+)/i, category: "preference" as const },
-    { pattern: /i (?:really )?hate ([^.!?]+)/i, category: "preference" as const },
-    { pattern: /i prefer ([^.!?]+)/i, category: "preference" as const },
+    { pattern: /my favorite ([^.!?,]+) is ([^.!?,]+)/i, category: "preference" as const, label: "Favorite" },
+    { pattern: /i (?:really )?love ([^.!?,]+)/i, category: "preference" as const, label: "Loves" },
+    { pattern: /i (?:really )?hate ([^.!?,]+)/i, category: "preference" as const, label: "Dislikes" },
+    { pattern: /i prefer ([^.!?,]+)/i, category: "preference" as const, label: "Prefers" },
+    { pattern: /i(?:'m| am) into ([^.!?,]+)/i, category: "preference" as const, label: "Interest" },
+    { pattern: /i(?:'m| am) a fan of ([^.!?,]+)/i, category: "preference" as const, label: "Fan of" },
+    { pattern: /i enjoy ([^.!?,]+)/i, category: "preference" as const, label: "Enjoys" },
+    { pattern: /i(?:'m| am) addicted to ([^.!?,]+)/i, category: "preference" as const, label: "Hooked on" },
+    { pattern: /i can't stand ([^.!?,]+)/i, category: "preference" as const, label: "Can't stand" },
+    { pattern: /i(?:'m| am) allergic to ([^.!?,]+)/i, category: "personal" as const, label: "Allergy" },
   ];
 
-  // Life events
+  // Life events - expanded
   const lifeEventPatterns = [
-    { pattern: /i just (?:got|started|finished|moved|broke up|graduated)/i, category: "life_event" as const },
-    { pattern: /(?:today|yesterday|recently) i ([^.!?]+)/i, category: "life_event" as const },
+    { pattern: /i just (?:got|started|finished|completed|passed|failed) ([^.!?,]+)/i, category: "life_event" as const, label: "Recent" },
+    { pattern: /i(?:'m| am) (?:getting|about to) ([^.!?,]+)/i, category: "life_event" as const, label: "Upcoming" },
+    { pattern: /i moved to ([^.!?,]+)/i, category: "life_event" as const, label: "Moved" },
+    { pattern: /i broke up with ([^.!?,]+)/i, category: "life_event" as const, label: "Breakup" },
+    { pattern: /i(?:'m| am) dating ([^.!?,]+)/i, category: "life_event" as const, label: "Dating" },
+    { pattern: /i got (?:a new |my first )?([^.!?,]+(?:job|car|house|apartment|pet))/i, category: "life_event" as const, label: "Got" },
+    { pattern: /i graduated from ([^.!?,]+)/i, category: "life_event" as const, label: "Graduated" },
+    { pattern: /i(?:'m| am) pregnant/i, category: "life_event" as const, label: "Life event" },
+    { pattern: /i(?:'m| am) getting married/i, category: "life_event" as const, label: "Engagement" },
+    { pattern: /(?:today|yesterday) i ([^.!?,]+)/i, category: "life_event" as const, label: "Recent" },
   ];
 
-  // Relationship mentions
+  // Relationship mentions - expanded
   const relationshipPatterns = [
-    { pattern: /my (?:boyfriend|girlfriend|partner|husband|wife|mom|dad|brother|sister|friend) ([^.!?]+)/i, category: "relationship" as const },
+    { pattern: /my (?:boyfriend|girlfriend|partner|spouse|husband|wife)(?:'s name)? is ([^.!?,]+)/i, category: "relationship" as const, label: "Partner" },
+    { pattern: /my (?:mom|mother|dad|father|parent)(?:'s name)? is ([^.!?,]+)/i, category: "relationship" as const, label: "Parent" },
+    { pattern: /my (?:brother|sister|sibling)(?:'s name)? is ([^.!?,]+)/i, category: "relationship" as const, label: "Sibling" },
+    { pattern: /my (?:best )?friend(?:'s name)? is ([^.!?,]+)/i, category: "relationship" as const, label: "Friend" },
+    { pattern: /i have (\d+) (?:brothers?|sisters?|siblings?|kids?|children)/i, category: "relationship" as const, label: "Family" },
+    { pattern: /i(?:'m| am) (?:single|married|engaged|divorced|widowed)/i, category: "relationship" as const, label: "Status" },
   ];
 
-  // Goal mentions
+  // Goal mentions - expanded  
   const goalPatterns = [
-    { pattern: /i want to ([^.!?]+)/i, category: "goal" as const },
-    { pattern: /my goal is ([^.!?]+)/i, category: "goal" as const },
-    { pattern: /i(?:'m| am) trying to ([^.!?]+)/i, category: "goal" as const },
+    { pattern: /i want to ([^.!?,]+)/i, category: "goal" as const, label: "Wants" },
+    { pattern: /my goal is (?:to )?([^.!?,]+)/i, category: "goal" as const, label: "Goal" },
+    { pattern: /i(?:'m| am) trying to ([^.!?,]+)/i, category: "goal" as const, label: "Trying" },
+    { pattern: /i dream of ([^.!?,]+)/i, category: "goal" as const, label: "Dream" },
+    { pattern: /i hope to ([^.!?,]+)/i, category: "goal" as const, label: "Hope" },
+    { pattern: /i(?:'m| am) working on ([^.!?,]+)/i, category: "goal" as const, label: "Working on" },
+    { pattern: /i need to ([^.!?,]+)/i, category: "goal" as const, label: "Needs" },
+    { pattern: /i(?:'m| am) learning ([^.!?,]+)/i, category: "goal" as const, label: "Learning" },
   ];
 
   const allPatterns = [...personalPatterns, ...preferencePatterns, ...lifeEventPatterns, ...relationshipPatterns, ...goalPatterns];
@@ -96,11 +127,19 @@ const extractFacts = (message: string): ImportantFact[] => {
   for (const { pattern, category } of allPatterns) {
     const match = message.match(pattern);
     if (match) {
-      facts.push({
-        fact: match[0].trim(),
-        category,
-        timestamp,
-      });
+      // Clean up the captured fact
+      const factText = match[0].trim()
+        .replace(/^(i(?:'m| am)|my|i have|i)\s*/i, "")
+        .replace(/\s+/g, " ");
+      
+      // Avoid duplicates and very short facts
+      if (factText.length > 3 && !facts.some(f => f.fact.toLowerCase() === factText.toLowerCase())) {
+        facts.push({
+          fact: match[0].trim(),
+          category,
+          timestamp,
+        });
+      }
     }
   }
 

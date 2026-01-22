@@ -2,6 +2,7 @@ import { HelmetProvider, Helmet } from "react-helmet-async";
 import LiaAvatar from "@/components/LiaAvatar";
 import ChatInterface from "@/components/ChatInterface";
 import CompanionSettingsDialog from "@/components/CompanionSettingsDialog";
+import MemoryViewerDialog from "@/components/MemoryViewerDialog";
 import FloatingClouds from "@/components/FloatingClouds";
 import FloatingSparkles from "@/components/FloatingSparkles";
 import ConfettiCelebration from "@/components/ConfettiCelebration";
@@ -14,7 +15,7 @@ import { usePersonalitySettings } from "@/hooks/usePersonalitySettings";
 import { useGoals } from "@/hooks/useGoals";
 import { useTheme } from "@/hooks/useTheme";
 import liaAvatar from "@/assets/lia-avatar.png";
-import { Trash2, Target, Bell, Sun, Moon } from "lucide-react";
+import { Trash2, Target, Bell, Sun, Moon, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -111,6 +112,20 @@ const Index = () => {
                 )}
               </Button>
               <NotificationsDialog companionName={settings.name} />
+              <MemoryViewerDialog
+                memory={memory}
+                companionName={settings.name}
+                onClearMemory={resetConversation}
+                trigger={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="bg-card/80 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm"
+                  >
+                    <Brain className="w-4 h-4 text-primary" />
+                  </Button>
+                }
+              />
               <GoalsDialog
                 trigger={
                   <Button
@@ -198,9 +213,25 @@ const Index = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute top-4 right-40 z-20 bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm"
+                  className="absolute top-4 right-52 z-20 bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm"
                 >
                   <Bell className="w-4 h-4 text-primary" />
+                </Button>
+              }
+            />
+
+            {/* Memory Viewer Button */}
+            <MemoryViewerDialog
+              memory={memory}
+              companionName={settings.name}
+              onClearMemory={resetConversation}
+              trigger={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute top-4 right-40 z-20 bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm"
+                >
+                  <Brain className="w-4 h-4 text-primary" />
                 </Button>
               }
             />
