@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Brain, User, Heart, Target, Calendar, Sparkles, TrendingUp, Clock, MessageSquare, Download, Trash2 } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Brain, User, Heart, Target, Calendar, Sparkles, TrendingUp, Clock, MessageSquare, Download, Trash2, Search, X, CalendarDays } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -12,6 +12,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Input } from "@/components/ui/input";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { format, isSameDay, isWithinInterval, startOfDay, endOfDay } from "date-fns";
+import { cn } from "@/lib/utils";
 
 interface MemoryViewerDialogProps {
   memory: {
@@ -62,23 +71,94 @@ const MemoryViewerDialog = ({
   trigger,
 }: MemoryViewerDialogProps) => {
   const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
+    from: undefined,
+    to: undefined,
+  });
+
+  // Filter facts based on search and date
+  const filteredFacts = useMemo(() => {
+    return memory.importantFacts.filter((fact) => {
+      const matchesSearch = searchQuery === "" || 
+        fact.fact.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        fact.category.toLowerCase().includes(searchQuery.toLowerCase());
+      
+      const factDate = new Date(fact.timestamp);
+      let matchesDate = true;
+      
+      if (selectedDate) {
+        matchesDate = isSameDay(factDate, selectedDate);
+      } else if (dateRange.from && dateRange.to) {
+        matchesDate = isWithinInterval(factDate, {
+          start: startOfDay(dateRange.from),
+          end: endOfDay(dateRange.to),
+        });
+      } else if (dateRange.from) {
+        matchesDate = factDate >= startOfDay(dateRange.from);
+      }
+      
+      return matchesSearch && matchesDate;
+    });
+  }, [memory.importantFacts, searchQuery, selectedDate, dateRange]);
+
+  // Filter mood history based on date
+  const filteredMoodHistory = useMemo(() => {
+    return memory.moodHistory.filter((entry) => {
+      const moodDate = new Date(entry.timestamp);
+      
+      if (selectedDate) {
+        return isSameDay(moodDate, selectedDate);
+      } else if (dateRange.from && dateRange.to) {
+        return isWithinInterval(moodDate, {
+          start: startOfDay(dateRange.from),
+          end: endOfDay(dateRange.to),
+        });
+      } else if (dateRange.from) {
+        return moodDate >= startOfDay(dateRange.from);
+      }
+      
+      return true;
+    });
+  }, [memory.moodHistory, selectedDate, dateRange]);
 
   // Calculate relationship stats
   const relationshipDays = memory.firstChatDate
     ? Math.floor((Date.now() - new Date(memory.firstChatDate).getTime()) / (1000 * 60 * 60 * 24))
     : 0;
 
-  // Calculate mood distribution
-  const moodCounts = memory.moodHistory.reduce((acc, entry) => {
+  // Calculate mood distribution from filtered data
+  const moodCounts = filteredMoodHistory.reduce((acc, entry) => {
     acc[entry.mood] = (acc[entry.mood] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
-  const totalMoods = memory.moodHistory.length || 1;
+  const totalMoods = filteredMoodHistory.length || 1;
   const moodPercentages = Object.entries(moodCounts).map(([mood, count]) => ({
     mood,
     percentage: Math.round((count / totalMoods) * 100),
   })).sort((a, b) => b.percentage - a.percentage);
+
+  // Get dates that have memories
+  const datesWithMemories = useMemo(() => {
+    const dates = new Set<string>();
+    memory.importantFacts.forEach((fact) => {
+      dates.add(format(new Date(fact.timestamp), "yyyy-MM-dd"));
+    });
+    memory.moodHistory.forEach((mood) => {
+      dates.add(format(new Date(mood.timestamp), "yyyy-MM-dd"));
+    });
+    return dates;
+  }, [memory.importantFacts, memory.moodHistory]);
+
+  const clearFilters = () => {
+    setSearchQuery("");
+    setSelectedDate(undefined);
+    setDateRange({ from: undefined, to: undefined });
+  };
+
+  const hasActiveFilters = searchQuery !== "" || selectedDate !== undefined || dateRange.from !== undefined;
 
   // Export memory as JSON
   const handleExport = () => {
@@ -118,11 +198,159 @@ const MemoryViewerDialog = ({
         </DialogHeader>
 
         <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-4">
+          <TabsList className="grid w-full grid-cols-4 mb-4">
             <TabsTrigger value="overview" className="text-xs">Overview</TabsTrigger>
+            <TabsTrigger value="search" className="text-xs">Search</TabsTrigger>
             <TabsTrigger value="facts" className="text-xs">Facts</TabsTrigger>
             <TabsTrigger value="moods" className="text-xs">Moods</TabsTrigger>
           </TabsList>
+
+          {/* Search Tab */}
+          <TabsContent value="search" className="space-y-4">
+            <div className="space-y-3">
+              {/* Text Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search memories..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 bg-background/50 border-border/30"
+                />
+                {searchQuery && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                    onClick={() => setSearchQuery("")}
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                )}
+              </div>
+
+              {/* Date Picker */}
+              <div className="flex gap-2">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "flex-1 justify-start text-left font-normal border-border/30 bg-background/50",
+                        !selectedDate && !dateRange.from && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarDays className="mr-2 h-4 w-4" />
+                      {selectedDate ? (
+                        format(selectedDate, "PPP")
+                      ) : dateRange.from ? (
+                        dateRange.to ? (
+                          `${format(dateRange.from, "MMM d")} - ${format(dateRange.to, "MMM d")}`
+                        ) : (
+                          `From ${format(dateRange.from, "MMM d")}`
+                        )
+                      ) : (
+                        "Pick a date"
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-card border-border/50" align="start">
+                    <CalendarComponent
+                      mode="single"
+                      selected={selectedDate}
+                      onSelect={(date) => {
+                        setSelectedDate(date);
+                        setDateRange({ from: undefined, to: undefined });
+                      }}
+                      initialFocus
+                      className={cn("p-3 pointer-events-auto")}
+                      modifiers={{
+                        hasMemory: (date) => datesWithMemories.has(format(date, "yyyy-MM-dd")),
+                      }}
+                      modifiersStyles={{
+                        hasMemory: {
+                          fontWeight: "bold",
+                          textDecoration: "underline",
+                          textDecorationColor: "hsl(var(--primary))",
+                        },
+                      }}
+                    />
+                  </PopoverContent>
+                </Popover>
+
+                {hasActiveFilters && (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={clearFilters}
+                    className="border-border/30 bg-background/50"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
+
+              {/* Filter Status */}
+              {hasActiveFilters && (
+                <div className="flex flex-wrap gap-2">
+                  {searchQuery && (
+                    <Badge variant="secondary" className="text-xs">
+                      Search: "{searchQuery}"
+                    </Badge>
+                  )}
+                  {selectedDate && (
+                    <Badge variant="secondary" className="text-xs">
+                      Date: {format(selectedDate, "MMM d, yyyy")}
+                    </Badge>
+                  )}
+                  {dateRange.from && (
+                    <Badge variant="secondary" className="text-xs">
+                      From: {format(dateRange.from, "MMM d")}
+                      {dateRange.to && ` to ${format(dateRange.to, "MMM d")}`}
+                    </Badge>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Search Results */}
+            <ScrollArea className="h-[320px] pr-4">
+              {filteredFacts.length > 0 ? (
+                <div className="space-y-3">
+                  <h3 className="font-semibold text-sm flex items-center gap-2">
+                    <Brain className="w-4 h-4 text-primary" />
+                    Found {filteredFacts.length} memories
+                  </h3>
+                  {filteredFacts.map((fact, i) => (
+                    <div key={i} className="bg-background/50 rounded-lg p-3 border border-border/30">
+                      <div className="flex items-start gap-2">
+                        <Badge className={`text-xs shrink-0 ${CATEGORY_COLORS[fact.category]}`}>
+                          {CATEGORY_ICONS[fact.category]}
+                          <span className="ml-1 capitalize">{fact.category.replace("_", " ")}</span>
+                        </Badge>
+                      </div>
+                      <p className="text-sm mt-2">{fact.fact}</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {format(new Date(fact.timestamp), "PPP 'at' p")}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : hasActiveFilters ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Search className="w-12 h-12 mx-auto mb-4 opacity-30" />
+                  <p>No memories found</p>
+                  <p className="text-sm mt-1">Try a different search or date~ 💕</p>
+                </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground">
+                  <Search className="w-12 h-12 mx-auto mb-4 opacity-30" />
+                  <p>Search your memories!</p>
+                  <p className="text-sm mt-1">Use the search bar or pick a date~ 💕</p>
+                </div>
+              )}
+            </ScrollArea>
+          </TabsContent>
 
           <TabsContent value="overview" className="space-y-4">
             <ScrollArea className="h-[400px] pr-4">
@@ -224,11 +452,11 @@ const MemoryViewerDialog = ({
 
           <TabsContent value="facts" className="space-y-4">
             <ScrollArea className="h-[400px] pr-4">
-              {memory.importantFacts.length > 0 ? (
+              {filteredFacts.length > 0 ? (
                 <div className="space-y-3">
                   {/* Group facts by category */}
                   {["personal", "preference", "life_event", "relationship", "goal"].map((category) => {
-                    const categoryFacts = memory.importantFacts.filter((f) => f.category === category);
+                    const categoryFacts = filteredFacts.filter((f) => f.category === category);
                     if (categoryFacts.length === 0) return null;
 
                     return (
@@ -236,6 +464,9 @@ const MemoryViewerDialog = ({
                         <h4 className="font-semibold text-sm mb-2 capitalize flex items-center gap-2">
                           {CATEGORY_ICONS[category]}
                           {category.replace("_", " ")}
+                          <Badge variant="outline" className="ml-auto text-xs">
+                            {categoryFacts.length}
+                          </Badge>
                         </h4>
                         <div className="space-y-2">
                           {categoryFacts.slice(-5).map((fact, i) => (
@@ -265,6 +496,13 @@ const MemoryViewerDialog = ({
             <ScrollArea className="h-[400px] pr-4">
               {moodPercentages.length > 0 ? (
                 <div className="space-y-4">
+                  {/* Filter info */}
+                  {hasActiveFilters && (
+                    <div className="text-sm text-muted-foreground">
+                      Showing {filteredMoodHistory.length} of {memory.moodHistory.length} mood entries
+                    </div>
+                  )}
+
                   {/* Mood Distribution */}
                   <div className="bg-background/50 rounded-lg p-4 border border-border/30">
                     <h3 className="font-semibold text-sm mb-3 flex items-center gap-2">
@@ -294,7 +532,7 @@ const MemoryViewerDialog = ({
                       Recent Moods
                     </h3>
                     <div className="flex flex-wrap gap-2">
-                      {memory.moodHistory.slice(-15).reverse().map((entry, i) => (
+                      {filteredMoodHistory.slice(-15).reverse().map((entry, i) => (
                         <div
                           key={i}
                           className="text-lg"
