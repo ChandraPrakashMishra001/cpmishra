@@ -12,6 +12,7 @@ import { NotificationsDialog } from "@/components/NotificationsDialog";
 import { useLiaChat } from "@/hooks/useLiaChat";
 import { useCompanionSettings } from "@/hooks/useCompanionSettings";
 import { usePersonalitySettings } from "@/hooks/usePersonalitySettings";
+import { usePhdMode } from "@/hooks/usePhdMode";
 import { useGoals } from "@/hooks/useGoals";
 import { useTheme } from "@/hooks/useTheme";
 import liaAvatar from "@/assets/lia-avatar.png";
@@ -37,6 +38,7 @@ const Index = () => {
     resetSettings: resetPersonality,
     getPersonalitySummary 
   } = usePersonalitySettings();
+  const { isEnabled: phdModeEnabled, toggle: togglePhdMode } = usePhdMode();
   const { getGoalsSummary } = useGoals();
   const { theme, toggleTheme, isNight } = useTheme();
   const goalsSummary = getGoalsSummary();
@@ -54,7 +56,7 @@ const Index = () => {
     quickReplies,
     showCelebration,
     setShowCelebration,
-  } = useLiaChat(settings.name, goalsSummary, personalitySummary);
+  } = useLiaChat(settings.name, goalsSummary, personalitySummary, phdModeEnabled);
 
   return (
     <HelmetProvider>
@@ -171,6 +173,8 @@ const Index = () => {
                 personalitySettings={personalitySettings}
                 onUpdatePersonality={updatePersonality}
                 onResetPersonality={resetPersonality}
+                phdModeEnabled={phdModeEnabled}
+                onTogglePhdMode={togglePhdMode}
               />
             </div>
           </div>
@@ -190,6 +194,8 @@ const Index = () => {
               personalitySettings={personalitySettings}
               onUpdatePersonality={updatePersonality}
               onResetPersonality={resetPersonality}
+              phdModeEnabled={phdModeEnabled}
+              onTogglePhdMode={togglePhdMode}
             />
 
             {/* Day/Night Toggle Button */}

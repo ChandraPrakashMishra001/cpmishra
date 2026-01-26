@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Settings, Upload, RotateCcw, X, Sparkles } from "lucide-react";
+import { Settings, Upload, RotateCcw, X, Sparkles, GraduationCap } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
 import { CompanionSettings } from "@/hooks/useCompanionSettings";
 import { PersonalitySettings, ToneLevel, PERSONALITY_LABELS } from "@/hooks/usePersonalitySettings";
 import PersonalitySlider from "./PersonalitySlider";
@@ -29,6 +30,8 @@ interface CompanionSettingsDialogProps {
   personalitySettings: PersonalitySettings;
   onUpdatePersonality: (key: keyof PersonalitySettings, value: ToneLevel) => void;
   onResetPersonality: () => void;
+  phdModeEnabled: boolean;
+  onTogglePhdMode: () => void;
 }
 
 const CompanionSettingsDialog = ({
@@ -40,6 +43,8 @@ const CompanionSettingsDialog = ({
   personalitySettings,
   onUpdatePersonality,
   onResetPersonality,
+  phdModeEnabled,
+  onTogglePhdMode,
 }: CompanionSettingsDialogProps) => {
   const [name, setName] = useState(settings.name);
   const [open, setOpen] = useState(false);
@@ -196,6 +201,30 @@ const CompanionSettingsDialog = ({
             <p className="text-sm text-muted-foreground">
               Adjust how {settings.name} communicates with you~
             </p>
+
+            {/* PhD Mode Toggle */}
+            <div className="p-4 rounded-lg bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-full bg-amber-500/20">
+                    <GraduationCap className="w-5 h-5 text-amber-500" />
+                  </div>
+                  <div>
+                    <Label htmlFor="phd-mode" className="text-sm font-medium cursor-pointer">
+                      PhD Expert Mode
+                    </Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Rigorous academic explanations with deep analysis
+                    </p>
+                  </div>
+                </div>
+                <Switch
+                  id="phd-mode"
+                  checked={phdModeEnabled}
+                  onCheckedChange={onTogglePhdMode}
+                />
+              </div>
+            </div>
 
             {/* Personality Sliders */}
             {(Object.keys(PERSONALITY_LABELS) as Array<keyof typeof PERSONALITY_LABELS>).map((key) => (
