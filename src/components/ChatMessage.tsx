@@ -2,6 +2,8 @@ import { Download } from "lucide-react";
 import MessageReactions, { Reactions, ReactionType } from "./MessageReactions";
 import BookmarkButton from "./BookmarkButton";
 import { Button } from "./ui/button";
+import 'katex/dist/katex.min.css';
+import { InlineMath, BlockMath } from 'react-katex';
 
 interface ChatMessageProps {
   content: string;
@@ -57,13 +59,58 @@ const formatMathExpression = (text: string): string => {
     });
 };
 
+// Render LaTeX math expressions
+const renderMath = (text: string): React.ReactNode[] => {
+  const parts: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let key = 0;
+
+  // Match block math $$...$$ first, then inline math $...$
+  const regex = /\$\$([^$]+)\$\$|\$([^$]+)\$/g;
+  let match;
+
+  while ((match = regex.exec(text)) !== null) {
+    // Add text before the match
+    if (match.index > lastIndex) {
+      parts.push(<span key={key++}>{text.slice(lastIndex, match.index)}</span>);
+    }
+
+    const blockMath = match[1];
+    const inlineMath = match[2];
+
+    try {
+      if (blockMath) {
+        parts.push(
+          <div key={key++} className="my-2 overflow-x-auto">
+            <BlockMath math={blockMath.trim()} />
+          </div>
+        );
+      } else if (inlineMath) {
+        parts.push(<InlineMath key={key++} math={inlineMath.trim()} />);
+      }
+    } catch {
+      // If KaTeX fails, show the original text
+      parts.push(<span key={key++} className="font-mono text-destructive">{match[0]}</span>);
+    }
+
+    lastIndex = match.index + match[0].length;
+  }
+
+  // Add remaining text
+  if (lastIndex < text.length) {
+    parts.push(<span key={key++}>{text.slice(lastIndex)}</span>);
+  }
+
+  return parts.length > 0 ? parts : [<span key={0}>{text}</span>];
+};
+
 // Simple markdown-like formatting for problem solutions
 const formatContent = (text: string): React.ReactNode => {
   // Split by line and process each
   const lines = text.split('\n');
   
   return lines.map((line, i) => {
-    // Apply math formatting first
+    // Apply math formatting first (for simple symbols)
     let processedLine = formatMathExpression(line);
     
     // Bold text: **text**
@@ -76,8 +123,15 @@ const formatContent = (text: string): React.ReactNode => {
         if (part.startsWith('**') && part.endsWith('**')) {
           return <strong key={j} className="font-semibold text-primary">{part.slice(2, -2)}</strong>;
         }
+        // Check if this part has LaTeX
+        if (part.includes('$')) {
+          return <span key={j}>{renderMath(part)}</span>;
+        }
         return part;
       });
+    } else if (processedLine.includes('$')) {
+      // Handle LaTeX in lines without bold
+      formattedLine = renderMath(processedLine);
     }
     
     // Check if this is a math equation line (contains = or math operators)
