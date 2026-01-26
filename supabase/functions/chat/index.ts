@@ -153,7 +153,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { messages, companionName, memory, goals, personality } = body;
+    const { messages, companionName, memory, goals, personality, phdMode } = body;
 
     // Validate input
     if (!validateMessages(messages)) {
@@ -177,10 +177,11 @@ serve(async (req) => {
     console.log("Received chat request with", messages.length, "messages");
 
     // Check if the latest message requires deep thinking
+    // PhD mode forces deep thinking for ALL messages
     const latestMessage = messages[messages.length - 1]?.content || "";
-    const needsDeepThinking = requiresDeepThinking(latestMessage);
+    const needsDeepThinking = phdMode === true || requiresDeepThinking(latestMessage);
     
-    console.log("Deep thinking mode:", needsDeepThinking);
+    console.log("Deep thinking mode:", needsDeepThinking, "| PhD mode:", phdMode === true);
 
     // Sanitize enhanced memory values
     const safeMemory = {
