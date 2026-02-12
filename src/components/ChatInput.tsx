@@ -103,7 +103,7 @@ const ChatInput = ({ onSend, disabled, companionName = "Lia" }: ChatInputProps) 
         </div>
       )}
       
-      <div className="flex items-end gap-2 sm:gap-3 p-2.5 sm:p-4 bg-card/40 backdrop-blur-md rounded-2xl border border-lia-pink/20 transition-all duration-300 hover:border-lia-pink/40">
+      <div className="flex items-end gap-2 sm:gap-3 p-2.5 sm:p-4 bg-card/50 backdrop-blur-md rounded-2xl border border-border/30 shadow-sm transition-all duration-300 focus-within:border-primary/40 focus-within:shadow-md focus-within:shadow-primary/5">
         <input
           type="file"
           ref={fileInputRef}

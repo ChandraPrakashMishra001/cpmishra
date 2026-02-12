@@ -20,11 +20,11 @@ const QuickReplies = ({ suggestions, onSelect, visible }: QuickRepliesProps) => 
         {suggestions.map((suggestion, index) => (
           <motion.button
             key={suggestion}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: index * 0.1 }}
+            initial={{ opacity: 0, scale: 0.8, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ delay: index * 0.08, type: "spring", stiffness: 300 }}
             onClick={() => onSelect(suggestion)}
-            className="px-3 py-1.5 text-xs sm:text-sm rounded-full bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary transition-all duration-200 hover:scale-105 active:scale-95"
+            className="px-4 py-2 text-xs sm:text-sm rounded-full bg-gradient-to-r from-primary/10 to-lia-pink/10 hover:from-primary/20 hover:to-lia-pink/20 border border-primary/20 text-primary font-medium transition-all duration-200 hover:scale-105 hover:shadow-md hover:shadow-primary/10 active:scale-95"
           >
             {suggestion}
           </motion.button>
