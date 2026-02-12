@@ -16,7 +16,7 @@ import { usePhdMode } from "@/hooks/usePhdMode";
 import { useGoals } from "@/hooks/useGoals";
 import { useTheme } from "@/hooks/useTheme";
 import liaAvatar from "@/assets/lia-avatar.png";
-import { Trash2, Target, Bell, Sun, Moon, Brain } from "lucide-react";
+import { Trash2, Target, Sun, Moon, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -184,103 +184,84 @@ const Index = () => {
         <div className="flex-1 flex flex-col lg:flex-row">
           {/* Avatar Section - Desktop only, sticky */}
           <div className="hidden lg:flex lg:w-1/2 lg:sticky lg:top-0 lg:h-screen flex-col items-center justify-center p-8 lg:p-12 relative">
-            {/* Settings Button */}
-            <CompanionSettingsDialog
-              settings={settings}
-              onUpdateName={updateName}
-              onUpdateAvatar={updateAvatar}
-              onReset={resetSettings}
-              defaultAvatarUrl={liaAvatar}
-              personalitySettings={personalitySettings}
-              onUpdatePersonality={updatePersonality}
-              onResetPersonality={resetPersonality}
-              phdModeEnabled={phdModeEnabled}
-              onTogglePhdMode={togglePhdMode}
-            />
-
-            {/* Day/Night Toggle Button */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleTheme}
-              className="absolute top-4 right-52 z-20 bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm transition-all duration-300"
-            >
-              {isNight ? (
-                <Sun className="w-4 h-4 text-yellow-500" />
-              ) : (
-                <Moon className="w-4 h-4 text-primary" />
-              )}
-            </Button>
-
-            {/* Notifications Button */}
-            <NotificationsDialog 
-              companionName={settings.name}
-              trigger={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-4 right-52 z-20 bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm"
-                >
-                  <Bell className="w-4 h-4 text-primary" />
-                </Button>
-              }
-            />
-
-            {/* Memory Viewer Button */}
-            <MemoryViewerDialog
-              memory={memory}
-              companionName={settings.name}
-              onClearMemory={resetConversation}
-              trigger={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-4 right-40 z-20 bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm"
-                >
-                  <Brain className="w-4 h-4 text-primary" />
-                </Button>
-              }
-            />
-
-            {/* Goals Button */}
-            <GoalsDialog 
-              trigger={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-4 right-28 z-20 bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm"
-                >
-                  <Target className="w-4 h-4 text-primary" />
-                </Button>
-              }
-            />
-
-            {/* Clear Memory Button */}
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="absolute top-4 right-16 z-20 bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-destructive/20 shadow-sm"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent className="bg-card border-border/50">
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Clear Memory?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    This will erase all conversation history and {settings.name} will forget everything about you. This cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={resetConversation} className="bg-destructive hover:bg-destructive/80">
-                    Clear Memory
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            {/* Desktop toolbar - clean flex row */}
+            <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleTheme}
+                className="bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm transition-all duration-300"
+              >
+                {isNight ? (
+                  <Sun className="w-4 h-4 text-yellow-500" />
+                ) : (
+                  <Moon className="w-4 h-4 text-primary" />
+                )}
+              </Button>
+              <NotificationsDialog companionName={settings.name} />
+              <MemoryViewerDialog
+                memory={memory}
+                companionName={settings.name}
+                onClearMemory={resetConversation}
+                trigger={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm"
+                  >
+                    <Brain className="w-4 h-4 text-primary" />
+                  </Button>
+                }
+              />
+              <GoalsDialog
+                trigger={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm"
+                  >
+                    <Target className="w-4 h-4 text-primary" />
+                  </Button>
+                }
+              />
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-destructive/20 shadow-sm"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent className="bg-card border-border/50">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Clear Memory?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This will erase all conversation history and {settings.name} will forget everything about you. This cannot be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction onClick={resetConversation} className="bg-destructive hover:bg-destructive/80">
+                      Clear Memory
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+              <CompanionSettingsDialog
+                settings={settings}
+                onUpdateName={updateName}
+                onUpdateAvatar={updateAvatar}
+                onReset={resetSettings}
+                defaultAvatarUrl={liaAvatar}
+                personalitySettings={personalitySettings}
+                onUpdatePersonality={updatePersonality}
+                onResetPersonality={resetPersonality}
+                phdModeEnabled={phdModeEnabled}
+                onTogglePhdMode={togglePhdMode}
+              />
+            </div>
 
             {/* Background decorations - soft sky accents */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">

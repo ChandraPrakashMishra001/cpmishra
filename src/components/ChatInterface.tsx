@@ -70,14 +70,17 @@ const ChatInterface = ({
   return (
     <div className="flex flex-col h-full">
       {/* Messages area */}
-      <div className="flex-1 overflow-y-auto px-2 sm:px-4 py-3 sm:py-6 space-y-3 sm:space-y-4 overscroll-contain">
+      <div className="flex-1 overflow-y-auto px-3 sm:px-6 py-4 sm:py-8 space-y-4 sm:space-y-5 overscroll-contain scroll-smooth">
         {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full text-center px-4">
-            <p className="text-muted-foreground text-base sm:text-lg font-display">
-              Start chatting with {companionName}! 💖
+          <div className="flex flex-col items-center justify-center h-full text-center px-6">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-primary/20 to-lia-pink/20 flex items-center justify-center mb-4 shadow-lg shadow-primary/10">
+              <span className="text-3xl sm:text-4xl">💬</span>
+            </div>
+            <p className="text-foreground/80 text-lg sm:text-xl font-display font-semibold mb-1">
+              Hey there! ✨
             </p>
-            <p className="text-muted-foreground/60 text-xs sm:text-sm mt-2">
-              Ask me anything - math, homework, or just chat~
+            <p className="text-muted-foreground text-sm sm:text-base max-w-xs">
+              I'm {companionName} — ask me anything, share a photo, or just chat~
             </p>
           </div>
         )}
@@ -98,13 +101,13 @@ const ChatInterface = ({
         ))}
         
         {isTyping && (
-          <div className="flex items-center gap-2 text-muted-foreground animate-slide-in px-1">
-            <div className="flex gap-1">
-              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-lia-pink rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
-              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-lia-pink rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
-              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-lia-pink rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+          <div className="flex items-center gap-2.5 text-muted-foreground animate-slide-in px-1">
+            <div className="flex gap-1 bg-card/60 backdrop-blur-sm px-3 py-2 rounded-full border border-border/30 shadow-sm">
+              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary/70 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
             </div>
-            <span className="text-xs sm:text-sm">{companionName} is thinking...</span>
+            <span className="text-xs sm:text-sm font-medium">{companionName} is thinking...</span>
             <MoodIndicator mood={currentMood} />
           </div>
         )}
@@ -119,8 +122,8 @@ const ChatInterface = ({
         visible={!isTyping && quickReplies.length > 0}
       />
 
-      {/* Input area - optimized for mobile */}
-      <div className="p-2 sm:p-4 border-t border-border/30 bg-background/50 backdrop-blur-sm safe-area-inset-bottom">
+      {/* Input area */}
+      <div className="p-2.5 sm:p-4 border-t border-border/20 bg-gradient-to-t from-background/80 to-background/40 backdrop-blur-md safe-area-inset-bottom">
         <div className="flex items-center gap-1.5 sm:gap-2">
           <div className="flex-1 min-w-0">
             <ChatInput onSend={onSendMessage} disabled={isTyping} companionName={companionName} />

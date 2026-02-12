@@ -166,13 +166,13 @@ const ChatMessage = ({ content, isUser, timestamp, imageUrl, reactions = default
       className={`flex ${isUser ? "justify-end" : "justify-start"} animate-slide-in group`}
     >
       <div
-        className={`max-w-[90%] sm:max-w-[80%] px-3 py-2 sm:px-4 sm:py-3 rounded-2xl relative ${
+        className={`max-w-[85%] sm:max-w-[75%] px-3.5 py-2.5 sm:px-5 sm:py-3.5 rounded-2xl relative transition-all duration-200 ${
           isUser
-            ? "bg-lia-pink/20 border border-lia-pink/30 rounded-br-md"
+            ? "bg-gradient-to-br from-lia-pink/25 to-lia-purple/15 border border-lia-pink/25 rounded-br-sm shadow-md shadow-lia-pink/10"
             : isProblemSolution 
-              ? "bg-card/80 border border-primary/30 rounded-bl-md backdrop-blur-sm shadow-sm"
-              : "bg-card/60 border border-lia-purple/20 rounded-bl-md backdrop-blur-sm"
-        } ${isBookmarked ? "ring-2 ring-primary/40" : ""}`}
+              ? "bg-gradient-to-br from-card/90 to-card/70 border border-primary/20 rounded-bl-sm backdrop-blur-sm shadow-lg shadow-primary/5"
+              : "bg-gradient-to-br from-card/80 to-card/60 border border-border/40 rounded-bl-sm backdrop-blur-sm shadow-md shadow-black/5"
+        } ${isBookmarked ? "ring-2 ring-primary/30 ring-offset-1 ring-offset-background" : ""}`}
       >
         {/* Bookmark button - appears on hover */}
         {onBookmark && (
@@ -182,11 +182,11 @@ const ChatMessage = ({ content, isUser, timestamp, imageUrl, reactions = default
         )}
 
         {imageUrl && (
-          <div className="mb-2 relative group/image">
+          <div className="mb-2.5 relative group/image">
             <img 
               src={imageUrl} 
               alt="Generated image" 
-              className="rounded-xl max-w-full h-auto shadow-lg"
+              className="rounded-xl max-w-full h-auto shadow-lg border border-border/20"
               loading="lazy"
             />
             <Button
@@ -219,9 +219,9 @@ const ChatMessage = ({ content, isUser, timestamp, imageUrl, reactions = default
         <div className={`text-foreground leading-relaxed text-sm sm:text-base ${isProblemSolution ? 'whitespace-pre-wrap' : ''}`}>
           {formatContent(content)}
         </div>
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-2 mt-1">
           {timestamp && (
-            <p className="text-[10px] sm:text-xs text-muted-foreground opacity-60">
+            <p className={`text-[10px] sm:text-xs opacity-50 ${isUser ? 'text-lia-pink' : 'text-muted-foreground'}`}>
               {timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
             </p>
           )}
