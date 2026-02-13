@@ -235,7 +235,7 @@ interface GoalsSummary {
   categories: string[];
 }
 
-export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSummary, personalitySummary?: string, phdModeEnabled: boolean = false) => {
+export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSummary, personalitySummary?: string, phdModeEnabled: boolean = false, roleplayPrompt: string = "") => {
   const { 
     memory, 
     addMessage, 
@@ -291,6 +291,7 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
         goals: goalsSummary,
         personality: personalitySummary,
         phdMode: phdModeEnabled,
+        roleplay: roleplayPrompt,
       }),
       signal,
     });

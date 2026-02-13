@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Settings, Upload, RotateCcw, X, Sparkles, GraduationCap } from "lucide-react";
+import { Settings, Upload, RotateCcw, X, Sparkles, GraduationCap, Theater } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -14,6 +14,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Switch } from "@/components/ui/switch";
 import { CompanionSettings } from "@/hooks/useCompanionSettings";
 import { PersonalitySettings, ToneLevel, PERSONALITY_LABELS } from "@/hooks/usePersonalitySettings";
+import { RoleplayCharacter, ROLEPLAY_OPTIONS } from "@/hooks/useRoleplay";
 import PersonalitySlider from "./PersonalitySlider";
 import { toast } from "sonner";
 
@@ -32,6 +33,8 @@ interface CompanionSettingsDialogProps {
   onResetPersonality: () => void;
   phdModeEnabled: boolean;
   onTogglePhdMode: () => void;
+  activeRole: RoleplayCharacter;
+  onRoleChange: (role: RoleplayCharacter) => void;
 }
 
 const CompanionSettingsDialog = ({
@@ -45,6 +48,8 @@ const CompanionSettingsDialog = ({
   onResetPersonality,
   phdModeEnabled,
   onTogglePhdMode,
+  activeRole,
+  onRoleChange,
 }: CompanionSettingsDialogProps) => {
   const [name, setName] = useState(settings.name);
   const [open, setOpen] = useState(false);
@@ -106,14 +111,18 @@ const CompanionSettingsDialog = ({
         </DialogHeader>
 
         <Tabs defaultValue="appearance" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-4">
-            <TabsTrigger value="appearance" className="flex items-center gap-2">
-              <Upload className="w-4 h-4" />
-              Appearance
+          <TabsList className="grid w-full grid-cols-3 mb-4">
+            <TabsTrigger value="appearance" className="flex items-center gap-1.5 text-xs sm:text-sm">
+              <Upload className="w-3.5 h-3.5" />
+              Look
             </TabsTrigger>
-            <TabsTrigger value="personality" className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4" />
+            <TabsTrigger value="personality" className="flex items-center gap-1.5 text-xs sm:text-sm">
+              <Sparkles className="w-3.5 h-3.5" />
               Personality
+            </TabsTrigger>
+            <TabsTrigger value="roleplay" className="flex items-center gap-1.5 text-xs sm:text-sm">
+              <Theater className="w-3.5 h-3.5" />
+              Roleplay
             </TabsTrigger>
           </TabsList>
 
@@ -203,11 +212,11 @@ const CompanionSettingsDialog = ({
             </p>
 
             {/* PhD Mode Toggle */}
-            <div className="p-4 rounded-lg bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-500/20">
+            <div className="p-4 rounded-lg bg-gradient-to-r from-accent/10 to-primary/10 border border-accent/20">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-full bg-amber-500/20">
-                    <GraduationCap className="w-5 h-5 text-amber-500" />
+                  <div className="p-2 rounded-full bg-accent/20">
+                    <GraduationCap className="w-5 h-5 text-accent" />
                   </div>
                   <div>
                     <Label htmlFor="phd-mode" className="text-sm font-medium cursor-pointer">
@@ -247,6 +256,54 @@ const CompanionSettingsDialog = ({
                 Reset Personality
               </Button>
             </div>
+          </TabsContent>
+
+          <TabsContent value="roleplay" className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Choose how {settings.name} acts around you~
+            </p>
+
+            <div className="grid grid-cols-2 gap-2">
+              {ROLEPLAY_OPTIONS.map((option) => (
+                <button
+                  key={option.id}
+                  onClick={() => {
+                    onRoleChange(option.id);
+                    toast.success(`${settings.name} is now your ${option.label}! ${option.emoji}`);
+                  }}
+                  className={`flex flex-col items-start gap-1 p-3 rounded-xl border text-left transition-all duration-200 ${
+                    activeRole === option.id
+                      ? "bg-primary/15 border-primary/40 shadow-sm shadow-primary/10"
+                      : "bg-card/50 border-border/30 hover:bg-card/80 hover:border-border/50"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">{option.emoji}</span>
+                    <span className={`text-sm font-medium ${activeRole === option.id ? "text-primary" : "text-foreground"}`}>
+                      {option.label}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground leading-tight">
+                    {option.description}
+                  </p>
+                </button>
+              ))}
+            </div>
+
+            {activeRole !== "default" && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  onRoleChange("default");
+                  toast.info("Back to default mode~");
+                }}
+                className="w-full border-border/30"
+              >
+                <RotateCcw className="w-3.5 h-3.5 mr-2" />
+                Reset to Default
+              </Button>
+            )}
           </TabsContent>
         </Tabs>
       </DialogContent>
