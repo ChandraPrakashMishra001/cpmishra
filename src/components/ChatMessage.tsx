@@ -166,7 +166,7 @@ const ChatMessage = ({ content, isUser, timestamp, imageUrl, reactions = default
       className={`flex ${isUser ? "justify-end" : "justify-start"} animate-slide-in group`}
     >
       <div
-        className={`max-w-[85%] sm:max-w-[75%] px-3.5 py-2.5 sm:px-5 sm:py-3.5 rounded-2xl relative transition-all duration-200 ${
+        className={`max-w-[88%] sm:max-w-[75%] px-3 py-2 sm:px-5 sm:py-3.5 rounded-2xl relative transition-all duration-200 ${
           isUser
             ? "bg-gradient-to-br from-lia-pink/25 to-lia-purple/15 border border-lia-pink/25 rounded-br-sm shadow-md shadow-lia-pink/10"
             : isProblemSolution 
@@ -216,7 +216,7 @@ const ChatMessage = ({ content, isUser, timestamp, imageUrl, reactions = default
             </Button>
           </div>
         )}
-        <div className={`text-foreground leading-relaxed text-sm sm:text-base ${isProblemSolution ? 'whitespace-pre-wrap' : ''}`}>
+        <div className={`text-foreground leading-relaxed text-[13px] sm:text-base ${isProblemSolution ? 'whitespace-pre-wrap' : ''}`}>
           {formatContent(content)}
         </div>
         <div className="flex items-center justify-between gap-2 mt-1">

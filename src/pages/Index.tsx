@@ -79,38 +79,37 @@ const Index = () => {
 
       <div className="min-h-[100dvh] flex flex-col relative z-10">
         {/* Mobile: Sticky header with compact avatar */}
-        <div className="lg:hidden sticky top-0 z-30 bg-card/90 backdrop-blur-md border-b border-border/50 shadow-sm p-2 sm:p-3">
-          <div className="flex items-center gap-4">
+        <div className="lg:hidden sticky top-0 z-30 bg-card/90 backdrop-blur-md border-b border-border/50 shadow-sm px-2.5 py-1.5">
+          <div className="flex items-center gap-2">
             <LiaAvatar 
               emotion={currentEmotion} 
               isTalking={isTalking} 
               customAvatarUrl={settings.avatarUrl}
               compact
             />
-            <div className="flex-1">
-              <h1 className="text-lg sm:text-xl font-display font-bold text-gradient">
+            <div className="flex-1 min-w-0">
+              <h1 className="text-base font-display font-bold text-gradient truncate">
                 {settings.name}
               </h1>
-              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+              <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
                 <span>Online</span>
                 {memory.userName && (
-                  <span className="text-primary font-medium">• {memory.userName}</span>
+                  <span className="text-primary font-medium truncate">• {memory.userName}</span>
                 )}
               </div>
             </div>
-            <div className="flex gap-2">
-              {/* Day/Night Toggle */}
+            <div className="flex items-center gap-1">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={toggleTheme}
-                className="bg-card/80 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm transition-all duration-300"
+                className="w-8 h-8 bg-card/80 border border-border/50 hover:bg-primary/20"
               >
                 {isNight ? (
-                  <Sun className="w-4 h-4 text-yellow-500" />
+                  <Sun className="w-3.5 h-3.5 text-yellow-500" />
                 ) : (
-                  <Moon className="w-4 h-4 text-primary" />
+                  <Moon className="w-3.5 h-3.5 text-primary" />
                 )}
               </Button>
               <NotificationsDialog companionName={settings.name} />
@@ -122,9 +121,9 @@ const Index = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="bg-card/80 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm"
+                    className="w-8 h-8 bg-card/80 border border-border/50 hover:bg-primary/20"
                   >
-                    <Brain className="w-4 h-4 text-primary" />
+                    <Brain className="w-3.5 h-3.5 text-primary" />
                   </Button>
                 }
               />
@@ -133,9 +132,9 @@ const Index = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="bg-card/80 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm"
+                    className="w-8 h-8 bg-card/80 border border-border/50 hover:bg-primary/20"
                   >
-                    <Target className="w-4 h-4 text-primary" />
+                    <Target className="w-3.5 h-3.5 text-primary" />
                   </Button>
                 }
               />
@@ -144,12 +143,12 @@ const Index = () => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="bg-card/40 backdrop-blur-sm border border-border/30 hover:bg-destructive/20"
+                    className="w-8 h-8 bg-card/40 border border-border/30 hover:bg-destructive/20"
                   >
-                    <Trash2 className="w-4 h-4" />
+                    <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent className="bg-card border-border/50">
+                <AlertDialogContent className="bg-card border-border/50 mx-4 max-w-[calc(100vw-2rem)]">
                   <AlertDialogHeader>
                     <AlertDialogTitle>Clear Memory?</AlertDialogTitle>
                     <AlertDialogDescription>
@@ -313,7 +312,7 @@ const Index = () => {
           </div>
 
           {/* Chat Section */}
-          <div className="flex-1 lg:w-1/2 flex flex-col bg-card/40 backdrop-blur-sm border-l border-border/50 shadow-lg min-h-[calc(100dvh-60px)] sm:min-h-[calc(100dvh-80px)] lg:min-h-screen">
+          <div className="flex-1 lg:w-1/2 flex flex-col bg-card/40 backdrop-blur-sm border-l border-border/50 shadow-lg min-h-[calc(100dvh-48px)] sm:min-h-[calc(100dvh-56px)] lg:min-h-screen">
             <ChatInterface
               messages={messages}
               onSendMessage={sendMessage}
