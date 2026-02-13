@@ -103,7 +103,7 @@ const ChatInput = ({ onSend, disabled, companionName = "Lia" }: ChatInputProps) 
         </div>
       )}
       
-      <div className="flex items-end gap-2 sm:gap-3 p-2.5 sm:p-4 bg-card/50 backdrop-blur-md rounded-2xl border border-border/30 shadow-sm transition-all duration-300 focus-within:border-primary/40 focus-within:shadow-md focus-within:shadow-primary/5">
+      <div className="flex items-end gap-1.5 sm:gap-3 p-2 sm:p-4 bg-card/50 backdrop-blur-md rounded-2xl border border-border/30 shadow-sm transition-all duration-300 focus-within:border-primary/40 focus-within:shadow-md focus-within:shadow-primary/5">
         <input
           type="file"
           ref={fileInputRef}
@@ -115,7 +115,7 @@ const ChatInput = ({ onSend, disabled, companionName = "Lia" }: ChatInputProps) 
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={disabled}
-          className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-lia-purple/20 hover:bg-lia-purple/40 active:bg-lia-purple/50 disabled:opacity-40 transition-all duration-300 touch-manipulation shrink-0"
+          className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-lia-purple/20 hover:bg-lia-purple/40 active:bg-lia-purple/50 disabled:opacity-40 transition-all duration-300 touch-manipulation shrink-0"
           title="Upload homework or share an image"
         >
           <ImagePlus className="w-4 h-4 sm:w-5 sm:h-5 text-lia-purple" />
@@ -151,7 +151,7 @@ const ChatInput = ({ onSend, disabled, companionName = "Lia" }: ChatInputProps) 
         <button
           onClick={handleSend}
           disabled={(!message.trim() && !imagePreview) || disabled || isOverLimit}
-          className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-lia-pink hover:bg-lia-pink-glow active:scale-95 disabled:opacity-40 disabled:hover:bg-lia-pink transition-all duration-300 glow-pink touch-manipulation shrink-0"
+          className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-lia-pink hover:bg-lia-pink-glow active:scale-95 disabled:opacity-40 disabled:hover:bg-lia-pink transition-all duration-300 glow-pink touch-manipulation shrink-0"
         >
           {disabled ? (
             <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-primary-foreground animate-pulse" />
