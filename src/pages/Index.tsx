@@ -15,6 +15,7 @@ import { usePersonalitySettings } from "@/hooks/usePersonalitySettings";
 import { usePhdMode } from "@/hooks/usePhdMode";
 import { useGoals } from "@/hooks/useGoals";
 import { useTheme } from "@/hooks/useTheme";
+import { useRoleplay } from "@/hooks/useRoleplay";
 import liaAvatar from "@/assets/lia-avatar.png";
 import { Trash2, Target, Sun, Moon, Brain } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -41,8 +42,10 @@ const Index = () => {
   const { isEnabled: phdModeEnabled, toggle: togglePhdMode } = usePhdMode();
   const { getGoalsSummary } = useGoals();
   const { theme, toggleTheme, isNight } = useTheme();
+  const { activeRole, setActiveRole, getRoleplayPrompt } = useRoleplay();
   const goalsSummary = getGoalsSummary();
   const personalitySummary = getPersonalitySummary();
+  const roleplayPrompt = getRoleplayPrompt(activeRole, settings.name);
   const { 
     messages, 
     sendMessage, 
@@ -56,7 +59,7 @@ const Index = () => {
     quickReplies,
     showCelebration,
     setShowCelebration,
-  } = useLiaChat(settings.name, goalsSummary, personalitySummary, phdModeEnabled);
+  } = useLiaChat(settings.name, goalsSummary, personalitySummary, phdModeEnabled, roleplayPrompt);
 
   return (
     <HelmetProvider>
@@ -174,6 +177,8 @@ const Index = () => {
                 onResetPersonality={resetPersonality}
                 phdModeEnabled={phdModeEnabled}
                 onTogglePhdMode={togglePhdMode}
+                activeRole={activeRole}
+                onRoleChange={setActiveRole}
               />
             </div>
           </div>
@@ -259,6 +264,8 @@ const Index = () => {
                 onResetPersonality={resetPersonality}
                 phdModeEnabled={phdModeEnabled}
                 onTogglePhdMode={togglePhdMode}
+                activeRole={activeRole}
+                onRoleChange={setActiveRole}
               />
             </div>
 

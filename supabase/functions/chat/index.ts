@@ -153,7 +153,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { messages, companionName, memory, goals, personality, phdMode } = body;
+    const { messages, companionName, memory, goals, personality, phdMode, roleplay } = body;
 
     // Validate input
     if (!validateMessages(messages)) {
@@ -664,6 +664,7 @@ When appropriate:
 - Show you value the relationship: "I look forward to our chats, you know?"
 ${deepThinkingPrompt}
 ${personalityContext}
+${typeof roleplay === 'string' && roleplay.trim() ? roleplay : ''}
 ${memoryContext}
 ${goalsContext}
 
