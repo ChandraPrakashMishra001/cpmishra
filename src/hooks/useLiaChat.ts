@@ -448,14 +448,19 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
 
     // Handle shared image analysis
     if (sharedImageUrl) {
-      // Detect if this is a homework request
       const lowerContent = content.toLowerCase();
-      const isHomework = ["solve", "help", "answer", "explain", "calculate", "what is", "how to", 
+      const isHomework = ["solve", "help", "answer", "calculate", "what is", "how to", 
         "homework", "problem", "question", "exercise", "math", "physics", "chemistry", "step"].some(kw => lowerContent.includes(kw));
+      const isRead = ["read", "what does it say", "what's written", "extract text", "ocr", "translate", "text in", "transcribe", "what is written"].some(kw => lowerContent.includes(kw));
+      const isSummarize = ["summarize", "summary", "summarise", "tldr", "key points", "main points", "overview", "break down", "explain this"].some(kw => lowerContent.includes(kw));
       
       const thinkingMessage = isHomework 
         ? "Let me analyze this problem... 🧠✨" 
-        : "Let me take a look~ 👀✨";
+        : isRead
+          ? "Let me read that for you... 📖✨"
+          : isSummarize
+            ? "Let me summarize this... 📋✨"
+            : "Let me take a look~ 👀✨";
       
       try {
         setMessages(prev => [...prev, {
