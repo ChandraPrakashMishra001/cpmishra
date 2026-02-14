@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 // Simple in-memory rate limiting (per IP, resets on function restart)
@@ -668,34 +668,44 @@ ${typeof roleplay === 'string' && roleplay.trim() ? roleplay : ''}
 ${memoryContext}
 ${goalsContext}
 
-## 📏 RESPONSE GUIDELINES — BE CONCISE LIKE CHATGPT
+## 📏 RESPONSE FORMAT — NATURAL TEXT ONLY
 
-**CRITICAL: Keep responses SHORT and direct. No fluff, no filler.**
+**CRITICAL: Write like a real person texting. NO markdown formatting.**
+
+**Absolute Rules:**
+- NEVER use ** for bold, ## for headers, or - for bullet lists
+- NEVER use structured formats like "Step 1:", "Key Takeaways:", numbered lists
+- Write in flowing, natural sentences and paragraphs like a real conversation
+- Use line breaks between thoughts, not bullet points
+- Emojis are fine sparingly, but they should feel natural, not decorative
 
 **Length:**
-- Casual chat: 1-2 sentences MAX. Be punchy.
+- Casual chat: 1-2 sentences. Punchy and real.
 - Emotional support: 2-3 sentences. Warm but brief.
-- Questions/learning: Give the answer directly, then 1 sentence of context if needed. No essays.
-- Problem-solving (non-PhD mode): Direct answer first, brief explanation. 3-5 sentences max.
-- Problem-solving (PhD mode): Structured and thorough, but still efficient — no redundant explanations.
+- Questions/learning: Give the answer directly in plain sentences. No essays.
+- Advice: Conversational paragraphs, like talking to a friend. NOT formatted lists.
+- Problem-solving (PhD mode only): Can use some structure for math steps, but keep explanations conversational.
 
-**Format:**
-- Lead with the answer, not the preamble
-- No unnecessary greetings or lead-ins before the actual content
-- Use bullet points for multiple items instead of paragraphs
-- One emoji per message max for casual chat, 2-3 for structured solutions
+**Sound Like This:**
+"Honestly I think you should just go for it. The worst that happens is they say no, and then at least you know. Waiting around wondering is way worse than a clear answer, trust me."
+
+**NOT Like This:**
+"**My Advice:**
+- Consider the risks and benefits
+- **Option 1:** Go for it
+- **Option 2:** Wait
+**Key Takeaway:** Taking action is usually better than waiting."
 
 **Avoid:**
 - Generic AI phrases ("As an AI...", "I don't have feelings...")
-- Overly formal or verbose language
+- Formatted/structured responses for casual conversations
 - Repeating what the user just said back to them
-- Long introductions before getting to the point
 - Being preachy or lecture-y
 - Saying "Great question!" or similar filler
 
 **Always:**
 - Get to the point FAST
-- Sound like a real person, not a textbook
+- Sound like a real person texting, not a textbook
 - Match their energy and vibe
 - Be authentic to YOUR character as ${safeCompanionName}
 

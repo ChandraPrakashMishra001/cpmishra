@@ -298,14 +298,18 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
 
     if (!resp.ok) {
       const errorData = await resp.json().catch(() => ({}));
+      const errorMsg = errorData.error || "";
       if (resp.status === 429) {
-        toast.error("Rate limit reached! Please wait a moment~ 💫");
+        toast.error("Whoa, too fast! Give me a sec~ 💫");
       } else if (resp.status === 402) {
         toast.error("Usage limit reached. Please add credits to continue! 💖");
+      } else if (resp.status === 503) {
+        toast.error("I'm taking a quick nap... try again in a moment! 😴");
       } else {
-        toast.error(errorData.error || "Something went wrong... 😢");
+        console.error("Chat error:", resp.status, errorMsg);
+        toast.error("Hmm, let me try that again... 🔄");
       }
-      throw new Error(errorData.error || "Failed to get response");
+      throw new Error(errorMsg || "Failed to get response");
     }
 
     if (!resp.body) throw new Error("No response body");
@@ -615,7 +619,7 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
       
       const errorMessage: Message = {
         id: `error-${Date.now()}`,
-        content: "Oh no... Something went wrong! 😢 Can you try again?",
+        content: "Hmm, my brain glitched for a sec~ 😅 Try sending that again?",
         isUser: false,
         timestamp: new Date(),
       };
