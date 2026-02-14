@@ -1,5 +1,5 @@
 import { useState, KeyboardEvent, useRef } from "react";
-import { Send, Sparkles, ImagePlus, X } from "lucide-react";
+import { Send, Sparkles, ImagePlus, X, Camera } from "lucide-react";
 import { toast } from "sonner";
 
 // Constants for validation
@@ -17,6 +17,7 @@ const ChatInput = ({ onSend, disabled, companionName = "Lia" }: ChatInputProps) 
   const [message, setMessage] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const cameraInputRef = useRef<HTMLInputElement>(null);
 
   const handleSend = () => {
     const trimmedMessage = message.trim();
@@ -111,12 +112,29 @@ const ChatInput = ({ onSend, disabled, companionName = "Lia" }: ChatInputProps) 
           onChange={handleImageSelect}
           className="hidden"
         />
+        <input
+          type="file"
+          ref={cameraInputRef}
+          accept="image/*"
+          capture="environment"
+          onChange={handleImageSelect}
+          className="hidden"
+        />
         
+        <button
+          onClick={() => cameraInputRef.current?.click()}
+          disabled={disabled}
+          className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-lia-cyan/20 hover:bg-lia-cyan/40 active:bg-lia-cyan/50 disabled:opacity-40 transition-all duration-300 touch-manipulation shrink-0"
+          title="Take a photo"
+        >
+          <Camera className="w-4 h-4 sm:w-5 sm:h-5 text-lia-cyan" />
+        </button>
+
         <button
           onClick={() => fileInputRef.current?.click()}
           disabled={disabled}
           className="flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-lia-purple/20 hover:bg-lia-purple/40 active:bg-lia-purple/50 disabled:opacity-40 transition-all duration-300 touch-manipulation shrink-0"
-          title="Upload homework or share an image"
+          title="Upload an image"
         >
           <ImagePlus className="w-4 h-4 sm:w-5 sm:h-5 text-lia-purple" />
         </button>
