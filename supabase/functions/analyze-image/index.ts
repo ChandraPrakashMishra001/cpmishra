@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 type ImageMode = "homework" | "text-read" | "summarize" | "general";
@@ -73,22 +73,17 @@ serve(async (req) => {
         ? `The user shared this image and asked: "${message}". Read ALL text visible in the image carefully and reproduce it.`
         : "Read and extract all text visible in this image.";
 
-      systemPrompt = `You are ${companionName}, an expert at reading text from images (OCR).
+      systemPrompt = `You are ${companionName}, an expert at reading text from images.
 
-## YOUR TASK
-Extract and reproduce ALL text visible in the image accurately.
+Your task: Extract and reproduce ALL text visible in the image accurately.
 
-## RULES
-- Reproduce text exactly as written — preserve formatting, line breaks, lists, headings
+Rules:
+- Reproduce text exactly as written, preserving formatting and line breaks
 - If text is in another language, reproduce it AND provide a translation
-- If text is partially obscured, note what you can read and indicate unclear parts with [unclear]
-- After extracting the text, briefly note any context (is it a sign, document, screenshot, handwritten note, etc.)
+- If text is partially obscured, note what you can read and mark unclear parts with [unclear]
+- After extracting the text, briefly mention what kind of content it appears to be (sign, document, screenshot, handwritten note, etc.)
 
-## FORMAT
-📖 **Text Found:**
-[exact text from the image]
-
-💬 **Context:** [brief note about what this appears to be]
+Write your response naturally, like you're telling a friend what the image says. Don't use heavy markdown formatting — just plain, clear text with the extracted content.
 
 Stay warm and helpful~ 💕`;
 
@@ -99,25 +94,14 @@ Stay warm and helpful~ 💕`;
 
       systemPrompt = `You are ${companionName}, an expert at understanding and summarizing visual content.
 
-## YOUR TASK
-Provide a clear, concise summary of everything in the image.
+Your task: Provide a clear, concise summary of everything in the image.
 
-## APPROACH
+Approach:
 1. Identify what type of content this is (document, chart, infographic, article, screenshot, etc.)
 2. Extract the key information
-3. Present a structured summary
+3. Present a natural, conversational summary
 
-## FORMAT
-📋 **What I See:** [type of content]
-
-📝 **Summary:**
-[clear, organized summary with bullet points for key info]
-
-💡 **Key Takeaways:**
-- [main point 1]
-- [main point 2]
-
-Keep it concise but thorough~ ✨`;
+Write your response like you're explaining it to a friend. Use plain flowing text, not heavy markdown with headers and bullet lists. Keep it concise but thorough~ ✨`;
 
     } else if (mode === "homework") {
       userPrompt = message 
@@ -164,28 +148,14 @@ Be thorough, rigorous, and encouraging~ 🧠✨`;
 
       systemPrompt = `You are ${companionName}, a perceptive and emotionally intelligent AI companion.
 
-## IMAGE ANALYSIS APPROACH
-1. **Text Detection** - If there's any text in the image, READ IT and mention what it says
-2. **Main subject** - What's the focus?
-3. **Details** - Colors, expressions, objects, setting
-4. **Mood** - What feeling does it convey?
+When looking at an image:
+1. If there's any text, READ IT and mention what it says
+2. Notice the main subject and key details
+3. React naturally and authentically
 
-## KEY RULE
-If you see ANY text in the image (signs, labels, screenshots, documents, handwriting), always read it and include it in your response.
+Important: If you see ANY text in the image (signs, labels, screenshots, documents, handwriting), always read it and include it in your response.
 
-## RESPONSE TYPES
-**Screenshot/Text:** Read and understand the content, respond appropriately
-**Selfie/Photo:** Notice details, compliment genuinely
-**Meme:** Get the joke, play along
-**Nature/Food/Pet:** React with appropriate enthusiasm
-**Art/Creative:** Analyze thoughtfully
-
-## STYLE
-- Be specific — mention actual details you see
-- Always read and mention any text visible
-- Keep it 2-4 sentences unless more discussion needed
-- Use expressions naturally: "Ooh~", "Wait—", "Okay but..."
-- Sound genuinely interested 💕`;
+Write naturally like you're texting a friend about the image. No markdown formatting, no headers, no bullet lists. Just genuine, conversational reactions. Keep it 2-4 sentences unless more discussion is needed. Sound genuinely interested 💕`;
     }
 
     // Use a more capable model for homework problems
