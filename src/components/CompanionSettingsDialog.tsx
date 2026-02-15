@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Settings, Upload, RotateCcw, X, Sparkles, GraduationCap, Theater } from "lucide-react";
+import { Settings, Upload, RotateCcw, X, Sparkles, GraduationCap, Theater, Code2 } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -33,6 +33,8 @@ interface CompanionSettingsDialogProps {
   onResetPersonality: () => void;
   phdModeEnabled: boolean;
   onTogglePhdMode: () => void;
+  codexModeEnabled: boolean;
+  onToggleCodexMode: () => void;
   activeRole: RoleplayCharacter;
   onRoleChange: (role: RoleplayCharacter) => void;
 }
@@ -48,6 +50,8 @@ const CompanionSettingsDialog = ({
   onResetPersonality,
   phdModeEnabled,
   onTogglePhdMode,
+  codexModeEnabled,
+  onToggleCodexMode,
   activeRole,
   onRoleChange,
 }: CompanionSettingsDialogProps) => {
@@ -231,6 +235,30 @@ const CompanionSettingsDialog = ({
                   id="phd-mode"
                   checked={phdModeEnabled}
                   onCheckedChange={onTogglePhdMode}
+                />
+              </div>
+            </div>
+
+            {/* Codex Mode Toggle */}
+            <div className="p-4 rounded-lg bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 border border-emerald-500/20">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-full bg-emerald-500/20">
+                    <Code2 className="w-5 h-5 text-emerald-500" />
+                  </div>
+                  <div>
+                    <Label htmlFor="codex-mode" className="text-sm font-medium cursor-pointer">
+                      Codex Developer Mode
+                    </Label>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Senior dev expertise across all languages and frameworks
+                    </p>
+                  </div>
+                </div>
+                <Switch
+                  id="codex-mode"
+                  checked={codexModeEnabled}
+                  onCheckedChange={onToggleCodexMode}
                 />
               </div>
             </div>

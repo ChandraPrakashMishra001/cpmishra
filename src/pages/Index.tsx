@@ -13,6 +13,7 @@ import { useLiaChat } from "@/hooks/useLiaChat";
 import { useCompanionSettings } from "@/hooks/useCompanionSettings";
 import { usePersonalitySettings } from "@/hooks/usePersonalitySettings";
 import { usePhdMode } from "@/hooks/usePhdMode";
+import { useCodexMode } from "@/hooks/useCodexMode";
 import { useGoals } from "@/hooks/useGoals";
 import { useTheme } from "@/hooks/useTheme";
 import { useRoleplay } from "@/hooks/useRoleplay";
@@ -40,6 +41,7 @@ const Index = () => {
     getPersonalitySummary 
   } = usePersonalitySettings();
   const { isEnabled: phdModeEnabled, toggle: togglePhdMode } = usePhdMode();
+  const { isEnabled: codexModeEnabled, toggle: toggleCodexMode } = useCodexMode();
   const { getGoalsSummary } = useGoals();
   const { theme, toggleTheme, isNight } = useTheme();
   const { activeRole, setActiveRole, getRoleplayPrompt } = useRoleplay();
@@ -59,7 +61,7 @@ const Index = () => {
     quickReplies,
     showCelebration,
     setShowCelebration,
-  } = useLiaChat(settings.name, goalsSummary, personalitySummary, phdModeEnabled, roleplayPrompt);
+  } = useLiaChat(settings.name, goalsSummary, personalitySummary, phdModeEnabled, roleplayPrompt, codexModeEnabled);
 
   return (
     <HelmetProvider>
@@ -177,6 +179,8 @@ const Index = () => {
                 onResetPersonality={resetPersonality}
                 phdModeEnabled={phdModeEnabled}
                 onTogglePhdMode={togglePhdMode}
+                codexModeEnabled={codexModeEnabled}
+                onToggleCodexMode={toggleCodexMode}
                 activeRole={activeRole}
                 onRoleChange={setActiveRole}
               />
@@ -264,6 +268,8 @@ const Index = () => {
                 onResetPersonality={resetPersonality}
                 phdModeEnabled={phdModeEnabled}
                 onTogglePhdMode={togglePhdMode}
+                codexModeEnabled={codexModeEnabled}
+                onToggleCodexMode={toggleCodexMode}
                 activeRole={activeRole}
                 onRoleChange={setActiveRole}
               />
