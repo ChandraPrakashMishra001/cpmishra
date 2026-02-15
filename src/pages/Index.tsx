@@ -18,7 +18,7 @@ import { useGoals } from "@/hooks/useGoals";
 import { useTheme } from "@/hooks/useTheme";
 import { useRoleplay } from "@/hooks/useRoleplay";
 import liaAvatar from "@/assets/lia-avatar.png";
-import { Trash2, Target, Sun, Moon, Brain } from "lucide-react";
+import { Trash2, Target, Sun, Moon, Brain, Code2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -99,6 +99,12 @@ const Index = () => {
               <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                 <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
                 <span>Online</span>
+                {codexModeEnabled && (
+                  <span className="flex items-center gap-0.5 bg-emerald-500/15 text-emerald-500 px-1.5 py-0.5 rounded-full font-semibold">
+                    <Code2 className="w-2.5 h-2.5" />
+                    Codex
+                  </span>
+                )}
                 {memory.userName && (
                   <span className="text-primary font-medium truncate">• {memory.userName}</span>
                 )}
@@ -311,6 +317,12 @@ const Index = () => {
               <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
               <span>Online</span>
               <MoodIndicator mood={currentEmotion} />
+              {codexModeEnabled && (
+                <span className="flex items-center gap-1 bg-emerald-500/15 text-emerald-500 px-2 py-0.5 rounded-full text-xs font-semibold">
+                  <Code2 className="w-3 h-3" />
+                  Codex
+                </span>
+              )}
             </div>
 
             {/* Memory stats */}
