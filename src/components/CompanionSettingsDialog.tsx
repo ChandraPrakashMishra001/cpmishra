@@ -98,7 +98,7 @@ const CompanionSettingsDialog = ({
         <Button
           variant="ghost"
           size="icon"
-          className="absolute top-4 right-4 z-20 bg-card/40 backdrop-blur-sm border border-border/30 hover:bg-card/60"
+          className="absolute top-4 left-4 z-20 bg-card/40 backdrop-blur-sm border border-border/30 hover:bg-card/60"
         >
           <Settings className="w-5 h-5" />
         </Button>
