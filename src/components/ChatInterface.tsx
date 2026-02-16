@@ -1,7 +1,6 @@
-import { useRef, useEffect, useState, useCallback } from "react";
+import { useRef, useEffect, useCallback } from "react";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
-import VoiceInterface from "./VoiceInterface";
 import QuickReplies from "./QuickReplies";
 import MoodIndicator from "./MoodIndicator";
 import { Emotion } from "./LiaAvatar";
@@ -26,7 +25,6 @@ interface ChatInterfaceProps {
   onBookmark?: (messageId: string) => void;
   isTyping: boolean;
   companionName?: string;
-  onVoiceSpeaking?: (speaking: boolean) => void;
   quickReplies?: string[];
   currentMood?: Emotion;
 }
@@ -38,26 +36,15 @@ const ChatInterface = ({
   onBookmark,
   isTyping, 
   companionName = "Lia", 
-  onVoiceSpeaking,
   quickReplies = [],
   currentMood = "happy"
 }: ChatInterfaceProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [isVoiceSpeaking, setIsVoiceSpeaking] = useState(false);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
-  const handleVoiceSpeaking = useCallback((speaking: boolean) => {
-    setIsVoiceSpeaking(speaking);
-    onVoiceSpeaking?.(speaking);
-  }, [onVoiceSpeaking]);
-
-  const handleVoiceTranscript = useCallback((text: string, isUser: boolean) => {
-    // Voice transcripts are added to the chat
-    onSendMessage(isUser ? text : `[Voice] ${text}`);
-  }, [onSendMessage]);
-
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
+  }, []);
 
   useEffect(() => {
     scrollToBottom();
@@ -70,7 +57,7 @@ const ChatInterface = ({
   return (
     <div className="flex flex-col h-full">
       {/* Messages area */}
-      <div className="flex-1 overflow-y-auto px-2.5 sm:px-6 py-3 sm:py-8 space-y-3 sm:space-y-5 overscroll-contain scroll-smooth">
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-2.5 sm:px-6 py-3 sm:py-8 space-y-3 sm:space-y-5 overscroll-contain scroll-smooth" style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}>
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center px-6">
             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-primary/20 to-lia-pink/20 flex items-center justify-center mb-4 shadow-lg shadow-primary/10">
@@ -124,16 +111,7 @@ const ChatInterface = ({
 
       {/* Input area */}
       <div className="p-2 sm:p-4 border-t border-border/20 bg-gradient-to-t from-background/80 to-background/40 backdrop-blur-md safe-area-inset-bottom">
-        <div className="flex items-center gap-1 sm:gap-2">
-          <div className="flex-1 min-w-0">
-            <ChatInput onSend={onSendMessage} disabled={isTyping} companionName={companionName} />
-          </div>
-          <VoiceInterface 
-            onSpeakingChange={handleVoiceSpeaking}
-            onTranscript={handleVoiceTranscript}
-            companionName={companionName}
-          />
-        </div>
+        <ChatInput onSend={onSendMessage} disabled={isTyping} companionName={companionName} />
       </div>
     </div>
   );
