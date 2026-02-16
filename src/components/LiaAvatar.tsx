@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import liaAvatar from "@/assets/lia-avatar.png";
+import liaAvatar from "@/assets/amanai-avatar.png";
 
 export type Emotion = 
   | "neutral" 
