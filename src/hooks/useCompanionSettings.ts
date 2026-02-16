@@ -6,7 +6,7 @@ export interface CompanionSettings {
 }
 
 const DEFAULT_SETTINGS: CompanionSettings = {
-  name: "Lia",
+  name: "Amanai",
   avatarUrl: null, // null means use default
 };
 
@@ -21,7 +21,7 @@ export const useCompanionSettings = () => {
   }, [settings]);
 
   const updateName = (name: string) => {
-    setSettings((prev) => ({ ...prev, name: name.trim() || "Lia" }));
+    setSettings((prev) => ({ ...prev, name: name.trim() || "Amanai" }));
   };
 
   const updateAvatar = (avatarUrl: string | null) => {
