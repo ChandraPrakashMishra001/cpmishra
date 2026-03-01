@@ -1,5 +1,5 @@
-import { useState, useRef } from "react";
-import { Settings, Upload, RotateCcw, X, Sparkles, GraduationCap, Theater, Code2 } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Settings, Upload, RotateCcw, X, Sparkles, GraduationCap, Theater, Code2, Download } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -58,6 +58,32 @@ const CompanionSettingsDialog = ({
   const [name, setName] = useState(settings.name);
   const [open, setOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [isAppInstalled, setIsAppInstalled] = useState(false);
+
+  useEffect(() => {
+    if (window.matchMedia("(display-mode: standalone)").matches) {
+      setIsAppInstalled(true);
+    }
+    const handler = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener("beforeinstallprompt", handler);
+    return () => window.removeEventListener("beforeinstallprompt", handler);
+  }, []);
+
+  const handleInstallApp = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === "accepted") {
+        setIsAppInstalled(true);
+        toast.success("App installed successfully! 🎉");
+      }
+      setDeferredPrompt(null);
+    }
+  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -332,6 +358,32 @@ const CompanionSettingsDialog = ({
                 Reset to Default
               </Button>
             )}
+
+            {/* Install App Section */}
+            <div className="pt-4 mt-4 border-t border-border/30">
+              {isAppInstalled ? (
+                <div className="flex items-center gap-2 text-sm text-muted-foreground p-3 rounded-lg bg-muted/30">
+                  <Download className="w-4 h-4 text-primary" />
+                  <span>App is already installed ✅</span>
+                </div>
+              ) : deferredPrompt ? (
+                <Button
+                  onClick={handleInstallApp}
+                  className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Install as App
+                </Button>
+              ) : (
+                <div className="text-xs text-muted-foreground p-3 rounded-lg bg-muted/30 space-y-1">
+                  <p className="font-medium flex items-center gap-1.5">
+                    <Download className="w-3.5 h-3.5" />
+                    Install as App
+                  </p>
+                  <p>Use your browser menu → "Install app" or "Add to Home Screen"</p>
+                </div>
+              )}
+            </div>
           </TabsContent>
         </Tabs>
       </DialogContent>
