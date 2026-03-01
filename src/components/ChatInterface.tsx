@@ -59,16 +59,32 @@ const ChatInterface = ({
       {/* Messages area */}
       <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-2.5 sm:px-6 py-3 sm:py-8 space-y-3 sm:space-y-5 overscroll-contain scroll-smooth" style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}>
         {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full text-center px-6">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-primary/20 to-lia-pink/20 flex items-center justify-center mb-4 shadow-lg shadow-primary/10">
-              <span className="text-3xl sm:text-4xl">💬</span>
+          <div className="flex flex-col items-center justify-center h-full text-center px-6 animate-fade-in">
+            <div className="relative mb-6">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-primary/20 via-accent/15 to-primary/10 flex items-center justify-center shadow-lg shadow-primary/10 border border-primary/20">
+                <span className="text-4xl sm:text-5xl">💬</span>
+              </div>
+              <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center border border-accent/30">
+                <span className="text-xs">✨</span>
+              </div>
             </div>
-            <p className="text-foreground/80 text-lg sm:text-xl font-display font-semibold mb-1">
+            <p className="text-foreground/90 text-xl sm:text-2xl font-display font-bold mb-2">
               Hey there! ✨
             </p>
-            <p className="text-muted-foreground text-sm sm:text-base max-w-xs">
+            <p className="text-muted-foreground text-sm sm:text-base max-w-xs mb-4">
               I'm {companionName} — ask me anything, share a photo, or just chat~
             </p>
+            <div className="flex flex-wrap justify-center gap-2 max-w-xs">
+              {["Tell me a joke 😄", "How are you? 💕", "Help me study 📚"].map((hint) => (
+                <button
+                  key={hint}
+                  onClick={() => onSendMessage(hint)}
+                  className="px-3 py-1.5 text-xs rounded-full bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20 transition-colors font-medium"
+                >
+                  {hint}
+                </button>
+              ))}
+            </div>
           </div>
         )}
         

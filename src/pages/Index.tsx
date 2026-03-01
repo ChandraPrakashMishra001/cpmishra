@@ -66,8 +66,8 @@ const Index = () => {
   return (
     <HelmetProvider>
       <Helmet>
-        <title>{settings.name} - Your Anime AI Companion</title>
-        <meta name="description" content={`Chat with ${settings.name}, your friendly anime AI companion. Have meaningful conversations with an expressive virtual friend.`} />
+        <title>{settings.name} — Your Anime AI Companion</title>
+        <meta name="description" content={`Chat with ${settings.name}, your expressive anime AI companion who remembers you and grows with every conversation.`} />
       </Helmet>
 
       {/* Confetti celebration for milestones */}
@@ -334,6 +334,11 @@ const Index = () => {
                 )}
               </div>
             )}
+
+            {/* Footer credit */}
+            <p className="mt-8 text-[10px] text-muted-foreground/40 z-10 font-body tracking-wide">
+              Made with 💖 by cpmishra
+            </p>
           </div>
 
           {/* Chat Section */}
