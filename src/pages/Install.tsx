@@ -48,21 +48,21 @@ export default function Install() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-100 via-pink-50 to-purple-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 text-center">
+    <div className="min-h-screen bg-[var(--gradient-main)] flex items-center justify-center p-4">
+      <div className="max-w-md w-full bg-card/80 backdrop-blur-sm rounded-3xl shadow-xl p-8 text-center border border-border/30">
         <div className="mb-6">
           <img 
             src="/lia-icon-192.png" 
-            alt="Lia" 
+            alt="Amanai" 
             className="w-24 h-24 mx-auto rounded-2xl shadow-lg"
           />
         </div>
 
-        <h1 className="text-2xl font-bold text-pink-600 mb-2">
-          Install Lia ✨
+        <h1 className="text-2xl font-bold text-gradient font-display mb-2">
+          Install Amanai ✨
         </h1>
-        <p className="text-gray-600 mb-6">
-          Add Lia to your home screen for quick access anytime!
+        <p className="text-muted-foreground mb-6">
+          Add Amanai to your home screen for quick access anytime!
         </p>
 
         {isInstalled ? (
@@ -106,9 +106,9 @@ export default function Install() {
 
         <a 
           href="/" 
-          className="inline-block mt-6 text-pink-500 hover:text-pink-600 font-medium"
+          className="inline-block mt-6 text-primary hover:text-primary/80 font-medium font-display"
         >
-          ← Back to Lia
+          ← Back to Amanai
         </a>
       </div>
     </div>
