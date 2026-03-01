@@ -128,9 +128,9 @@ const CompanionSettingsDialog = ({
         <Button
           variant="ghost"
           size="icon"
-          className="absolute top-14 left-2 z-20 bg-card/40 backdrop-blur-sm border border-border/30 hover:bg-card/60"
+          className="w-7 h-7 lg:w-auto lg:h-auto lg:bg-card/40 lg:backdrop-blur-sm lg:border lg:border-border/30 hover:bg-card/60"
         >
-          <Settings className="w-5 h-5" />
+          <Settings className="w-3.5 h-3.5 lg:w-5 lg:h-5" />
         </Button>
       </DialogTrigger>
       <DialogContent className="bg-card border-border/50 backdrop-blur-xl max-w-md max-h-[85vh] overflow-y-auto">

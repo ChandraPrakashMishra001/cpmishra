@@ -57,7 +57,7 @@ const ChatInterface = ({
   return (
     <div className="flex flex-col h-full">
       {/* Messages area */}
-      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-2.5 sm:px-6 py-3 sm:py-8 space-y-3 sm:space-y-5 overscroll-contain scroll-smooth" style={{ scrollBehavior: 'smooth', WebkitOverflowScrolling: 'touch' }}>
+      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-2.5 sm:px-6 py-3 sm:py-8 space-y-3 sm:space-y-5 overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center px-6 animate-fade-in">
             <div className="relative mb-6">
