@@ -82,10 +82,10 @@ const Index = () => {
       {/* Magical floating sparkles */}
       <FloatingSparkles />
 
-      <div className="min-h-[100dvh] flex flex-col relative z-10">
+      <div className="h-[100dvh] flex flex-col relative z-10 overflow-hidden">
         {/* Mobile: Sticky header with compact avatar */}
-        <div className="lg:hidden sticky top-0 z-30 bg-card/90 backdrop-blur-md border-b border-border/50 shadow-sm px-2.5 py-1.5">
-          <div className="flex items-center gap-2">
+        <div className="lg:hidden sticky top-0 z-30 bg-card/90 backdrop-blur-md border-b border-border/50 shadow-sm px-3 py-2">
+          <div className="flex items-center gap-2.5">
             <LiaAvatar 
               emotion={currentEmotion} 
               isTalking={isTalking} 
@@ -93,29 +93,26 @@ const Index = () => {
               compact
             />
             <div className="flex-1 min-w-0">
-              <h1 className="text-base font-display font-bold text-gradient truncate">
+              <h1 className="text-sm font-display font-bold text-gradient truncate leading-tight">
                 {settings.name}
               </h1>
               <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                 <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
                 <span>Online</span>
                 {codexModeEnabled && (
-                  <span className="flex items-center gap-0.5 bg-emerald-500/15 text-emerald-500 px-1.5 py-0.5 rounded-full font-semibold">
+                  <span className="flex items-center gap-0.5 bg-emerald-500/15 text-emerald-500 px-1 py-0.5 rounded-full font-semibold text-[9px]">
                     <Code2 className="w-2.5 h-2.5" />
                     Codex
                   </span>
                 )}
-                {memory.userName && (
-                  <span className="text-primary font-medium truncate">• {memory.userName}</span>
-                )}
               </div>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0.5">
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={toggleTheme}
-                className="w-8 h-8 bg-card/80 border border-border/50 hover:bg-primary/20"
+                className="w-7 h-7 hover:bg-primary/20"
               >
                 {isNight ? (
                   <Sun className="w-3.5 h-3.5 text-yellow-500" />
@@ -129,33 +126,21 @@ const Index = () => {
                 companionName={settings.name}
                 onClearMemory={resetConversation}
                 trigger={
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="w-8 h-8 bg-card/80 border border-border/50 hover:bg-primary/20"
-                  >
+                  <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-primary/20">
                     <Brain className="w-3.5 h-3.5 text-primary" />
                   </Button>
                 }
               />
               <GoalsDialog
                 trigger={
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="w-8 h-8 bg-card/80 border border-border/50 hover:bg-primary/20"
-                  >
+                  <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-primary/20">
                     <Target className="w-3.5 h-3.5 text-primary" />
                   </Button>
                 }
               />
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="w-8 h-8 bg-card/40 border border-border/30 hover:bg-destructive/20"
-                  >
+                  <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-destructive/20">
                     <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 </AlertDialogTrigger>
@@ -195,7 +180,7 @@ const Index = () => {
         </div>
 
         {/* Desktop layout */}
-        <div className="flex-1 flex flex-col lg:flex-row">
+        <div className="flex-1 flex flex-col lg:flex-row min-h-0">
           {/* Avatar Section - Desktop only, sticky */}
           <div className="hidden lg:flex lg:w-1/2 lg:sticky lg:top-0 lg:h-screen flex-col items-center justify-center p-8 lg:p-12 relative">
             {/* Desktop toolbar - clean flex row */}
@@ -342,7 +327,7 @@ const Index = () => {
           </div>
 
           {/* Chat Section */}
-          <div className="flex-1 lg:w-1/2 flex flex-col bg-card/40 backdrop-blur-sm border-l border-border/50 shadow-lg min-h-[calc(100dvh-48px)] sm:min-h-[calc(100dvh-56px)] lg:min-h-screen">
+          <div className="flex-1 lg:w-1/2 flex flex-col bg-card/40 backdrop-blur-sm lg:border-l border-border/50 shadow-lg min-h-0 lg:h-screen">
             <ChatInterface
               messages={messages}
               onSendMessage={sendMessage}
