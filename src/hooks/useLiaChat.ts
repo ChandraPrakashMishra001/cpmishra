@@ -556,7 +556,7 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
     // Regular chat flow
     const recentMessages = messages
       .filter(msg => !msg.id.startsWith("welcome") && !msg.id.startsWith("error"))
-      .slice(-8);
+      .slice(-20);
     
     const conversationHistory = recentMessages.map(msg => ({
       role: msg.isUser ? "user" as const : "assistant" as const,
