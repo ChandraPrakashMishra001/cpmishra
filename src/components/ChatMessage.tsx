@@ -106,12 +106,15 @@ const renderMath = (text: string): React.ReactNode[] => {
 
 // Simple markdown-like formatting for problem solutions
 const formatContent = (text: string): React.ReactNode => {
+  // Detect if text actually contains math-like content
+  const hasMath = /\$[^$]+\$|\d+\s*[+\-*/^]\s*\d+|sqrt\(|\\frac|\\int|\^[0-9]/.test(text);
+  
   // Split by line and process each
   const lines = text.split('\n');
   
   return lines.map((line, i) => {
-    // Apply math formatting first (for simple symbols)
-    let processedLine = formatMathExpression(line);
+    // Only apply math formatting if the text actually contains math
+    let processedLine = hasMath ? formatMathExpression(line) : line;
     
     // Bold text: **text**
     let formattedLine: React.ReactNode = processedLine;
@@ -134,9 +137,11 @@ const formatContent = (text: string): React.ReactNode => {
       formattedLine = renderMath(processedLine);
     }
     
-    // Check if this is a math equation line (contains = or math operators)
-    const isMathLine = /[=×÷√²³⁴⁵⁶⁷⁸⁹⁰¹±∞π]/.test(processedLine) || 
-                       /^\s*[\d\s+\-×÷=()]+\s*$/.test(processedLine);
+    // Check if this is a math equation line (only if we detected math)
+    const isMathLine = hasMath && (
+      /[=×÷√²³⁴⁵⁶⁷⁸⁹⁰¹±∞π]/.test(processedLine) || 
+      /^\s*[\d\s+\-×÷=()]+\s*$/.test(processedLine)
+    );
     
     return (
       <span key={i} className={isMathLine ? 'font-mono tracking-wide' : ''}>
