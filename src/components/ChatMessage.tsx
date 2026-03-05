@@ -166,7 +166,7 @@ const ChatMessage = ({ content, isUser, timestamp, imageUrl, reactions = default
       className={`flex ${isUser ? "justify-end" : "justify-start"} animate-slide-in group`}
     >
       <div
-        className={`max-w-[88%] sm:max-w-[75%] px-3 py-2 sm:px-5 sm:py-3.5 rounded-2xl relative transition-all duration-200 ${
+        className={`max-w-[85%] sm:max-w-[75%] px-3 py-2.5 sm:px-4 sm:py-3 rounded-2xl relative transition-all duration-200 ${
           isUser
             ? "bg-gradient-to-br from-lia-pink/25 to-lia-purple/15 border border-lia-pink/25 rounded-br-sm shadow-md shadow-lia-pink/10"
             : isProblemSolution 
@@ -174,15 +174,15 @@ const ChatMessage = ({ content, isUser, timestamp, imageUrl, reactions = default
               : "bg-gradient-to-br from-card/80 to-card/60 border border-border/40 rounded-bl-sm backdrop-blur-sm shadow-md shadow-black/5"
         } ${isBookmarked ? "ring-2 ring-primary/30 ring-offset-1 ring-offset-background" : ""}`}
       >
-        {/* Bookmark button - appears on hover */}
+        {/* Bookmark button - appears on hover/long-press */}
         {onBookmark && (
-          <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+          <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 sm:transition-opacity sm:duration-200">
             <BookmarkButton isBookmarked={isBookmarked} onToggle={onBookmark} />
           </div>
         )}
 
         {imageUrl && (
-          <div className="mb-2.5 relative group/image">
+          <div className="mb-2 relative group/image">
             <img 
               src={imageUrl} 
               alt="Generated image" 
@@ -216,7 +216,7 @@ const ChatMessage = ({ content, isUser, timestamp, imageUrl, reactions = default
             </Button>
           </div>
         )}
-        <div className={`text-foreground leading-relaxed text-[13px] sm:text-base ${isProblemSolution ? 'whitespace-pre-wrap' : ''}`}>
+        <div className={`text-foreground leading-relaxed text-[14px] sm:text-base ${isProblemSolution ? 'whitespace-pre-wrap' : ''}`}>
           {formatContent(content)}
         </div>
         <div className="flex items-center justify-between gap-2 mt-1">
