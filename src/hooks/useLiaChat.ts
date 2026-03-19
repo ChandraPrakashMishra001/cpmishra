@@ -213,6 +213,10 @@ const detectTopics = (message: string): string[] => {
     school: ["school", "study", "homework", "exam", "class", "teacher"],
     relationships: ["friend", "family", "boyfriend", "girlfriend", "dating", "love"],
     health: ["health", "exercise", "gym", "workout", "diet", "doctor"],
+    plants: ["plant", "flower", "leaf", "garden", "bloom", "seed", "soil", "root", "tree", "herb", "shrub", "succulent", "fern", "moss", "houseplant", "indoor plant", "botanical", "botany"],
+    plantcare: ["watering", "fertilizer", "pruning", "repot", "propagation", "sunlight", "shade", "compost", "mulch", "drainage"],
+    plantdiseases: ["disease", "fungus", "blight", "wilt", "rot", "mildew", "pest", "aphid", "yellowing", "spots", "wilting", "symptom", "treatment", "cure"],
+    medicinal: ["medicinal", "herbal", "ayurvedic", "remedy", "healing", "tincture", "essential oil", "phytochemical"],
   };
 
   const topics: string[] = [];
