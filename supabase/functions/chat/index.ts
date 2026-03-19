@@ -111,7 +111,20 @@ function requiresDeepThinking(message: string): boolean {
     "economics", "finance", "accounting", "logic", "philosophy", "history",
     "geography", "literature", "grammar", "vocabulary", "language",
     "python", "javascript", "java", "c++", "sql", "html", "css",
-    "number", "equation", "fraction", "decimal", "percentage"
+    "number", "equation", "fraction", "decimal", "percentage",
+    // Botany & Plant Science
+    "plant", "leaf", "flower", "root", "stem", "seed", "fruit", "bark", "petal",
+    "botany", "botanical", "species", "genus", "family", "cultivar", "variety",
+    "disease", "fungus", "fungal", "blight", "wilt", "rot", "rust", "mildew",
+    "pest", "insect", "aphid", "mite", "caterpillar", "beetle", "nematode",
+    "symptom", "yellowing", "wilting", "spots", "lesion", "necrosis", "chlorosis",
+    "cure", "treatment", "fungicide", "pesticide", "organic", "remedy",
+    "medicinal", "herbal", "ayurvedic", "phytochemical", "alkaloid", "terpene",
+    "photosynthesis", "pollination", "germination", "propagation", "pruning",
+    "soil", "fertilizer", "compost", "mulch", "irrigation", "drainage",
+    "herb", "shrub", "tree", "vine", "grass", "fern", "moss", "succulent",
+    "indoor plant", "outdoor plant", "houseplant", "garden", "nursery",
+    "bloom", "blossom", "sprout", "sapling", "canopy", "tuber", "bulb", "rhizome"
   ];
   
   // Direct question patterns
