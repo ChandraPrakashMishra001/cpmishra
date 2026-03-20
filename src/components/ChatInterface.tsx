@@ -75,7 +75,7 @@ const ChatInterface = ({
               How can I help you? Share a plant photo, ask about diseases, or just chat~
             </p>
             <div className="flex flex-wrap justify-center gap-2 max-w-xs">
-              {["Tell me a joke 😄", "How are you? 💕", "Help me study 📚"].map((hint) => (
+              {["Identify my plant 🌱", "My plant looks sick 🍂", "Plant care tips 🌿"].map((hint) => (
                 <button
                   key={hint}
                   onClick={() => onSendMessage(hint)}
