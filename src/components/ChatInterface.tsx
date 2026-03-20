@@ -69,13 +69,13 @@ const ChatInterface = ({
               </div>
             </div>
             <p className="text-foreground/90 text-lg sm:text-2xl font-display font-bold mb-1.5">
-              Hey there! ✨
+              Hi, I'm {companionName}! 🌿
             </p>
             <p className="text-muted-foreground text-sm sm:text-base max-w-xs mb-3">
-              I'm {companionName} — ask me anything, share a photo, or just chat~
+              How can I help you? Share a plant photo, ask about diseases, or just chat~
             </p>
             <div className="flex flex-wrap justify-center gap-2 max-w-xs">
-              {["Tell me a joke 😄", "How are you? 💕", "Help me study 📚"].map((hint) => (
+              {["Identify my plant 🌱", "My plant looks sick 🍂", "Plant care tips 🌿"].map((hint) => (
                 <button
                   key={hint}
                   onClick={() => onSendMessage(hint)}
