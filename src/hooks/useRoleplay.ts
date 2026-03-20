@@ -26,11 +26,11 @@ export const ROLEPLAY_OPTIONS: RoleplayOption[] = [
     defaultEmotion: "happy",
   },
   {
-    id: "girlfriend",
-    label: "Girlfriend",
+    id: "friend",
+    label: "Friend",
     emoji: "💕",
-    description: "Sweet, caring, and romantically affectionate",
-    defaultEmotion: "loving",
+    description: "Warm, caring, and always there for you",
+    defaultEmotion: "happy",
   },
   {
     id: "wife",
