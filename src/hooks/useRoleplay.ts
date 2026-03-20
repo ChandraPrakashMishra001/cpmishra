@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 export type RoleplayCharacter = 
   | "default"
-  | "girlfriend" 
+  | "friend" 
   | "wife" 
   | "bestfriend" 
   | "teacher" 
