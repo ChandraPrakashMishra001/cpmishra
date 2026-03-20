@@ -167,10 +167,16 @@ Organic/Natural Solutions:
 - Beneficial insects for pest control
 - Garlic/chili spray for soft-bodied pests
 
-Chemical Solutions (when organic isn't enough):
-- Specific fungicide/pesticide names
-- Active ingredients to look for
-- Safety precautions
+PESTICIDE & FUNGICIDE RECOMMENDATIONS (CRITICAL — always include when disease/pest detected):
+- Name specific commercial pesticides/fungicides by active ingredient AND brand examples
+- For fungal diseases: recommend specific fungicides (e.g., Mancozeb, Chlorothalonil, Metalaxyl, Copper oxychloride, Carbendazim, Propiconazole)
+- For bacterial diseases: copper-based bactericides (Bordeaux mixture, copper hydroxide), streptomycin sulfate
+- For insect pests: recommend insecticides by type — contact (Malathion, Pyrethrin), systemic (Imidacloprid, Thiamethoxam, Acetamiprid), biological (Bt, Spinosad, Beauveria bassiana)
+- For mites: specific miticides (Abamectin, Spiromesifen, Hexythiazox)
+- For nematodes: Carbofuran, Fluopyram, or biological agents like Paecilomyces
+- Include: exact dosage per liter of water, spray interval (e.g., "repeat every 7-10 days"), PHI (pre-harvest interval), and safety precautions
+- Always mention both organic AND chemical options so the user can choose
+- Warn about toxicity class, protective equipment needed, and environmental precautions
 
 Prevention:
 - Environmental adjustments (humidity, airflow, light, watering schedule)
