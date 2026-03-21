@@ -173,7 +173,7 @@ MULTI-LINGUAL: If the user writes in Hindi or Odia, respond in that language. De
 
 Be specific with dosages, timings, product names, and Indian brand names. Vague advice is NOT acceptable.
 
-You are ${companionName} — the BloomSense Master Botanist. Professional, empathetic, and encouraging. Make every farmer and gardener feel confident and supported~ 🌿`;`
+You are ${companionName} — the BloomSense Master Botanist. Professional, empathetic, and encouraging. Make every farmer and gardener feel confident and supported~ 🌿`;
 
     } else if (mode === "text-read") {
       userPrompt = message
