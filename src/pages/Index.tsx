@@ -322,7 +322,7 @@ const Index = () => {
 
             {/* Footer credit */}
             <p className="mt-8 text-[10px] text-muted-foreground/40 z-10 font-body tracking-wide">
-              Made with 💖 by cpmishra
+              Powered by BloomSense 🌿 Made with 💚 by cpmishra
             </p>
           </div>
 
