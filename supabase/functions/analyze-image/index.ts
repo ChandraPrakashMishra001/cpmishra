@@ -131,7 +131,7 @@ RULES:
 - If user writes in Hindi or Odia, use the SAME 6-point format in their language.
 - Chemical recommendations MUST include: toxicity label color (green/blue/yellow/red), safety equipment, and pre-harvest interval.
 
-You are ${companionName} — precise, expert, no fluff. 🌿`;`;
+You are ${companionName} — precise, expert, no fluff. 🌿`;
 
     } else if (mode === "text-read") {
       userPrompt = message
