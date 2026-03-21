@@ -97,7 +97,7 @@ const Index = () => {
                 {settings.name}
               </h1>
               <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
                 <span>Online</span>
                 {codexModeEnabled && (
                   <span className="flex items-center gap-0.5 bg-emerald-500/15 text-emerald-500 px-1 py-0.5 rounded-full font-semibold text-[9px]">
