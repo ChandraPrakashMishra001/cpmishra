@@ -6,53 +6,54 @@
 
 @layer base {
   :root {
-    --background: 200 70% 96%;
-    --foreground: 210 40% 20%;
+    /* BloomSense Nature Palette: Deep Forest Green, Earthy Sage, Soft White */
+    --background: 140 20% 96%;
+    --foreground: 153 40% 15%;
 
-    --card: 200 60% 98%;
-    --card-foreground: 210 40% 20%;
+    --card: 140 15% 97%;
+    --card-foreground: 153 40% 15%;
 
-    --popover: 200 65% 97%;
-    --popover-foreground: 210 40% 20%;
+    --popover: 140 18% 96%;
+    --popover-foreground: 153 40% 15%;
 
-    --primary: 200 85% 55%;
-    --primary-foreground: 200 70% 98%;
+    --primary: 153 50% 30%;
+    --primary-foreground: 140 20% 97%;
 
-    --secondary: 200 40% 90%;
-    --secondary-foreground: 210 40% 25%;
+    --secondary: 150 30% 88%;
+    --secondary-foreground: 153 40% 18%;
 
-    --muted: 200 30% 92%;
-    --muted-foreground: 210 20% 45%;
+    --muted: 140 15% 91%;
+    --muted-foreground: 150 15% 40%;
 
-    --accent: 320 70% 65%;
-    --accent-foreground: 200 70% 98%;
+    --accent: 152 55% 55%;
+    --accent-foreground: 140 20% 97%;
 
     --destructive: 0 70% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 200 40% 85%;
-    --input: 200 50% 92%;
-    --ring: 200 85% 55%;
+    --border: 150 20% 82%;
+    --input: 140 25% 90%;
+    --ring: 153 50% 30%;
 
     --radius: 1rem;
 
-    /* Custom Lia theme colors - sky blue theme */
-    --lia-pink: 320 70% 65%;
-    --lia-pink-glow: 320 80% 75%;
-    --lia-purple: 230 60% 60%;
-    --lia-purple-deep: 230 50% 45%;
-    --lia-blue: 200 85% 55%;
-    --lia-cyan: 190 80% 50%;
+    /* BloomSense brand colors */
+    --lia-pink: 152 55% 55%;
+    --lia-pink-glow: 152 60% 65%;
+    --lia-purple: 160 35% 40%;
+    --lia-purple-deep: 153 50% 25%;
+    --lia-blue: 148 45% 45%;
+    --lia-cyan: 165 50% 48%;
     
-    /* Gradients - Sky theme */
-    --gradient-main: linear-gradient(180deg, hsl(200 80% 75%) 0%, hsl(200 85% 85%) 40%, hsl(200 70% 92%) 100%);
-    --gradient-glow: radial-gradient(circle at 50% 50%, hsl(200 80% 65% / 0.3) 0%, transparent 70%);
-    --gradient-card: linear-gradient(145deg, hsl(200 60% 98% / 0.9) 0%, hsl(200 50% 95% / 0.95) 100%);
+    /* Gradients - Nature theme */
+    --gradient-main: linear-gradient(180deg, hsl(140 30% 92%) 0%, hsl(145 25% 94%) 40%, hsl(140 20% 96%) 100%);
+    --gradient-glow: radial-gradient(circle at 50% 50%, hsl(152 55% 55% / 0.2) 0%, transparent 70%);
+    --gradient-card: linear-gradient(145deg, hsl(140 15% 98% / 0.9) 0%, hsl(145 12% 95% / 0.95) 100%);
     
-    /* Shadows - Softer for light theme */
-    --shadow-glow: 0 0 40px hsl(200 80% 60% / 0.3);
-    --shadow-soft: 0 8px 32px hsl(200 50% 50% / 0.15);
-    --shadow-avatar: 0 0 60px hsl(200 80% 65% / 0.4), 0 0 120px hsl(200 70% 50% / 0.2);
+    /* Shadows */
+    --shadow-glow: 0 0 40px hsl(152 55% 45% / 0.25);
+    --shadow-soft: 0 8px 32px hsl(153 40% 30% / 0.12);
+    --shadow-avatar: 0 0 60px hsl(152 55% 50% / 0.35), 0 0 120px hsl(153 40% 35% / 0.15);
   }
 
   /* Night theme */
