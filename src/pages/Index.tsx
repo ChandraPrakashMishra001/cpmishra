@@ -66,8 +66,8 @@ const Index = () => {
   return (
     <HelmetProvider>
       <Helmet>
-        <title>{settings.name} — Your Anime AI Companion</title>
-        <meta name="description" content={`Chat with ${settings.name}, your expressive anime AI companion who remembers you and grows with every conversation.`} />
+        <title>{settings.name} — BloomSense Agricultural Intelligence</title>
+        <meta name="description" content={`Chat with ${settings.name}, the BloomSense Master Botanist. Expert plant identification, disease diagnosis, IPM strategies, and Ayurvedic plant care.`} />
       </Helmet>
 
       {/* Confetti celebration for milestones */}
@@ -97,10 +97,10 @@ const Index = () => {
                 {settings.name}
               </h1>
               <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
+                <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
                 <span>Online</span>
                 {codexModeEnabled && (
-                  <span className="flex items-center gap-0.5 bg-emerald-500/15 text-emerald-500 px-1 py-0.5 rounded-full font-semibold text-[9px]">
+                  <span className="flex items-center gap-0.5 bg-primary/15 text-primary px-1 py-0.5 rounded-full font-semibold text-[9px]">
                     <Code2 className="w-2.5 h-2.5" />
                     Codex
                   </span>
@@ -279,7 +279,7 @@ const Index = () => {
                 {settings.name}
               </h1>
               <p className="text-muted-foreground font-body">
-                Your AI Companion ✨
+                BloomSense Master Botanist 🌿
               </p>
               {memory.userName && (
                 <p className="text-sm text-primary mt-2 font-medium">
@@ -299,11 +299,11 @@ const Index = () => {
 
             {/* Status indicator with mood */}
             <div className="mt-8 flex items-center gap-3 text-sm text-muted-foreground z-10 bg-card/60 px-4 py-2 rounded-full backdrop-blur-sm border border-border/50">
-              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+              <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
               <span>Online</span>
               <MoodIndicator mood={currentEmotion} />
               {codexModeEnabled && (
-                <span className="flex items-center gap-1 bg-emerald-500/15 text-emerald-500 px-2 py-0.5 rounded-full text-xs font-semibold">
+                <span className="flex items-center gap-1 bg-primary/15 text-primary px-2 py-0.5 rounded-full text-xs font-semibold">
                   <Code2 className="w-3 h-3" />
                   Codex
                 </span>
@@ -322,7 +322,7 @@ const Index = () => {
 
             {/* Footer credit */}
             <p className="mt-8 text-[10px] text-muted-foreground/40 z-10 font-body tracking-wide">
-              Made with 💖 by cpmishra
+              Powered by BloomSense 🌿 Made with 💚 by cpmishra
             </p>
           </div>
 
