@@ -100,7 +100,7 @@ const Index = () => {
                 <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
                 <span>Online</span>
                 {codexModeEnabled && (
-                  <span className="flex items-center gap-0.5 bg-emerald-500/15 text-emerald-500 px-1 py-0.5 rounded-full font-semibold text-[9px]">
+                  <span className="flex items-center gap-0.5 bg-primary/15 text-primary px-1 py-0.5 rounded-full font-semibold text-[9px]">
                     <Code2 className="w-2.5 h-2.5" />
                     Codex
                   </span>
