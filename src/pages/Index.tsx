@@ -299,11 +299,11 @@ const Index = () => {
 
             {/* Status indicator with mood */}
             <div className="mt-8 flex items-center gap-3 text-sm text-muted-foreground z-10 bg-card/60 px-4 py-2 rounded-full backdrop-blur-sm border border-border/50">
-              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+              <span className="w-2 h-2 bg-primary rounded-full animate-pulse" />
               <span>Online</span>
               <MoodIndicator mood={currentEmotion} />
               {codexModeEnabled && (
-                <span className="flex items-center gap-1 bg-emerald-500/15 text-emerald-500 px-2 py-0.5 rounded-full text-xs font-semibold">
+                <span className="flex items-center gap-1 bg-primary/15 text-primary px-2 py-0.5 rounded-full text-xs font-semibold">
                   <Code2 className="w-3 h-3" />
                   Codex
                 </span>
