@@ -64,27 +64,13 @@ const ChatInterface = ({
               <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-primary/20 via-accent/15 to-primary/10 flex items-center justify-center shadow-lg shadow-primary/10 border border-primary/20">
                 <span className="text-3xl sm:text-5xl">🌿</span>
               </div>
-              <div className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-accent/20 flex items-center justify-center border border-accent/30">
-                <span className="text-[10px] sm:text-xs">🌱</span>
-              </div>
             </div>
             <p className="text-foreground/90 text-lg sm:text-2xl font-display font-bold mb-1.5">
               Hi, I'm {companionName}! 🌿
             </p>
-            <p className="text-muted-foreground text-sm sm:text-base max-w-xs mb-3">
-              Your BloomSense Master Botanist. Share a plant photo, ask about diseases, or get expert crop advice~
+            <p className="text-muted-foreground text-sm sm:text-base max-w-xs">
+              How may I help you?
             </p>
-            <div className="flex flex-wrap justify-center gap-2 max-w-xs">
-              {["Identify my plant 🌱", "My crop looks sick 🍂", "IPM strategies 🛡️", "Ayurvedic uses 🌿"].map((hint) => (
-                <button
-                  key={hint}
-                  onClick={() => onSendMessage(hint)}
-                  className="px-3 py-1.5 text-xs rounded-full bg-primary/10 border border-primary/20 text-primary hover:bg-primary/20 active:scale-95 transition-all font-medium touch-manipulation"
-                >
-                  {hint}
-                </button>
-              ))}
-            </div>
           </div>
         )}
         
