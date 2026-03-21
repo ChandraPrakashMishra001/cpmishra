@@ -66,8 +66,8 @@ const Index = () => {
   return (
     <HelmetProvider>
       <Helmet>
-        <title>{settings.name} — Your Anime AI Companion</title>
-        <meta name="description" content={`Chat with ${settings.name}, your expressive anime AI companion who remembers you and grows with every conversation.`} />
+        <title>{settings.name} — BloomSense Agricultural Intelligence</title>
+        <meta name="description" content={`Chat with ${settings.name}, the BloomSense Master Botanist. Expert plant identification, disease diagnosis, IPM strategies, and Ayurvedic plant care.`} />
       </Helmet>
 
       {/* Confetti celebration for milestones */}
