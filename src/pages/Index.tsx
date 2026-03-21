@@ -279,7 +279,7 @@ const Index = () => {
                 {settings.name}
               </h1>
               <p className="text-muted-foreground font-body">
-                Your AI Companion ✨
+                BloomSense Master Botanist 🌿
               </p>
               {memory.userName && (
                 <p className="text-sm text-primary mt-2 font-medium">

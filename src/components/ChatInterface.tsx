@@ -62,20 +62,20 @@ const ChatInterface = ({
           <div className="flex flex-col items-center justify-center h-full text-center px-6 animate-fade-in">
             <div className="relative mb-5">
               <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-primary/20 via-accent/15 to-primary/10 flex items-center justify-center shadow-lg shadow-primary/10 border border-primary/20">
-                <span className="text-3xl sm:text-5xl">💬</span>
+                <span className="text-3xl sm:text-5xl">🌿</span>
               </div>
               <div className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-accent/20 flex items-center justify-center border border-accent/30">
-                <span className="text-[10px] sm:text-xs">✨</span>
+                <span className="text-[10px] sm:text-xs">🌱</span>
               </div>
             </div>
             <p className="text-foreground/90 text-lg sm:text-2xl font-display font-bold mb-1.5">
               Hi, I'm {companionName}! 🌿
             </p>
             <p className="text-muted-foreground text-sm sm:text-base max-w-xs mb-3">
-              How can I help you? Share a plant photo, ask about diseases, or just chat~
+              Your BloomSense Master Botanist. Share a plant photo, ask about diseases, or get expert crop advice~
             </p>
             <div className="flex flex-wrap justify-center gap-2 max-w-xs">
-              {["Identify my plant 🌱", "My plant looks sick 🍂", "Plant care tips 🌿"].map((hint) => (
+              {["Identify my plant 🌱", "My crop looks sick 🍂", "IPM strategies 🛡️", "Ayurvedic uses 🌿"].map((hint) => (
                 <button
                   key={hint}
                   onClick={() => onSendMessage(hint)}
@@ -105,12 +105,12 @@ const ChatInterface = ({
         
         {isTyping && (
           <div className="flex items-center gap-2 text-muted-foreground animate-slide-in px-1">
-            <div className="flex gap-1 bg-card/60 backdrop-blur-sm px-3 py-2 rounded-full border border-border/30 shadow-sm">
+            <div className="flex gap-1 bg-card/40 backdrop-blur-md px-3 py-2 rounded-full border border-border/30 shadow-sm">
               <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
               <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary/70 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
               <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary/40 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
             </div>
-            <span className="text-xs sm:text-sm font-medium">{companionName} is thinking...</span>
+            <span className="text-xs sm:text-sm font-medium">{companionName} is analyzing...</span>
             <MoodIndicator mood={currentMood} />
           </div>
         )}

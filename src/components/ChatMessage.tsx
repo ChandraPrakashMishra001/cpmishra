@@ -173,10 +173,10 @@ const ChatMessage = ({ content, isUser, timestamp, imageUrl, reactions = default
       <div
         className={`max-w-[85%] sm:max-w-[75%] px-3 py-2.5 sm:px-4 sm:py-3 rounded-2xl relative transition-all duration-200 ${
           isUser
-            ? "bg-gradient-to-br from-lia-pink/25 to-lia-purple/15 border border-lia-pink/25 rounded-br-sm shadow-md shadow-lia-pink/10"
+            ? "bg-accent/15 backdrop-blur-md border border-accent/25 rounded-br-sm shadow-md shadow-accent/10"
             : isProblemSolution 
-              ? "bg-gradient-to-br from-card/90 to-card/70 border border-primary/20 rounded-bl-sm backdrop-blur-sm shadow-lg shadow-primary/5"
-              : "bg-gradient-to-br from-card/80 to-card/60 border border-border/40 rounded-bl-sm backdrop-blur-sm shadow-md shadow-black/5"
+              ? "bg-card/40 backdrop-blur-md border border-primary/20 rounded-bl-sm shadow-lg shadow-primary/5"
+              : "bg-card/30 backdrop-blur-md border border-border/30 rounded-bl-sm shadow-md shadow-black/5"
         } ${isBookmarked ? "ring-2 ring-primary/30 ring-offset-1 ring-offset-background" : ""}`}
       >
         {/* Bookmark button - appears on hover/long-press */}

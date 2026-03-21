@@ -58,48 +58,48 @@
 
   /* Night theme */
   .dark-sky {
-    --background: 230 30% 10%;
-    --foreground: 220 20% 95%;
+    --background: 153 30% 8%;
+    --foreground: 140 15% 92%;
 
-    --card: 230 25% 14%;
-    --card-foreground: 220 20% 95%;
+    --card: 153 25% 12%;
+    --card-foreground: 140 15% 92%;
 
-    --popover: 230 25% 12%;
-    --popover-foreground: 220 20% 95%;
+    --popover: 153 25% 10%;
+    --popover-foreground: 140 15% 92%;
 
-    --primary: 260 70% 65%;
-    --primary-foreground: 230 30% 10%;
+    --primary: 152 55% 50%;
+    --primary-foreground: 153 30% 8%;
 
-    --secondary: 230 30% 20%;
-    --secondary-foreground: 220 20% 95%;
+    --secondary: 153 25% 18%;
+    --secondary-foreground: 140 15% 92%;
 
-    --muted: 230 20% 18%;
-    --muted-foreground: 220 15% 65%;
+    --muted: 153 18% 16%;
+    --muted-foreground: 145 12% 60%;
 
-    --accent: 280 70% 70%;
-    --accent-foreground: 230 30% 10%;
+    --accent: 152 50% 60%;
+    --accent-foreground: 153 30% 8%;
 
-    --border: 230 25% 22%;
-    --input: 230 25% 16%;
-    --ring: 260 70% 65%;
+    --border: 153 20% 20%;
+    --input: 153 22% 14%;
+    --ring: 152 55% 50%;
 
-    /* Custom Lia theme colors - night theme */
-    --lia-pink: 280 70% 70%;
-    --lia-pink-glow: 280 80% 80%;
-    --lia-purple: 260 60% 60%;
-    --lia-purple-deep: 260 50% 30%;
-    --lia-blue: 220 80% 70%;
-    --lia-cyan: 200 70% 60%;
+    /* BloomSense dark brand colors */
+    --lia-pink: 152 50% 60%;
+    --lia-pink-glow: 152 55% 70%;
+    --lia-purple: 160 30% 50%;
+    --lia-purple-deep: 153 40% 22%;
+    --lia-blue: 148 40% 55%;
+    --lia-cyan: 165 45% 55%;
     
-    /* Gradients - Night theme */
-    --gradient-main: linear-gradient(180deg, hsl(230 40% 8%) 0%, hsl(250 35% 15%) 50%, hsl(230 30% 12%) 100%);
-    --gradient-glow: radial-gradient(circle at 50% 50%, hsl(260 70% 50% / 0.2) 0%, transparent 70%);
-    --gradient-card: linear-gradient(145deg, hsl(230 30% 16% / 0.9) 0%, hsl(240 25% 12% / 0.95) 100%);
+    /* Gradients - Night forest theme */
+    --gradient-main: linear-gradient(180deg, hsl(153 35% 6%) 0%, hsl(155 30% 10%) 50%, hsl(153 25% 8%) 100%);
+    --gradient-glow: radial-gradient(circle at 50% 50%, hsl(152 55% 40% / 0.15) 0%, transparent 70%);
+    --gradient-card: linear-gradient(145deg, hsl(153 28% 14% / 0.9) 0%, hsl(155 22% 10% / 0.95) 100%);
     
     /* Shadows - Night theme */
-    --shadow-glow: 0 0 40px hsl(260 70% 50% / 0.4);
-    --shadow-soft: 0 8px 32px hsl(230 50% 5% / 0.5);
-    --shadow-avatar: 0 0 60px hsl(260 80% 65% / 0.4), 0 0 120px hsl(280 70% 50% / 0.2);
+    --shadow-glow: 0 0 40px hsl(152 55% 40% / 0.3);
+    --shadow-soft: 0 8px 32px hsl(153 40% 4% / 0.5);
+    --shadow-avatar: 0 0 60px hsl(152 60% 50% / 0.35), 0 0 120px hsl(152 50% 40% / 0.15);
   }
 }
 
