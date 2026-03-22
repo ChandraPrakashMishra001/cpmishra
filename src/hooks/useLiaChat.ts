@@ -179,12 +179,7 @@ const generateEnhancedWelcomeMessage = (
   }
   
   // New user
-  const greetings = [
-    `Hiii~! I'm ${companionName}, your AI companion! 💖 So happy to meet you! What's your name?`,
-    `Welcome welcome~! ✨ I'm ${companionName}! I'd love to get to know you~ What should I call you?`,
-    `Oh, a new friend! I'm ${companionName}~ 🌸 Tell me your name so we can be proper friends!`,
-  ];
-  return greetings[Math.floor(Math.random() * greetings.length)];
+  return `Hi, I'm ${companionName}! 🌿 How may I help you?`;
 };
 
 // Extract name from message
