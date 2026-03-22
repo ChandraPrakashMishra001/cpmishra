@@ -14,7 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      field_logs: {
+        Row: {
+          created_at: string
+          crop_name: string | null
+          diagnosis_summary: string | null
+          id: string
+          location: string | null
+          messages: Json
+          severity: string | null
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          crop_name?: string | null
+          diagnosis_summary?: string | null
+          id?: string
+          location?: string | null
+          messages?: Json
+          severity?: string | null
+          title?: string
+        }
+        Update: {
+          created_at?: string
+          crop_name?: string | null
+          diagnosis_summary?: string | null
+          id?: string
+          location?: string | null
+          messages?: Json
+          severity?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
