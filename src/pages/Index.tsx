@@ -242,6 +242,11 @@ const Index = () => {
                   </Button>
                 }
               />
+              <FieldLogDialog
+                messages={messages}
+                companionName={settings.name}
+              />
+              <DiseaseGallery onAskAbout={(name) => sendMessage(`Tell me about ${name} disease - diagnosis and treatment`)} />
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
