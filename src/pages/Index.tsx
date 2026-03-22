@@ -9,6 +9,8 @@ import ConfettiCelebration from "@/components/ConfettiCelebration";
 import MoodIndicator from "@/components/MoodIndicator";
 import { GoalsDialog } from "@/components/GoalsDialog";
 import { NotificationsDialog } from "@/components/NotificationsDialog";
+import FieldLogDialog from "@/components/FieldLogDialog";
+import DiseaseGallery from "@/components/DiseaseGallery";
 import { useLiaChat } from "@/hooks/useLiaChat";
 import { useCompanionSettings } from "@/hooks/useCompanionSettings";
 import { usePersonalitySettings } from "@/hooks/usePersonalitySettings";
@@ -18,7 +20,7 @@ import { useGoals } from "@/hooks/useGoals";
 import { useTheme } from "@/hooks/useTheme";
 import { useRoleplay } from "@/hooks/useRoleplay";
 import liaAvatar from "@/assets/amanai-avatar.png";
-import { Trash2, Target, Sun, Moon, Brain, Code2 } from "lucide-react";
+import { Trash2, Target, Sun, Moon, Brain, Code2, BookOpen, Bug } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -138,6 +140,23 @@ const Index = () => {
                   </Button>
                 }
               />
+              <FieldLogDialog
+                messages={messages}
+                companionName={settings.name}
+                trigger={
+                  <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-primary/20">
+                    <BookOpen className="w-3.5 h-3.5 text-primary" />
+                  </Button>
+                }
+              />
+              <DiseaseGallery
+                trigger={
+                  <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-primary/20">
+                    <Bug className="w-3.5 h-3.5 text-primary" />
+                  </Button>
+                }
+                onAskAbout={(name) => sendMessage(`Tell me about ${name} disease - diagnosis and treatment`)}
+              />
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-destructive/20">
@@ -223,6 +242,11 @@ const Index = () => {
                   </Button>
                 }
               />
+              <FieldLogDialog
+                messages={messages}
+                companionName={settings.name}
+              />
+              <DiseaseGallery onAskAbout={(name) => sendMessage(`Tell me about ${name} disease - diagnosis and treatment`)} />
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button
