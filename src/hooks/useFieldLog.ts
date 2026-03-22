@@ -47,7 +47,7 @@ export const useFieldLog = () => {
   ) => {
     const { error } = await supabase.from("field_logs").insert([{
       title,
-      messages: messages as unknown as Record<string, unknown>[],
+      messages: JSON.parse(JSON.stringify(messages)),
       crop_name: cropName || null,
       diagnosis_summary: diagnosisSummary || null,
       location: location || null,
