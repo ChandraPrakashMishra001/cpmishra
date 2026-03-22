@@ -45,14 +45,14 @@ export const useFieldLog = () => {
     location?: string,
     severity?: string,
   ) => {
-    const { error } = await supabase.from("field_logs").insert({
+    const { error } = await supabase.from("field_logs").insert([{
       title,
       messages: messages as unknown as Record<string, unknown>[],
       crop_name: cropName || null,
       diagnosis_summary: diagnosisSummary || null,
       location: location || null,
       severity: severity || null,
-    });
+    }]);
 
     if (error) {
       toast.error("Failed to save field log");
