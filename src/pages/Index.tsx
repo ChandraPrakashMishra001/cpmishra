@@ -140,6 +140,23 @@ const Index = () => {
                   </Button>
                 }
               />
+              <FieldLogDialog
+                messages={messages}
+                companionName={settings.name}
+                trigger={
+                  <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-primary/20">
+                    <BookOpen className="w-3.5 h-3.5 text-primary" />
+                  </Button>
+                }
+              />
+              <DiseaseGallery
+                trigger={
+                  <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-primary/20">
+                    <Bug className="w-3.5 h-3.5 text-primary" />
+                  </Button>
+                }
+                onAskAbout={(name) => sendMessage(`Tell me about ${name} disease - diagnosis and treatment`)}
+              />
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-destructive/20">
