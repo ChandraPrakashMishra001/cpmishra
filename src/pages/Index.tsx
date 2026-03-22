@@ -9,6 +9,8 @@ import ConfettiCelebration from "@/components/ConfettiCelebration";
 import MoodIndicator from "@/components/MoodIndicator";
 import { GoalsDialog } from "@/components/GoalsDialog";
 import { NotificationsDialog } from "@/components/NotificationsDialog";
+import FieldLogDialog from "@/components/FieldLogDialog";
+import DiseaseGallery from "@/components/DiseaseGallery";
 import { useLiaChat } from "@/hooks/useLiaChat";
 import { useCompanionSettings } from "@/hooks/useCompanionSettings";
 import { usePersonalitySettings } from "@/hooks/usePersonalitySettings";
