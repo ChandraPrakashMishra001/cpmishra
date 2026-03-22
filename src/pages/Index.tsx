@@ -20,7 +20,7 @@ import { useGoals } from "@/hooks/useGoals";
 import { useTheme } from "@/hooks/useTheme";
 import { useRoleplay } from "@/hooks/useRoleplay";
 import liaAvatar from "@/assets/amanai-avatar.png";
-import { Trash2, Target, Sun, Moon, Brain, Code2 } from "lucide-react";
+import { Trash2, Target, Sun, Moon, Brain, Code2, BookOpen, Bug } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
