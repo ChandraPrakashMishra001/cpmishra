@@ -48,6 +48,7 @@ const Index = () => {
   const { getGoalsSummary } = useGoals();
   const { theme, toggleTheme, isNight } = useTheme();
   const { activeRole, setActiveRole, getRoleplayPrompt } = useRoleplay();
+  const { language, changeLanguage } = useLanguage();
   const goalsSummary = getGoalsSummary();
   const personalitySummary = getPersonalitySummary();
   const roleplayPrompt = getRoleplayPrompt(activeRole, settings.name);
@@ -64,7 +65,9 @@ const Index = () => {
     quickReplies,
     showCelebration,
     setShowCelebration,
-  } = useLiaChat(settings.name, goalsSummary, personalitySummary, phdModeEnabled, roleplayPrompt, codexModeEnabled);
+  } = useLiaChat(settings.name, goalsSummary, personalitySummary, phdModeEnabled, roleplayPrompt, codexModeEnabled, language);
+
+  const languages: AppLanguage[] = ["en", "hi", "od"];
 
   return (
     <HelmetProvider>
