@@ -114,6 +114,22 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-0.5">
+              {/* Language selector - mobile */}
+              <div className="flex items-center bg-muted/60 rounded-full p-0.5 mr-1">
+                {languages.map((lang) => (
+                  <button
+                    key={lang}
+                    onClick={() => changeLanguage(lang)}
+                    className={`px-1.5 py-0.5 rounded-full text-[9px] font-bold transition-all ${
+                      language === lang
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
+                  >
+                    {LANGUAGE_LABELS[lang].short}
+                  </button>
+                ))}
+              </div>
               <Button
                 variant="ghost"
                 size="icon"
