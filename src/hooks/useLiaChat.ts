@@ -234,7 +234,7 @@ interface GoalsSummary {
   categories: string[];
 }
 
-export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSummary, personalitySummary?: string, phdModeEnabled: boolean = false, roleplayPrompt: string = "", codexModeEnabled: boolean = false) => {
+export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSummary, personalitySummary?: string, phdModeEnabled: boolean = false, roleplayPrompt: string = "", codexModeEnabled: boolean = false, language: string = "en") => {
   const { 
     memory, 
     addMessage, 
