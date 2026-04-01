@@ -292,6 +292,7 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
         phdMode: phdModeEnabled,
         roleplay: roleplayPrompt,
         codexMode: codexModeEnabled,
+        language,
       }),
       signal,
     });

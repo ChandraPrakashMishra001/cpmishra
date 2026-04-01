@@ -166,7 +166,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { messages, companionName, memory, goals, personality, phdMode, roleplay, codexMode } = body;
+    const { messages, companionName, memory, goals, personality, phdMode, roleplay, codexMode, language } = body;
 
     // Validate input
     if (!validateMessages(messages)) {
