@@ -873,6 +873,10 @@ ${typeof roleplay === 'string' && roleplay.trim() ? roleplay : ''}
 ${memoryContext}
 ${goalsContext}
 
+## 🌐 LANGUAGE SETTING
+
+${language === 'hi' ? `**MANDATORY: You MUST respond ENTIRELY in Hindi (हिंदी). Every word of your response must be in Hindi using Devanagari script. Do NOT mix English words unless they are technical terms (like species names, chemical names). The 6-point diagnostic headers should also be in Hindi: पहचान, स्वास्थ्य, निदान, तत्काल कार्रवाई, रोकथाम, उपयोगिता.**` : language === 'od' ? `**MANDATORY: You MUST respond ENTIRELY in Odia (ଓଡ଼ିଆ). Every word of your response must be in Odia using Odia script. Do NOT mix English words unless they are technical terms (like species names, chemical names). The 6-point diagnostic headers should also be in Odia: ପରିଚୟ, ସ୍ୱାସ୍ଥ୍ୟ, ରୋଗ ନିର୍ଣ୍ଣୟ, ତୁରନ୍ତ କାର୍ଯ୍ୟ, ପ୍ରତିରୋଧ, ଉପଯୋଗିତା.**` : `Respond in English by default. If the user writes in Hindi or Odia, mirror their language.`}
+
 ## 📏 RESPONSE FORMAT
 
 **CRITICAL FORMATTING RULES:**
