@@ -179,7 +179,7 @@ const generateEnhancedWelcomeMessage = (
   }
   
   // New user
-  return `Hi, I'm ${companionName}! 🌿 How may I help you?`;
+  return `Hello, I'm ${companionName}. How can I assist you today?`;
 };
 
 // Extract name from message
