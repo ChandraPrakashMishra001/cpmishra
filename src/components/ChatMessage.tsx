@@ -113,32 +113,36 @@ const formatContent = (text: string): React.ReactNode => {
   const lines = text.split('\n');
   
   return lines.map((line, i) => {
-    // Only apply math formatting if the text actually contains math
-    let processedLine = hasMath ? formatMathExpression(line) : line;
-    
-    // Bold text: **text**
+    let processedLine = line;
     let formattedLine: React.ReactNode = processedLine;
     
-    // Handle headers/bold markers like **Problem**: or 📝 **Problem**:
+    // Handle bold markers **text** FIRST, before any math formatting
     if (processedLine.includes('**')) {
       const parts = processedLine.split(/(\*\*[^*]+\*\*)/g);
       formattedLine = parts.map((part, j) => {
         if (part.startsWith('**') && part.endsWith('**')) {
           return <strong key={j} className="font-semibold text-primary">{part.slice(2, -2)}</strong>;
         }
-        // Check if this part has LaTeX
-        if (part.includes('$')) {
-          return <span key={j}>{renderMath(part)}</span>;
+        // Apply math formatting only to non-bold parts if needed
+        let processed = hasMath ? formatMathExpression(part) : part;
+        if (processed.includes('$')) {
+          return <span key={j}>{renderMath(processed)}</span>;
         }
-        return part;
+        return processed;
       });
-    } else if (processedLine.includes('$')) {
-      // Handle LaTeX in lines without bold
-      formattedLine = renderMath(processedLine);
+    } else {
+      // No bold markers — safe to apply math formatting
+      processedLine = hasMath ? formatMathExpression(processedLine) : processedLine;
+      
+      if (processedLine.includes('$')) {
+        formattedLine = renderMath(processedLine);
+      } else {
+        formattedLine = processedLine;
+      }
     }
     
     // Check if this is a math equation line (only if we detected math)
-    const isMathLine = hasMath && (
+    const isMathLine = hasMath && !line.includes('**') && (
       /[=×÷√²³⁴⁵⁶⁷⁸⁹⁰¹±∞π]/.test(processedLine) || 
       /^\s*[\d\s+\-×÷=()]+\s*$/.test(processedLine)
     );
