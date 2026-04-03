@@ -589,42 +589,55 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
       });
     };
 
-    try {
-      await streamChat(
-        conversationHistory,
-        updateAssistantMessage,
-        () => {
-          setIsTyping(false);
-          setIsTalking(false);
-          
-          if (assistantContent) {
-            const finalMessage: Message = {
-              id: assistantMsgId,
-              content: assistantContent,
-              isUser: false,
-              timestamp: new Date(),
-            };
-            addMessage(finalMessage);
-          }
-        },
-        abortControllerRef.current.signal
-      );
-    } catch (error) {
-      if ((error as Error).name === 'AbortError') {
-        return;
+    const maxRetries = 2;
+    for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      try {
+        assistantContent = "";
+        await streamChat(
+          conversationHistory,
+          updateAssistantMessage,
+          () => {
+            setIsTyping(false);
+            setIsTalking(false);
+            
+            if (assistantContent) {
+              const finalMessage: Message = {
+                id: assistantMsgId,
+                content: assistantContent,
+                isUser: false,
+                timestamp: new Date(),
+              };
+              addMessage(finalMessage);
+            }
+          },
+          abortControllerRef.current.signal
+        );
+        return; // Success, exit loop
+      } catch (error) {
+        if ((error as Error).name === 'AbortError') {
+          return;
+        }
+        console.error(`Chat error (attempt ${attempt + 1}/${maxRetries + 1}):`, error);
+        
+        if (attempt < maxRetries) {
+          // Wait briefly before retrying
+          await new Promise(r => setTimeout(r, 1000 * (attempt + 1)));
+          continue;
+        }
+        
+        // All retries exhausted
+        setIsTyping(false);
+        setIsTalking(false);
+        setCurrentEmotion("sad");
+        
+        const errorMessage: Message = {
+          id: `error-${Date.now()}`,
+          content: "I'm having trouble connecting right now. Please check your internet and try again 🔄",
+          isUser: false,
+          timestamp: new Date(),
+        };
+        setMessages(prev => [...prev, errorMessage]);
       }
-      console.error("Chat error:", error);
-      setIsTyping(false);
-      setIsTalking(false);
-      setCurrentEmotion("sad");
-      
-      const errorMessage: Message = {
-        id: `error-${Date.now()}`,
-        content: "Hmm, my brain glitched for a sec~ 😅 Try sending that again?",
-        isUser: false,
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, errorMessage]);
     }
   }, [messages, companionName, memory, goalsSummary, addMessage, setUserName, addTopics]);
 
