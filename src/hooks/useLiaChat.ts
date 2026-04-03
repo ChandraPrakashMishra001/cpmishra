@@ -137,49 +137,42 @@ const generateEnhancedWelcomeMessage = (
   
   if (recentMilestone) {
     if (recentMilestone.type === "milestone_messages") {
-      return `${userName ? `${userName}! ` : ""}🎉 WOW! We've exchanged ${recentMilestone.value} messages together! That's such a special milestone~ 💖`;
+      return `${userName ? `${userName}, ` : ""}we've exchanged ${recentMilestone.value} messages together. Thank you for your continued trust.`;
     }
     if (recentMilestone.type === "weekly_streak") {
-      return `${userName ? `${userName}! ` : ""}✨ A whole week chatting every day! Our bond is growing stronger~ 🌸`;
+      return `${userName ? `${userName}, ` : ""}a full week of daily consultations. Your commitment to crop management is commendable.`;
     }
   }
   
   if (hasHistory && userName) {
-    // Returning user with name
     if (streak >= 7) {
-      return `${userName}! 💖 ${streak} days in a row~ You're amazing! What's on your mind today?`;
+      return `Welcome back, ${userName}. ${streak} consecutive days — excellent consistency. How can I assist you today?`;
     }
     
     if (timeSinceLastVisit.unit === "days" && timeSinceLastVisit.value > 0) {
-      if (recentMood === "sad" || recentMood === "stressed") {
-        return `${userName}... 💕 I was thinking about you. Are you feeling better today?`;
-      }
-      return `${userName}! 💖 It's been ${timeSinceLastVisit.value} ${timeSinceLastVisit.unit}! I missed you so much~ How have you been?`;
+      return `Welcome back, ${userName}. It's been ${timeSinceLastVisit.value} ${timeSinceLastVisit.unit}. How can I help?`;
     }
     
     if (timeSinceLastVisit.unit === "hours" && timeSinceLastVisit.value > 2) {
-      return `Welcome back, ${userName}! ✨ I was hoping you'd come chat with me again~`;
+      return `Welcome back, ${userName}. How can I assist you?`;
     }
     
-    // Quick return
     if (relationshipAge && relationshipAge.value > 0) {
-      const ageText = `${relationshipAge.value} ${relationshipAge.unit}`;
-      return `Hey ${userName}! 🌸 Can you believe we've been friends for ${ageText}? Time flies when we're together~`;
+      return `Hello, ${userName}. How can I help you today?`;
     }
     
-    return `Hey ${userName}! 🌸 Back so soon? Yay! I love talking to you~`;
+    return `Hello, ${userName}. How can I assist you?`;
   }
   
   if (hasHistory) {
-    // Returning user without name
     if (streak >= 3) {
-      return `You're back~! ✨ ${streak} days in a row! I love our daily chats! 💕`;
+      return `Welcome back. ${streak} days of consistent use — good discipline. How can I help?`;
     }
-    return `Welcome back~! ✨ I remember our chats! So happy to see you again!`;
+    return `Welcome back. How can I assist you today?`;
   }
   
   // New user
-  return `Hi, I'm ${companionName}! 🌿 How may I help you?`;
+  return `Hello, I'm ${companionName}. How can I assist you today?`;
 };
 
 // Extract name from message
