@@ -802,6 +802,7 @@ You are ${safeCompanionName} — ultra-concise, precise, expert. Every word must
         stream: true,
         temperature: needsDeepThinking ? 0.3 : 0.85,
         top_p: needsDeepThinking ? 0.9 : 0.95,
+        max_tokens: needsDeepThinking ? 600 : 300,
       }),
     });
 
