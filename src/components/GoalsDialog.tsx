@@ -30,10 +30,6 @@ const categoryColors: Record<Goal["category"], string> = {
   creative: "bg-orange-500/20 text-orange-400 border-orange-500/30",
 };
 
-interface GoalsDialogProps {
-  trigger?: React.ReactNode;
-}
-
 export interface GoalsDialogProps {
   trigger?: React.ReactNode;
   open?: boolean;
