@@ -135,6 +135,16 @@ const Index = () => {
                 companionName={settings.name}
                 compact
               />
+              <MemoryViewerDialog
+                memory={memory}
+                companionName={settings.name}
+                onClearMemory={resetConversation}
+                trigger={
+                  <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-primary/20">
+                    <Brain className="w-3.5 h-3.5 text-primary" />
+                  </Button>
+                }
+              />
               <FieldLogDialog
                 messages={messages}
                 companionName={settings.name}
