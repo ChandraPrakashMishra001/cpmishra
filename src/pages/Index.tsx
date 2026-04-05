@@ -7,10 +7,9 @@ import FloatingClouds from "@/components/FloatingClouds";
 import FloatingSparkles from "@/components/FloatingSparkles";
 import ConfettiCelebration from "@/components/ConfettiCelebration";
 import MoodIndicator from "@/components/MoodIndicator";
-import { GoalsDialog } from "@/components/GoalsDialog";
-import { NotificationsDialog } from "@/components/NotificationsDialog";
 import FieldLogDialog from "@/components/FieldLogDialog";
 import DiseaseGallery from "@/components/DiseaseGallery";
+import ToolbarMenu from "@/components/ToolbarMenu";
 import { useLiaChat } from "@/hooks/useLiaChat";
 import { useCompanionSettings } from "@/hooks/useCompanionSettings";
 import { usePersonalitySettings } from "@/hooks/usePersonalitySettings";
@@ -21,7 +20,7 @@ import { useTheme } from "@/hooks/useTheme";
 import { useRoleplay } from "@/hooks/useRoleplay";
 import { useLanguage, LANGUAGE_LABELS, type AppLanguage } from "@/hooks/useLanguage";
 import liaAvatar from "@/assets/amanai-avatar.png";
-import { Trash2, Target, Sun, Moon, Brain, Code2, BookOpen, Bug, Globe } from "lucide-react";
+import { Trash2, Brain, Code2, BookOpen, Bug } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -130,19 +129,12 @@ const Index = () => {
                   </button>
                 ))}
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleTheme}
-                className="w-7 h-7 hover:bg-primary/20"
-              >
-                {isNight ? (
-                  <Sun className="w-3.5 h-3.5 text-yellow-500" />
-                ) : (
-                  <Moon className="w-3.5 h-3.5 text-primary" />
-                )}
-              </Button>
-              <NotificationsDialog companionName={settings.name} />
+              <ToolbarMenu
+                isNight={isNight}
+                onToggleTheme={toggleTheme}
+                companionName={settings.name}
+                compact
+              />
               <MemoryViewerDialog
                 memory={memory}
                 companionName={settings.name}
@@ -150,13 +142,6 @@ const Index = () => {
                 trigger={
                   <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-primary/20">
                     <Brain className="w-3.5 h-3.5 text-primary" />
-                  </Button>
-                }
-              />
-              <GoalsDialog
-                trigger={
-                  <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-primary/20">
-                    <Target className="w-3.5 h-3.5 text-primary" />
                   </Button>
                 }
               />
@@ -240,19 +225,11 @@ const Index = () => {
                   </button>
                 ))}
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleTheme}
-                className="bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm transition-all duration-300"
-              >
-                {isNight ? (
-                  <Sun className="w-4 h-4 text-yellow-500" />
-                ) : (
-                  <Moon className="w-4 h-4 text-primary" />
-                )}
-              </Button>
-              <NotificationsDialog companionName={settings.name} />
+              <ToolbarMenu
+                isNight={isNight}
+                onToggleTheme={toggleTheme}
+                companionName={settings.name}
+              />
               <MemoryViewerDialog
                 memory={memory}
                 companionName={settings.name}
@@ -264,17 +241,6 @@ const Index = () => {
                     className="bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm"
                   >
                     <Brain className="w-4 h-4 text-primary" />
-                  </Button>
-                }
-              />
-              <GoalsDialog
-                trigger={
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm"
-                  >
-                    <Target className="w-4 h-4 text-primary" />
                   </Button>
                 }
               />

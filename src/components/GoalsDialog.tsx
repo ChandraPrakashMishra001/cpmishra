@@ -30,11 +30,13 @@ const categoryColors: Record<Goal["category"], string> = {
   creative: "bg-orange-500/20 text-orange-400 border-orange-500/30",
 };
 
-interface GoalsDialogProps {
+export interface GoalsDialogProps {
   trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export const GoalsDialog = ({ trigger }: GoalsDialogProps) => {
+export const GoalsDialog = ({ trigger, open, onOpenChange }: GoalsDialogProps) => {
   const { goals, addGoal, deleteGoal, addMilestone, toggleMilestone, updateProgress } = useGoals();
   const [isAddingGoal, setIsAddingGoal] = useState(false);
   const [expandedGoal, setExpandedGoal] = useState<string | null>(null);
@@ -80,7 +82,7 @@ export const GoalsDialog = ({ trigger }: GoalsDialogProps) => {
   const completedGoals = goals.filter(g => g.completed);
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         {trigger || (
           <Button variant="ghost" size="icon" className="text-lia-pink hover:bg-lia-pink/20">
