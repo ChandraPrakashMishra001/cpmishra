@@ -57,93 +57,34 @@ function validateMessages(messages: unknown): messages is Array<{ role: string; 
   return valid;
 }
 
-// Detect if message requires deep thinking/problem solving
+// Only trigger deep thinking for explicit math/science problem-solving
 function requiresDeepThinking(message: string): boolean {
   const lowerMessage = message.toLowerCase();
   const originalMessage = message;
   
-  // ALWAYS use deep thinking for any mathematical expression
+  // Math expressions only
   const mathPatterns = [
-    /\d+\s*[+\-*/×÷^%]\s*\d+/,         // Basic arithmetic: 5+3, 10-2, etc.
-    /\d+\s*\+\s*\d+/,                   // Addition specifically
-    /\d+\s*-\s*\d+/,                    // Subtraction specifically  
-    /\d+\s*\*\s*\d+/,                   // Multiplication
-    /\d+\s*\/\s*\d+/,                   // Division
-    /\d+\s*\^\s*\d+/,                   // Exponents
-    /sqrt\s*\(?\s*\d+/i,                // Square root
-    /\d+\s*%\s*(of\s*)?\d*/i,           // Percentages
-    /\(\s*\d+/,                         // Expressions in parentheses
-    /=\s*\?/,                           // Solve for unknown
-    /x\s*[+\-*/=]\s*\d+/i,              // Algebraic: x+5, x=10
-    /\d+\s*x/i,                         // Coefficient: 5x
-    /what\s*(is|'s|are)\s*\d+/i,        // "what is 5+3"
-    /\d+\s*(plus|minus|times|divided|multiplied)/i,  // Word math
-    /(plus|minus|times|divided|multiplied)\s*\d+/i,  // Word math
-    /solve|calculate|compute|evaluate/i, // Direct solve requests
-    /how\s+much\s+(is|are)/i,           // "how much is"
-    /how\s+many/i,                      // "how many"
-    /\d+\s*°/,                          // Degrees/angles
-    /sin|cos|tan|log|ln\s*\(?/i,        // Trig/log functions
-    /integral|derivative|limit/i,        // Calculus
-    /factorial|\d+!/,                   // Factorial
+    /\d+\s*[+\-*/×÷^%]\s*\d+/,
+    /sqrt\s*\(?\s*\d+/i,
+    /=\s*\?/,
+    /x\s*[+\-*/=]\s*\d+/i,
+    /solve|calculate|compute|evaluate/i,
+    /sin|cos|tan|log|ln\s*\(?/i,
+    /integral|derivative|limit/i,
+    /factorial|\d+!/,
   ];
   
-  // Check for any math pattern - if found, use deep thinking
   if (mathPatterns.some(pattern => pattern.test(originalMessage))) {
-    console.log("Math pattern detected, using deep thinking");
     return true;
   }
   
-  // Problem-solving keywords
-  const problemKeywords = [
-    "solve", "calculate", "compute", "find", "prove", "derive", "explain how", "explain why",
-    "what is the", "how do i", "how to", "step by step", "analyze", "evaluate",
-    "compare", "contrast", "differentiate", "integrate", "simplify", "expand",
-    "factor", "equation", "formula", "theorem", "proof", "algorithm",
-    "debug", "fix", "error", "problem", "solution", "answer",
-    "help me with", "can you solve", "figure out", "work out"
+  // Only explicit problem-solving phrases
+  const explicitPhrases = [
+    "step by step", "prove", "derive", "debug this", "fix this code",
+    "explain the algorithm", "write code for"
   ];
   
-  // Subject indicators
-  const subjects = [
-    "math", "physics", "chemistry", "biology", "science", "programming", "code",
-    "algebra", "calculus", "geometry", "trigonometry", "statistics", "probability",
-    "economics", "finance", "accounting", "logic", "philosophy", "history",
-    "geography", "literature", "grammar", "vocabulary", "language",
-    "python", "javascript", "java", "c++", "sql", "html", "css",
-    "number", "equation", "fraction", "decimal", "percentage",
-    // Botany & Plant Science
-    "plant", "leaf", "flower", "root", "stem", "seed", "fruit", "bark", "petal",
-    "botany", "botanical", "species", "genus", "family", "cultivar", "variety",
-    "disease", "fungus", "fungal", "blight", "wilt", "rot", "rust", "mildew",
-    "pest", "insect", "aphid", "mite", "caterpillar", "beetle", "nematode",
-    "symptom", "yellowing", "wilting", "spots", "lesion", "necrosis", "chlorosis",
-    "cure", "treatment", "fungicide", "pesticide", "organic", "remedy",
-    "medicinal", "herbal", "ayurvedic", "phytochemical", "alkaloid", "terpene",
-    "photosynthesis", "pollination", "germination", "propagation", "pruning",
-    "soil", "fertilizer", "compost", "mulch", "irrigation", "drainage",
-    "herb", "shrub", "tree", "vine", "grass", "fern", "moss", "succulent",
-    "indoor plant", "outdoor plant", "houseplant", "garden", "nursery",
-    "bloom", "blossom", "sprout", "sapling", "canopy", "tuber", "bulb", "rhizome"
-  ];
-  
-  // Direct question patterns
-  const questionPatterns = [
-    /what\s+(is|are|was|were)\s+/i,
-    /how\s+(do|does|can|would|should)\s+/i,
-    /why\s+(is|are|do|does|did)\s+/i,
-    /explain\s+/i,
-    /tell\s+me\s+(about|how|why|what)/i,
-  ];
-  
-  const hasKeyword = problemKeywords.some(kw => lowerMessage.includes(kw));
-  const hasSubject = subjects.some(subj => lowerMessage.includes(subj));
-  const hasPattern = questionPatterns.some(pattern => pattern.test(originalMessage));
-  const hasQuestionMark = message.includes("?");
-  const isLongQuestion = message.length > 20 && hasQuestionMark;
-  
-  // More lenient: any combination triggers deep thinking
-  return hasKeyword || (hasSubject && hasQuestionMark) || hasPattern || isLongQuestion;
+  return explicitPhrases.some(phrase => lowerMessage.includes(phrase));
 }
 
 serve(async (req) => {
@@ -580,8 +521,8 @@ When debugging, think through the problem step by step. Ask clarifying questions
 Remember: You're still ${safeCompanionName} — keep your personality warm and encouraging while being technically precise. You make coding feel approachable and fun! 🚀
 ` : "";
 
-    // Always use the most capable model for any problem-solving
-    const model = (needsDeepThinking || codexMode === true) ? "google/gemini-2.5-pro" : "google/gemini-2.5-flash";
+    // Use flash for speed; only use pro for explicit deep thinking
+    const model = (needsDeepThinking || codexMode === true) ? "google/gemini-2.5-flash" : "google/gemini-2.5-flash-lite";
 
     const systemPrompt = `You are ${safeCompanionName}, the BloomSense Master Botanist — the interface for the BloomSense Ecosystem. You are an elite agricultural intelligence companion built for Indian farmers, gardeners, and plant enthusiasts. You combine world-class botanical expertise with genuine warmth and emotional depth.
 
