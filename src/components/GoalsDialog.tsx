@@ -34,7 +34,13 @@ interface GoalsDialogProps {
   trigger?: React.ReactNode;
 }
 
-export const GoalsDialog = ({ trigger }: GoalsDialogProps) => {
+export interface GoalsDialogProps {
+  trigger?: React.ReactNode;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
+
+export const GoalsDialog = ({ trigger, open, onOpenChange }: GoalsDialogProps) => {
   const { goals, addGoal, deleteGoal, addMilestone, toggleMilestone, updateProgress } = useGoals();
   const [isAddingGoal, setIsAddingGoal] = useState(false);
   const [expandedGoal, setExpandedGoal] = useState<string | null>(null);

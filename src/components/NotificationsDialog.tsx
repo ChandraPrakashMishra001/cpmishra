@@ -17,9 +17,11 @@ import { cn } from "@/lib/utils";
 interface NotificationsDialogProps {
   trigger?: React.ReactNode;
   companionName: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
 }
 
-export const NotificationsDialog = ({ trigger, companionName }: NotificationsDialogProps) => {
+export const NotificationsDialog = ({ trigger, companionName, open, onOpenChange }: NotificationsDialogProps) => {
   const {
     settings,
     permission,
