@@ -7,10 +7,9 @@ import FloatingClouds from "@/components/FloatingClouds";
 import FloatingSparkles from "@/components/FloatingSparkles";
 import ConfettiCelebration from "@/components/ConfettiCelebration";
 import MoodIndicator from "@/components/MoodIndicator";
-import { GoalsDialog } from "@/components/GoalsDialog";
-import { NotificationsDialog } from "@/components/NotificationsDialog";
 import FieldLogDialog from "@/components/FieldLogDialog";
 import DiseaseGallery from "@/components/DiseaseGallery";
+import ToolbarMenu from "@/components/ToolbarMenu";
 import { useLiaChat } from "@/hooks/useLiaChat";
 import { useCompanionSettings } from "@/hooks/useCompanionSettings";
 import { usePersonalitySettings } from "@/hooks/usePersonalitySettings";
@@ -21,7 +20,19 @@ import { useTheme } from "@/hooks/useTheme";
 import { useRoleplay } from "@/hooks/useRoleplay";
 import { useLanguage, LANGUAGE_LABELS, type AppLanguage } from "@/hooks/useLanguage";
 import liaAvatar from "@/assets/amanai-avatar.png";
-import { Trash2, Target, Sun, Moon, Brain, Code2, BookOpen, Bug, Globe } from "lucide-react";
+import { Trash2, Sun, Moon, Brain, Code2, BookOpen, Bug } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
