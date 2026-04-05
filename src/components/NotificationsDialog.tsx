@@ -41,7 +41,7 @@ export const NotificationsDialog = ({ trigger, companionName, open, onOpenChange
 
   if (!isSupported) {
     return (
-      <Dialog>
+      <Dialog open={open} onOpenChange={onOpenChange}>
         <DialogTrigger asChild>
           {trigger || (
             <Button
