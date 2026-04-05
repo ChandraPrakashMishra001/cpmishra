@@ -215,19 +215,11 @@ const Index = () => {
                   </button>
                 ))}
               </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleTheme}
-                className="bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm transition-all duration-300"
-              >
-                {isNight ? (
-                  <Sun className="w-4 h-4 text-yellow-500" />
-                ) : (
-                  <Moon className="w-4 h-4 text-primary" />
-                )}
-              </Button>
-              <NotificationsDialog companionName={settings.name} />
+              <ToolbarMenu
+                isNight={isNight}
+                onToggleTheme={toggleTheme}
+                companionName={settings.name}
+              />
               <MemoryViewerDialog
                 memory={memory}
                 companionName={settings.name}
@@ -239,17 +231,6 @@ const Index = () => {
                     className="bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm"
                   >
                     <Brain className="w-4 h-4 text-primary" />
-                  </Button>
-                }
-              />
-              <GoalsDialog
-                trigger={
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm"
-                  >
-                    <Target className="w-4 h-4 text-primary" />
                   </Button>
                 }
               />
