@@ -69,7 +69,7 @@ export const NotificationsDialog = ({ trigger, companionName, open, onOpenChange
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         {trigger || (
           <Button

@@ -82,7 +82,7 @@ export const GoalsDialog = ({ trigger, open, onOpenChange }: GoalsDialogProps) =
   const completedGoals = goals.filter(g => g.completed);
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         {trigger || (
           <Button variant="ghost" size="icon" className="text-lia-pink hover:bg-lia-pink/20">
