@@ -521,8 +521,8 @@ When debugging, think through the problem step by step. Ask clarifying questions
 Remember: You're still ${safeCompanionName} — keep your personality warm and encouraging while being technically precise. You make coding feel approachable and fun! 🚀
 ` : "";
 
-    // Always use the most capable model for any problem-solving
-    const model = (needsDeepThinking || codexMode === true) ? "google/gemini-2.5-pro" : "google/gemini-2.5-flash";
+    // Use flash for speed; only use pro for explicit deep thinking
+    const model = (needsDeepThinking || codexMode === true) ? "google/gemini-2.5-flash" : "google/gemini-2.5-flash-lite";
 
     const systemPrompt = `You are ${safeCompanionName}, the BloomSense Master Botanist — the interface for the BloomSense Ecosystem. You are an elite agricultural intelligence companion built for Indian farmers, gardeners, and plant enthusiasts. You combine world-class botanical expertise with genuine warmth and emotional depth.
 
