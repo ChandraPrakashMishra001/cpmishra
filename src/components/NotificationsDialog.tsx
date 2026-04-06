@@ -39,20 +39,24 @@ export const NotificationsDialog = ({ trigger, companionName, open, onOpenChange
     sendMotivationalMessage();
   };
 
+  const isControlled = open !== undefined;
+
   if (!isSupported) {
     return (
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogTrigger asChild>
-          {trigger || (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="bg-card/40 backdrop-blur-sm border border-border/30 hover:bg-lia-pink/20"
-            >
-              <BellOff className="w-4 h-4 text-muted-foreground" />
-            </Button>
-          )}
-        </DialogTrigger>
+        {!isControlled && (
+          <DialogTrigger asChild>
+            {trigger || (
+              <Button
+                variant="ghost"
+                size="icon"
+                className="bg-card/40 backdrop-blur-sm border border-border/30 hover:bg-lia-pink/20"
+              >
+                <BellOff className="w-4 h-4 text-muted-foreground" />
+              </Button>
+            )}
+          </DialogTrigger>
+        )}
         <DialogContent className="bg-card border-border/50 max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -70,24 +74,26 @@ export const NotificationsDialog = ({ trigger, companionName, open, onOpenChange
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "bg-card/40 backdrop-blur-sm border border-border/30",
-              settings.enabled ? "hover:bg-lia-pink/20" : "hover:bg-muted/20"
-            )}
-          >
-            {settings.enabled ? (
-              <Bell className="w-4 h-4 text-lia-pink" />
-            ) : (
-              <BellOff className="w-4 h-4 text-muted-foreground" />
-            )}
-          </Button>
-        )}
-      </DialogTrigger>
+      {!isControlled && (
+        <DialogTrigger asChild>
+          {trigger || (
+            <Button
+              variant="ghost"
+              size="icon"
+              className={cn(
+                "bg-card/40 backdrop-blur-sm border border-border/30",
+                settings.enabled ? "hover:bg-lia-pink/20" : "hover:bg-muted/20"
+              )}
+            >
+              {settings.enabled ? (
+                <Bell className="w-4 h-4 text-lia-pink" />
+              ) : (
+                <BellOff className="w-4 h-4 text-muted-foreground" />
+              )}
+            </Button>
+          )}
+        </DialogTrigger>
+      )}
       <DialogContent className="bg-card border-border/50 max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-xl">
