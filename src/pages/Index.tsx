@@ -66,7 +66,7 @@ const Index = () => {
     setShowCelebration,
   } = useLiaChat(settings.name, goalsSummary, personalitySummary, phdModeEnabled, roleplayPrompt, codexModeEnabled, language);
 
-  const languages: AppLanguage[] = ["en", "hi", "od"];
+  
 
   return (
     <HelmetProvider>
