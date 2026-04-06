@@ -22,7 +22,9 @@ interface ToolbarMenuProps {
   onChangeLanguage: (lang: AppLanguage) => void;
 }
 
-const ToolbarMenu = ({ isNight, onToggleTheme, companionName, compact = false }: ToolbarMenuProps) => {
+const languages: AppLanguage[] = ["en", "hi", "od"];
+
+const ToolbarMenu = ({ isNight, onToggleTheme, companionName, compact = false, language, onChangeLanguage }: ToolbarMenuProps) => {
   const [goalsOpen, setGoalsOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
