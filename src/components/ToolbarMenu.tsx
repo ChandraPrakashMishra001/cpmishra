@@ -1,4 +1,4 @@
-import { Sun, Moon, Target, Bell, ChevronDown, Menu } from "lucide-react";
+import { Sun, Moon, Target, Bell, Menu, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -6,16 +6,20 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { GoalsDialog } from "./GoalsDialog";
 import { NotificationsDialog } from "./NotificationsDialog";
 import { useState } from "react";
+import { LANGUAGE_LABELS, type AppLanguage } from "@/hooks/useLanguage";
 
 interface ToolbarMenuProps {
   isNight: boolean;
   onToggleTheme: () => void;
   companionName: string;
   compact?: boolean;
+  language: AppLanguage;
+  onChangeLanguage: (lang: AppLanguage) => void;
 }
 
 const ToolbarMenu = ({ isNight, onToggleTheme, companionName, compact = false }: ToolbarMenuProps) => {
