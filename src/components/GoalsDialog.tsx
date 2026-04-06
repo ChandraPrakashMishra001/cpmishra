@@ -81,15 +81,19 @@ export const GoalsDialog = ({ trigger, open, onOpenChange }: GoalsDialogProps) =
   const activeGoals = goals.filter(g => !g.completed);
   const completedGoals = goals.filter(g => g.completed);
 
+  const isControlled = open !== undefined;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        {trigger || (
-          <Button variant="ghost" size="icon" className="text-lia-pink hover:bg-lia-pink/20">
-            <Target className="w-5 h-5" />
-          </Button>
-        )}
-      </DialogTrigger>
+      {!isControlled && (
+        <DialogTrigger asChild>
+          {trigger || (
+            <Button variant="ghost" size="icon" className="text-lia-pink hover:bg-lia-pink/20">
+              <Target className="w-5 h-5" />
+            </Button>
+          )}
+        </DialogTrigger>
+      )}
       <DialogContent className="max-w-lg max-h-[80vh] overflow-hidden flex flex-col bg-card/95 backdrop-blur-xl border-lia-pink/30">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-foreground">
