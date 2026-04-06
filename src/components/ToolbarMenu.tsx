@@ -63,6 +63,26 @@ const ToolbarMenu = ({ isNight, onToggleTheme, companionName, compact = false, l
             <Target className="w-4 h-4 text-primary" />
             <span>Your Goals</span>
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel className="flex items-center gap-2 text-xs">
+            <Globe className="w-3.5 h-3.5 text-primary" />
+            Language
+          </DropdownMenuLabel>
+          <div className="flex items-center gap-1 px-2 pb-1.5">
+            {languages.map((lang) => (
+              <button
+                key={lang}
+                onClick={() => onChangeLanguage(lang)}
+                className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all ${
+                  language === lang
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                }`}
+              >
+                {LANGUAGE_LABELS[lang].short}
+              </button>
+            ))}
+          </div>
         </DropdownMenuContent>
       </DropdownMenu>
 
