@@ -1,4 +1,4 @@
-import { Sun, Moon, Target, Bell, ChevronDown, Menu } from "lucide-react";
+import { Sun, Moon, Target, Bell, Menu, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -6,19 +6,25 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { GoalsDialog } from "./GoalsDialog";
 import { NotificationsDialog } from "./NotificationsDialog";
 import { useState } from "react";
+import { LANGUAGE_LABELS, type AppLanguage } from "@/hooks/useLanguage";
 
 interface ToolbarMenuProps {
   isNight: boolean;
   onToggleTheme: () => void;
   companionName: string;
   compact?: boolean;
+  language: AppLanguage;
+  onChangeLanguage: (lang: AppLanguage) => void;
 }
 
-const ToolbarMenu = ({ isNight, onToggleTheme, companionName, compact = false }: ToolbarMenuProps) => {
+const languages: AppLanguage[] = ["en", "hi", "od"];
+
+const ToolbarMenu = ({ isNight, onToggleTheme, companionName, compact = false, language, onChangeLanguage }: ToolbarMenuProps) => {
   const [goalsOpen, setGoalsOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
 
@@ -57,6 +63,26 @@ const ToolbarMenu = ({ isNight, onToggleTheme, companionName, compact = false }:
             <Target className="w-4 h-4 text-primary" />
             <span>Your Goals</span>
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel className="flex items-center gap-2 text-xs">
+            <Globe className="w-3.5 h-3.5 text-primary" />
+            Language
+          </DropdownMenuLabel>
+          <div className="flex items-center gap-1 px-2 pb-1.5">
+            {languages.map((lang) => (
+              <button
+                key={lang}
+                onClick={() => onChangeLanguage(lang)}
+                className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all ${
+                  language === lang
+                    ? "bg-primary text-primary-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-accent"
+                }`}
+              >
+                {LANGUAGE_LABELS[lang].short}
+              </button>
+            ))}
+          </div>
         </DropdownMenuContent>
       </DropdownMenu>
 

@@ -18,7 +18,7 @@ import { useCodexMode } from "@/hooks/useCodexMode";
 import { useGoals } from "@/hooks/useGoals";
 import { useTheme } from "@/hooks/useTheme";
 import { useRoleplay } from "@/hooks/useRoleplay";
-import { useLanguage, LANGUAGE_LABELS, type AppLanguage } from "@/hooks/useLanguage";
+import { useLanguage, type AppLanguage } from "@/hooks/useLanguage";
 import liaAvatar from "@/assets/amanai-avatar.png";
 import { Trash2, Brain, Code2, BookOpen, Bug } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -66,7 +66,7 @@ const Index = () => {
     setShowCelebration,
   } = useLiaChat(settings.name, goalsSummary, personalitySummary, phdModeEnabled, roleplayPrompt, codexModeEnabled, language);
 
-  const languages: AppLanguage[] = ["en", "hi", "od"];
+  
 
   return (
     <HelmetProvider>
@@ -113,27 +113,13 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center gap-0.5">
-              {/* Language selector - mobile */}
-              <div className="flex items-center bg-muted/60 rounded-full p-0.5 mr-1">
-                {languages.map((lang) => (
-                  <button
-                    key={lang}
-                    onClick={() => changeLanguage(lang)}
-                    className={`px-1.5 py-0.5 rounded-full text-[9px] font-bold transition-all ${
-                      language === lang
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {LANGUAGE_LABELS[lang].short}
-                  </button>
-                ))}
-              </div>
               <ToolbarMenu
                 isNight={isNight}
                 onToggleTheme={toggleTheme}
                 companionName={settings.name}
                 compact
+                language={language}
+                onChangeLanguage={changeLanguage}
               />
               <MemoryViewerDialog
                 memory={memory}
@@ -209,26 +195,12 @@ const Index = () => {
           <div className="hidden lg:flex lg:w-1/2 lg:sticky lg:top-0 lg:h-screen flex-col items-center justify-center p-8 lg:p-12 relative">
             {/* Desktop toolbar - clean flex row */}
             <div className="absolute top-4 right-4 z-20 flex items-center gap-2">
-              {/* Language selector - desktop */}
-              <div className="flex items-center bg-card/60 backdrop-blur-sm border border-border/50 rounded-full p-1 shadow-sm">
-                {languages.map((lang) => (
-                  <button
-                    key={lang}
-                    onClick={() => changeLanguage(lang)}
-                    className={`px-2.5 py-1 rounded-full text-xs font-bold transition-all ${
-                      language === lang
-                        ? "bg-primary text-primary-foreground shadow-sm"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {LANGUAGE_LABELS[lang].short}
-                  </button>
-                ))}
-              </div>
               <ToolbarMenu
                 isNight={isNight}
                 onToggleTheme={toggleTheme}
                 companionName={settings.name}
+                language={language}
+                onChangeLanguage={changeLanguage}
               />
               <MemoryViewerDialog
                 memory={memory}
