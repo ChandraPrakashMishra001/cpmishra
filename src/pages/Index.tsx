@@ -19,6 +19,7 @@ import { useGoals } from "@/hooks/useGoals";
 import { useTheme } from "@/hooks/useTheme";
 import { useRoleplay } from "@/hooks/useRoleplay";
 import { useLanguage, type AppLanguage } from "@/hooks/useLanguage";
+import { useModelSelection } from "@/hooks/useModelSelection";
 import liaAvatar from "@/assets/amanai-avatar.png";
 import { Trash2, Brain, Code2, BookOpen, Bug } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -48,6 +49,7 @@ const Index = () => {
   const { theme, toggleTheme, isNight } = useTheme();
   const { activeRole, setActiveRole, getRoleplayPrompt } = useRoleplay();
   const { language, changeLanguage } = useLanguage();
+  const { selectedModel, changeModel, getModelInfo } = useModelSelection();
   const goalsSummary = getGoalsSummary();
   const personalitySummary = getPersonalitySummary();
   const roleplayPrompt = getRoleplayPrompt(activeRole, settings.name);
@@ -64,7 +66,7 @@ const Index = () => {
     quickReplies,
     showCelebration,
     setShowCelebration,
-  } = useLiaChat(settings.name, goalsSummary, personalitySummary, phdModeEnabled, roleplayPrompt, codexModeEnabled, language);
+  } = useLiaChat(settings.name, goalsSummary, personalitySummary, phdModeEnabled, roleplayPrompt, codexModeEnabled, language, getModelInfo().apiModel);
 
   
 
@@ -120,6 +122,8 @@ const Index = () => {
                 compact
                 language={language}
                 onChangeLanguage={changeLanguage}
+                selectedModel={selectedModel}
+                onChangeModel={changeModel}
               />
               <MemoryViewerDialog
                 memory={memory}
@@ -201,6 +205,8 @@ const Index = () => {
                 companionName={settings.name}
                 language={language}
                 onChangeLanguage={changeLanguage}
+                selectedModel={selectedModel}
+                onChangeModel={changeModel}
               />
               <MemoryViewerDialog
                 memory={memory}
