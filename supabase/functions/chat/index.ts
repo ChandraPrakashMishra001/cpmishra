@@ -146,7 +146,7 @@ LANGUAGE: ${langDir}`;
     } else {
       // Auto-select: deep thinking gets heavier model
       model = (needsDeepThinking || codexMode === true)
-        ? "google/gemini-2.5-flash"
+        ? "google/gemini-3-flash-preview"
         : "google/gemini-3-flash-preview";
     }
 
