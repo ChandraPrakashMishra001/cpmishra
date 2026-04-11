@@ -227,7 +227,7 @@ interface GoalsSummary {
   categories: string[];
 }
 
-export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSummary, personalitySummary?: string, phdModeEnabled: boolean = false, roleplayPrompt: string = "", codexModeEnabled: boolean = false, language: string = "en") => {
+export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSummary, personalitySummary?: string, phdModeEnabled: boolean = false, roleplayPrompt: string = "", codexModeEnabled: boolean = false, language: string = "en", userModel: string = "auto") => {
   const { 
     memory, 
     addMessage, 
@@ -286,6 +286,7 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
         roleplay: roleplayPrompt,
         codexMode: codexModeEnabled,
         language,
+        userModel: userModel !== "auto" ? userModel : undefined,
       }),
       signal,
     });
