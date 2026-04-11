@@ -47,7 +47,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { messages, companionName, memory, goals, personality, phdMode, roleplay, codexMode, language } = body;
+    const { messages, companionName, memory, goals, personality, phdMode, roleplay, codexMode, language, userModel } = body;
 
     if (!validateMessages(messages)) {
       return new Response(JSON.stringify({ error: "Invalid request format" }), {
@@ -132,10 +132,23 @@ ${memCtx}${goalsCtx}
 
 LANGUAGE: ${langDir}`;
 
-    // Use latest fast model for standard, flash for deep thinking
-    const model = (needsDeepThinking || codexMode === true)
-      ? "google/gemini-2.5-flash"
-      : "google/gemini-3-flash-preview";
+    // Model selection: user override > auto-select
+    const VALID_MODELS = [
+      "google/gemini-3-flash-preview",
+      "google/gemini-2.5-flash-lite",
+      "google/gemini-2.5-flash",
+      "google/gemini-2.5-pro",
+      "openai/gpt-5-mini",
+    ];
+    let model: string;
+    if (typeof userModel === "string" && VALID_MODELS.includes(userModel)) {
+      model = userModel;
+    } else {
+      // Auto-select: deep thinking gets heavier model
+      model = (needsDeepThinking || codexMode === true)
+        ? "google/gemini-2.5-flash"
+        : "google/gemini-3-flash-preview";
+    }
 
     // Only send last 15 messages for speed
     const recentMessages = messages.slice(-15);
