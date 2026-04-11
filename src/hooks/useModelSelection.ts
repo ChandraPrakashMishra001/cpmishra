@@ -14,7 +14,7 @@ export const AI_MODELS: ModelInfo[] = [
   { id: "flash", label: "Flash", description: "Fast & balanced", apiModel: "google/gemini-3-flash-preview" },
   { id: "flash-lite", label: "Lite", description: "Fastest, simple tasks", apiModel: "google/gemini-2.5-flash-lite" },
   { id: "pro", label: "Pro", description: "Complex reasoning", apiModel: "google/gemini-2.5-pro" },
-  { id: "gpt5-mini", label: "GPT-5 Mini", description: "Strong all-rounder", apiModel: "openai/gpt-5-mini" },
+  { id: "gpt5-mini", label: "GPT5", description: "Strong all-rounder", apiModel: "openai/gpt-5-mini" },
 ];
 
 export const useModelSelection = () => {
