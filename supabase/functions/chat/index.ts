@@ -135,13 +135,13 @@ LANGUAGE: ${langDir}`;
     // Model selection: user override > auto-select
     const VALID_MODELS = [
       "google/gemini-3-flash-preview",
-      "google/gemini-3-pro-image-preview",
       "google/gemini-3.1-pro-preview",
     ];
     let model: string;
     if (typeof userModel === "string" && VALID_MODELS.includes(userModel)) {
       model = userModel;
     } else {
+      // Auto: deep tasks → Pro 3.1, standard → Flash 3
       model = (needsDeepThinking || codexMode === true)
         ? "google/gemini-3.1-pro-preview"
         : "google/gemini-3-flash-preview";
@@ -166,9 +166,9 @@ LANGUAGE: ${langDir}`;
           })),
         ],
         stream: true,
-        temperature: needsDeepThinking ? 0.2 : 0.4,
-        top_p: 0.9,
-        max_tokens: needsDeepThinking ? 500 : 200,
+        temperature: needsDeepThinking ? 0.15 : 0.35,
+        top_p: 0.85,
+        max_tokens: needsDeepThinking ? 800 : 350,
       }),
     });
 
