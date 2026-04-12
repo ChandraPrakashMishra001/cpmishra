@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 
-export type AIModel = "auto" | "flash" | "flash-lite" | "pro" | "gpt5-mini";
+export type AIModel = "auto" | "gemini3-flash" | "gemini3-pro" | "gemini31-pro";
 
 export interface ModelInfo {
   id: AIModel;
@@ -11,10 +11,9 @@ export interface ModelInfo {
 
 export const AI_MODELS: ModelInfo[] = [
   { id: "auto", label: "Auto", description: "Best model for each query", apiModel: "auto" },
-  { id: "flash", label: "Flash", description: "Fast & balanced", apiModel: "google/gemini-3-flash-preview" },
-  { id: "flash-lite", label: "Lite", description: "Fastest, simple tasks", apiModel: "google/gemini-2.5-flash-lite" },
-  { id: "pro", label: "Pro", description: "Complex reasoning", apiModel: "google/gemini-2.5-pro" },
-  { id: "gpt5-mini", label: "GPT5", description: "Strong all-rounder", apiModel: "openai/gpt-5-mini" },
+  { id: "gemini3-flash", label: "Flash 3", description: "Fast & balanced", apiModel: "google/gemini-3-flash-preview" },
+  { id: "gemini3-pro", label: "Pro 3", description: "Image generation", apiModel: "google/gemini-3-pro-image-preview" },
+  { id: "gemini31-pro", label: "Pro 3.1", description: "Latest reasoning", apiModel: "google/gemini-3.1-pro-preview" },
 ];
 
 export const useModelSelection = () => {
