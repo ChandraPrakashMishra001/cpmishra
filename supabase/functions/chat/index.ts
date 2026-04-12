@@ -135,16 +135,17 @@ LANGUAGE: ${langDir}`;
     // Model selection: user override > auto-select
     const VALID_MODELS = [
       "google/gemini-3-flash-preview",
-      "google/gemini-3-pro-image-preview",
+      "google/gemini-3.1-flash-preview",
       "google/gemini-3.1-pro-preview",
     ];
     let model: string;
     if (typeof userModel === "string" && VALID_MODELS.includes(userModel)) {
       model = userModel;
     } else {
+      // Auto: deep tasks → Pro 3.1 for reasoning, standard → Flash 3.1 for speed
       model = (needsDeepThinking || codexMode === true)
         ? "google/gemini-3.1-pro-preview"
-        : "google/gemini-3-flash-preview";
+        : "google/gemini-3.1-flash-preview";
     }
 
     // Only send last 15 messages for speed
