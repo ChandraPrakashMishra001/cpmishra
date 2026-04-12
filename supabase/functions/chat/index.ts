@@ -167,9 +167,9 @@ LANGUAGE: ${langDir}`;
           })),
         ],
         stream: true,
-        temperature: needsDeepThinking ? 0.2 : 0.4,
-        top_p: 0.9,
-        max_tokens: needsDeepThinking ? 500 : 200,
+        temperature: needsDeepThinking ? 0.15 : 0.35,
+        top_p: 0.85,
+        max_tokens: needsDeepThinking ? 800 : 350,
       }),
     });
 
