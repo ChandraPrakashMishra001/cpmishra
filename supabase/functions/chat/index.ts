@@ -135,18 +135,15 @@ LANGUAGE: ${langDir}`;
     // Model selection: user override > auto-select
     const VALID_MODELS = [
       "google/gemini-3-flash-preview",
-      "google/gemini-2.5-flash-lite",
-      "google/gemini-2.5-flash",
-      "google/gemini-2.5-pro",
-      "openai/gpt-5-mini",
+      "google/gemini-3-pro-image-preview",
+      "google/gemini-3.1-pro-preview",
     ];
     let model: string;
     if (typeof userModel === "string" && VALID_MODELS.includes(userModel)) {
       model = userModel;
     } else {
-      // Auto-select: deep thinking gets heavier model
       model = (needsDeepThinking || codexMode === true)
-        ? "google/gemini-3-flash-preview"
+        ? "google/gemini-3.1-pro-preview"
         : "google/gemini-3-flash-preview";
     }
 
