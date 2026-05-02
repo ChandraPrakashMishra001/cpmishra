@@ -263,6 +263,19 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
   const [currentEmotion, setCurrentEmotion] = useState<Emotion>("happy");
   const [isTalking, setIsTalking] = useState(false);
 
+  // Keep latest messages in a ref so sendMessage doesn't re-create on every keystroke
+  const messagesRef = useRef(messages);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
+  // Abort any in-flight request when the hook unmounts
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
+
   // Stream chat with AI
   const streamChat = async (
     userMessages: { role: "user" | "assistant"; content: string }[],
@@ -547,8 +560,8 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
       }
     }
 
-    // Regular chat flow
-    const recentMessages = messages
+    // Regular chat flow — read from ref to keep callback identity stable
+    const recentMessages = messagesRef.current
       .filter(msg => !msg.id.startsWith("welcome") && !msg.id.startsWith("error"))
       .slice(-20);
     
@@ -559,41 +572,85 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
     conversationHistory.push({ role: "user", content });
 
     let assistantContent = "";
+    let pendingChunk = "";
+    let rafId: number | null = null;
+    let lastEmotionLen = 0;
+    setIsTalking(true);
+
+    const flushChunk = () => {
+      rafId = null;
+      if (!pendingChunk) return;
+      assistantContent += pendingChunk;
+      pendingChunk = "";
+
+      if (assistantContent.length - lastEmotionLen > 80) {
+        lastEmotionLen = assistantContent.length;
+        setCurrentEmotion(detectEmotionFromResponse(assistantContent));
+      }
+
+      const snapshot = assistantContent;
+      setMessages(prev => {
+        const idx = prev.findIndex(m => m.id === assistantMsgId);
+        if (idx !== -1) {
+          if (prev[idx].content === snapshot) return prev;
+          const next = prev.slice();
+          next[idx] = { ...next[idx], content: snapshot };
+          return next;
+        }
+        return [
+          ...prev,
+          { id: assistantMsgId, content: snapshot, isUser: false, timestamp: new Date() },
+        ];
+      });
+    };
 
     const updateAssistantMessage = (nextChunk: string) => {
-      assistantContent += nextChunk;
-      setIsTalking(true);
-      
-      const emotion = detectEmotionFromResponse(assistantContent);
-      setCurrentEmotion(emotion);
-
-      setMessages(prev => {
-        const existingAssistantIdx = prev.findIndex(m => m.id === assistantMsgId);
-        if (existingAssistantIdx !== -1) {
-          return prev.map((m, i) => 
-            i === existingAssistantIdx ? { ...m, content: assistantContent } : m
-          );
-        }
-        return [...prev, { 
-          id: assistantMsgId, 
-          content: assistantContent, 
-          isUser: false, 
-          timestamp: new Date() 
-        }];
-      });
+      pendingChunk += nextChunk;
+      if (rafId === null) {
+        rafId = requestAnimationFrame(flushChunk);
+      }
     };
 
     const maxRetries = 2;
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
         assistantContent = "";
+        pendingChunk = "";
+        lastEmotionLen = 0;
         await streamChat(
           conversationHistory,
           updateAssistantMessage,
           () => {
+            // Final flush of any buffered tokens
+            if (rafId !== null) {
+              cancelAnimationFrame(rafId);
+              rafId = null;
+            }
+            if (pendingChunk) {
+              assistantContent += pendingChunk;
+              pendingChunk = "";
+            }
+            // Ensure the assistant message is rendered (even if rAF never fired)
+            if (assistantContent) {
+              const snapshot = assistantContent;
+              setMessages(prev => {
+                const idx = prev.findIndex(m => m.id === assistantMsgId);
+                if (idx !== -1) {
+                  if (prev[idx].content === snapshot) return prev;
+                  const next = prev.slice();
+                  next[idx] = { ...next[idx], content: snapshot };
+                  return next;
+                }
+                return [
+                  ...prev,
+                  { id: assistantMsgId, content: snapshot, isUser: false, timestamp: new Date() },
+                ];
+              });
+            }
             setIsTyping(false);
             setIsTalking(false);
-            
+            setCurrentEmotion(detectEmotionFromResponse(assistantContent));
+
             if (assistantContent) {
               const finalMessage: Message = {
                 id: assistantMsgId,
@@ -604,9 +661,9 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
               addMessage(finalMessage);
             }
           },
-          abortControllerRef.current.signal
+          abortControllerRef.current!.signal
         );
-        return; // Success, exit loop
+        return; // Success
       } catch (error) {
         if ((error as Error).name === 'AbortError') {
           return;
@@ -633,7 +690,7 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
         setMessages(prev => [...prev, errorMessage]);
       }
     }
-  }, [messages, companionName, memory, goalsSummary, addMessage, setUserName, addTopics]);
+  }, [companionName, goalsSummary, personalitySummary, phdModeEnabled, roleplayPrompt, codexModeEnabled, language, userModel, addMessage, setUserName, addTopics, memoryContext]);
 
   const handleReaction = useCallback((messageId: string, reactionType: ReactionType) => {
     setMessages(prev => prev.map(msg => {
@@ -663,18 +720,13 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
   }, []);
 
   const handleBookmark = useCallback((messageId: string) => {
+    const wasBookmarked = messagesRef.current.find(m => m.id === messageId)?.isBookmarked;
     setMessages(prev => prev.map(msg => {
       if (msg.id !== messageId) return msg;
-      return {
-        ...msg,
-        isBookmarked: !msg.isBookmarked,
-      };
+      return { ...msg, isBookmarked: !msg.isBookmarked };
     }));
-    toast.success(messages.find(m => m.id === messageId)?.isBookmarked 
-      ? "Bookmark removed~ 📌" 
-      : "Message bookmarked! 💖"
-    );
-  }, [messages]);
+    toast.success(wasBookmarked ? "Bookmark removed~ 📌" : "Message bookmarked! 💖");
+  }, []);
 
   // Generate quick reply suggestions based on last assistant message
   const generateQuickReplies = useCallback((): string[] => {
