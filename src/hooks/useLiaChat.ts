@@ -680,7 +680,7 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
         setMessages(prev => [...prev, errorMessage]);
       }
     }
-  }, [messages, companionName, memory, goalsSummary, addMessage, setUserName, addTopics]);
+  }, [companionName, goalsSummary, personalitySummary, phdModeEnabled, roleplayPrompt, codexModeEnabled, language, userModel, addMessage, setUserName, addTopics, memoryContext]);
 
   const handleReaction = useCallback((messageId: string, reactionType: ReactionType) => {
     setMessages(prev => prev.map(msg => {
