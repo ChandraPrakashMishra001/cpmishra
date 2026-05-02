@@ -152,26 +152,35 @@ LANGUAGE: ${langDir}`;
     // Only send last 15 messages for speed
     const recentMessages = messages.slice(-15);
 
+    const isOpenAI = model.startsWith("openai/");
+    const tokenLimit = needsDeepThinking ? 800 : 350;
+    const requestBody: Record<string, unknown> = {
+      model,
+      messages: [
+        { role: "system", content: systemPrompt },
+        ...recentMessages.map((m: { role: string; content: string }) => ({
+          role: m.role,
+          content: m.content.slice(0, 1500),
+        })),
+      ],
+      stream: true,
+      top_p: 0.85,
+    };
+    // GPT-5 family uses max_completion_tokens and doesn't accept custom temperature
+    if (isOpenAI) {
+      requestBody.max_completion_tokens = tokenLimit;
+    } else {
+      requestBody.max_tokens = tokenLimit;
+      requestBody.temperature = needsDeepThinking ? 0.15 : 0.35;
+    }
+
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        model,
-        messages: [
-          { role: "system", content: systemPrompt },
-          ...recentMessages.map((m: { role: string; content: string }) => ({
-            role: m.role,
-            content: m.content.slice(0, 1500),
-          })),
-        ],
-        stream: true,
-        temperature: needsDeepThinking ? 0.15 : 0.35,
-        top_p: 0.85,
-        max_tokens: needsDeepThinking ? 800 : 350,
-      }),
+      body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
