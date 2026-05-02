@@ -572,28 +572,44 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
     conversationHistory.push({ role: "user", content });
 
     let assistantContent = "";
+    let pendingChunk = "";
+    let rafId: number | null = null;
+    let lastEmotionLen = 0;
+    setIsTalking(true);
+
+    const flushChunk = () => {
+      rafId = null;
+      if (!pendingChunk) return;
+      assistantContent += pendingChunk;
+      pendingChunk = "";
+
+      // Recompute emotion only every ~80 chars to avoid O(n²) work per token
+      if (assistantContent.length - lastEmotionLen > 80) {
+        lastEmotionLen = assistantContent.length;
+        setCurrentEmotion(detectEmotionFromResponse(assistantContent));
+      }
+
+      const snapshot = assistantContent;
+      setMessages(prev => {
+        const idx = prev.findIndex(m => m.id === assistantMsgId);
+        if (idx !== -1) {
+          if (prev[idx].content === snapshot) return prev;
+          const next = prev.slice();
+          next[idx] = { ...next[idx], content: snapshot };
+          return next;
+        }
+        return [
+          ...prev,
+          { id: assistantMsgId, content: snapshot, isUser: false, timestamp: new Date() },
+        ];
+      });
+    };
 
     const updateAssistantMessage = (nextChunk: string) => {
-      assistantContent += nextChunk;
-      setIsTalking(true);
-      
-      const emotion = detectEmotionFromResponse(assistantContent);
-      setCurrentEmotion(emotion);
-
-      setMessages(prev => {
-        const existingAssistantIdx = prev.findIndex(m => m.id === assistantMsgId);
-        if (existingAssistantIdx !== -1) {
-          return prev.map((m, i) => 
-            i === existingAssistantIdx ? { ...m, content: assistantContent } : m
-          );
-        }
-        return [...prev, { 
-          id: assistantMsgId, 
-          content: assistantContent, 
-          isUser: false, 
-          timestamp: new Date() 
-        }];
-      });
+      pendingChunk += nextChunk;
+      if (rafId === null) {
+        rafId = requestAnimationFrame(flushChunk);
+      }
     };
 
     const maxRetries = 2;
