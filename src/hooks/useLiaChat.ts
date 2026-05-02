@@ -710,18 +710,13 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
   }, []);
 
   const handleBookmark = useCallback((messageId: string) => {
+    const wasBookmarked = messagesRef.current.find(m => m.id === messageId)?.isBookmarked;
     setMessages(prev => prev.map(msg => {
       if (msg.id !== messageId) return msg;
-      return {
-        ...msg,
-        isBookmarked: !msg.isBookmarked,
-      };
+      return { ...msg, isBookmarked: !msg.isBookmarked };
     }));
-    toast.success(messages.find(m => m.id === messageId)?.isBookmarked 
-      ? "Bookmark removed~ 📌" 
-      : "Message bookmarked! 💖"
-    );
-  }, [messages]);
+    toast.success(wasBookmarked ? "Bookmark removed~ 📌" : "Message bookmarked! 💖");
+  }, []);
 
   // Generate quick reply suggestions based on last assistant message
   const generateQuickReplies = useCallback((): string[] => {
