@@ -189,6 +189,8 @@ const ChatInput = forwardRef<HTMLDivElement, ChatInputProps>(({ onSend, disabled
       </div>
     </div>
   );
-};
+});
+
+ChatInput.displayName = "ChatInput";
 
 export default ChatInput;
