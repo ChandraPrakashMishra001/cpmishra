@@ -629,12 +629,22 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
             if (pendingChunk) {
               assistantContent += pendingChunk;
               pendingChunk = "";
+            }
+            // Ensure the assistant message is rendered (even if rAF never fired)
+            if (assistantContent) {
+              const snapshot = assistantContent;
               setMessages(prev => {
                 const idx = prev.findIndex(m => m.id === assistantMsgId);
-                if (idx === -1) return prev;
-                const next = prev.slice();
-                next[idx] = { ...next[idx], content: assistantContent };
-                return next;
+                if (idx !== -1) {
+                  if (prev[idx].content === snapshot) return prev;
+                  const next = prev.slice();
+                  next[idx] = { ...next[idx], content: snapshot };
+                  return next;
+                }
+                return [
+                  ...prev,
+                  { id: assistantMsgId, content: snapshot, isUser: false, timestamp: new Date() },
+                ];
               });
             }
             setIsTyping(false);
