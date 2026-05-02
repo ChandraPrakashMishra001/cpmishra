@@ -1,4 +1,4 @@
-import { useRef, useEffect, useCallback } from "react";
+import { useRef, useEffect, useCallback, memo } from "react";
 import ChatMessage from "./ChatMessage";
 import ChatInput from "./ChatInput";
 import QuickReplies from "./QuickReplies";
@@ -29,35 +29,58 @@ interface ChatInterfaceProps {
   currentMood?: Emotion;
 }
 
-const ChatInterface = ({ 
-  messages, 
-  onSendMessage, 
-  onReact, 
+const ChatInterface = ({
+  messages,
+  onSendMessage,
+  onReact,
   onBookmark,
-  isTyping, 
-  companionName = "Lia", 
+  isTyping,
+  companionName = "Lia",
   quickReplies = [],
-  currentMood = "happy"
+  currentMood = "happy",
 }: ChatInterfaceProps) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const lastScrollRef = useRef(0);
+  const isUserScrollingRef = useRef(false);
 
-  const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // Throttled scroll prevents jank during fast token streaming
+  const scrollToBottom = useCallback((smooth = false) => {
+    const now = Date.now();
+    if (!smooth && now - lastScrollRef.current < 120) return;
+    lastScrollRef.current = now;
+    messagesEndRef.current?.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "end" });
+  }, []);
+
+  // Pause auto-scroll if user scrolled up to read history
+  useEffect(() => {
+    const el = scrollContainerRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+      isUserScrollingRef.current = distanceFromBottom > 140;
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (isUserScrollingRef.current) return;
+    scrollToBottom(!isTyping);
+  }, [messages, isTyping, scrollToBottom]);
 
-  const handleQuickReply = (suggestion: string) => {
-    onSendMessage(suggestion);
-  };
+  const handleQuickReply = useCallback(
+    (suggestion: string) => onSendMessage(suggestion),
+    [onSendMessage]
+  );
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
-      {/* Messages area */}
-      <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-3 sm:px-6 py-3 sm:py-8 space-y-2.5 sm:space-y-5 overscroll-contain" style={{ WebkitOverflowScrolling: 'touch' }}>
+      <div
+        ref={scrollContainerRef}
+        className="flex-1 overflow-y-auto px-3 sm:px-6 py-3 sm:py-8 space-y-2.5 sm:space-y-5 overscroll-contain"
+        style={{ WebkitOverflowScrolling: "touch" }}
+      >
         {messages.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full text-center px-6 animate-fade-in">
             <div className="relative mb-5">
@@ -68,12 +91,10 @@ const ChatInterface = ({
             <p className="text-foreground/90 text-lg sm:text-2xl font-display font-bold mb-1.5">
               Hi, I'm {companionName}! 🌿
             </p>
-            <p className="text-muted-foreground text-sm sm:text-base max-w-xs">
-              How may I help you?
-            </p>
+            <p className="text-muted-foreground text-sm sm:text-base max-w-xs">How may I help you?</p>
           </div>
         )}
-        
+
         {messages.map((msg) => (
           <ChatMessage
             key={msg.id}
@@ -88,7 +109,7 @@ const ChatInterface = ({
             onBookmark={onBookmark ? () => onBookmark(msg.id) : undefined}
           />
         ))}
-        
+
         {isTyping && (
           <div className="flex items-center gap-2 text-muted-foreground animate-slide-in px-1">
             <div className="flex gap-1 bg-card/40 backdrop-blur-md px-3 py-2 rounded-full border border-border/30 shadow-sm">
@@ -100,18 +121,12 @@ const ChatInterface = ({
             <MoodIndicator mood={currentMood} />
           </div>
         )}
-        
+
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Quick replies */}
-      <QuickReplies
-        suggestions={quickReplies}
-        onSelect={handleQuickReply}
-        visible={!isTyping && quickReplies.length > 0}
-      />
+      <QuickReplies suggestions={quickReplies} onSelect={handleQuickReply} visible={!isTyping && quickReplies.length > 0} />
 
-      {/* Input area */}
       <div className="p-2 sm:p-3 border-t border-border/20 bg-gradient-to-t from-background/90 to-background/50 backdrop-blur-md safe-area-inset-bottom">
         <ChatInput onSend={onSendMessage} disabled={isTyping} companionName={companionName} />
       </div>
@@ -119,4 +134,4 @@ const ChatInterface = ({
   );
 };
 
-export default ChatInterface;
+export default memo(ChatInterface);
