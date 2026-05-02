@@ -154,6 +154,8 @@ LANGUAGE: ${langDir}`;
 
     const isOpenAI = model.startsWith("openai/");
     const tokenLimit = needsDeepThinking ? 800 : 350;
+    // GPT-5 reasoning consumes tokens before output — give it more headroom
+    const openAITokenLimit = needsDeepThinking ? 2000 : 1200;
     const requestBody: Record<string, unknown> = {
       model,
       messages: [
@@ -165,9 +167,8 @@ LANGUAGE: ${langDir}`;
       ],
       stream: true,
     };
-    // GPT-5 family uses max_completion_tokens and doesn't accept custom temperature/top_p
     if (isOpenAI) {
-      requestBody.max_completion_tokens = tokenLimit;
+      requestBody.max_completion_tokens = openAITokenLimit;
     } else {
       requestBody.max_tokens = tokenLimit;
       requestBody.temperature = needsDeepThinking ? 0.15 : 0.35;
