@@ -263,6 +263,19 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
   const [currentEmotion, setCurrentEmotion] = useState<Emotion>("happy");
   const [isTalking, setIsTalking] = useState(false);
 
+  // Keep latest messages in a ref so sendMessage doesn't re-create on every keystroke
+  const messagesRef = useRef(messages);
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
+  // Abort any in-flight request when the hook unmounts
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
+
   // Stream chat with AI
   const streamChat = async (
     userMessages: { role: "user" | "assistant"; content: string }[],
