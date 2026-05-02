@@ -164,14 +164,14 @@ LANGUAGE: ${langDir}`;
         })),
       ],
       stream: true,
-      top_p: 0.85,
     };
-    // GPT-5 family uses max_completion_tokens and doesn't accept custom temperature
+    // GPT-5 family uses max_completion_tokens and doesn't accept custom temperature/top_p
     if (isOpenAI) {
       requestBody.max_completion_tokens = tokenLimit;
     } else {
       requestBody.max_tokens = tokenLimit;
       requestBody.temperature = needsDeepThinking ? 0.15 : 0.35;
+      requestBody.top_p = 0.85;
     }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
