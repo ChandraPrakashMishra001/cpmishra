@@ -1,4 +1,4 @@
-import { useState, KeyboardEvent, useRef, useEffect, useCallback } from "react";
+import { useState, KeyboardEvent, useRef, useEffect, useCallback, forwardRef } from "react";
 import { Send, Sparkles, ImagePlus, X, Camera } from "lucide-react";
 import { toast } from "sonner";
 
@@ -13,7 +13,7 @@ interface ChatInputProps {
   companionName?: string;
 }
 
-const ChatInput = ({ onSend, disabled, companionName = "Lia" }: ChatInputProps) => {
+const ChatInput = forwardRef<HTMLDivElement, ChatInputProps>(({ onSend, disabled, companionName = "Lia" }, _outerRef) => {
   const [message, setMessage] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
