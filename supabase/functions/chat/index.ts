@@ -136,6 +136,8 @@ LANGUAGE: ${langDir}`;
     const VALID_MODELS = [
       "google/gemini-3-flash-preview",
       "google/gemini-3.1-pro-preview",
+      "google/gemini-2.5-pro",
+      "openai/gpt-5",
     ];
     let model: string;
     if (typeof userModel === "string" && VALID_MODELS.includes(userModel)) {
