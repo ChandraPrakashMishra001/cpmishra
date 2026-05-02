@@ -560,8 +560,8 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
       }
     }
 
-    // Regular chat flow
-    const recentMessages = messages
+    // Regular chat flow — read from ref to keep callback identity stable
+    const recentMessages = messagesRef.current
       .filter(msg => !msg.id.startsWith("welcome") && !msg.id.startsWith("error"))
       .slice(-20);
     
@@ -583,7 +583,6 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
       assistantContent += pendingChunk;
       pendingChunk = "";
 
-      // Recompute emotion only every ~80 chars to avoid O(n²) work per token
       if (assistantContent.length - lastEmotionLen > 80) {
         lastEmotionLen = assistantContent.length;
         setCurrentEmotion(detectEmotionFromResponse(assistantContent));
@@ -616,13 +615,32 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
         assistantContent = "";
+        pendingChunk = "";
+        lastEmotionLen = 0;
         await streamChat(
           conversationHistory,
           updateAssistantMessage,
           () => {
+            // Final flush of any buffered tokens
+            if (rafId !== null) {
+              cancelAnimationFrame(rafId);
+              rafId = null;
+            }
+            if (pendingChunk) {
+              assistantContent += pendingChunk;
+              pendingChunk = "";
+              setMessages(prev => {
+                const idx = prev.findIndex(m => m.id === assistantMsgId);
+                if (idx === -1) return prev;
+                const next = prev.slice();
+                next[idx] = { ...next[idx], content: assistantContent };
+                return next;
+              });
+            }
             setIsTyping(false);
             setIsTalking(false);
-            
+            setCurrentEmotion(detectEmotionFromResponse(assistantContent));
+
             if (assistantContent) {
               const finalMessage: Message = {
                 id: assistantMsgId,
@@ -633,9 +651,9 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
               addMessage(finalMessage);
             }
           },
-          abortControllerRef.current.signal
+          abortControllerRef.current!.signal
         );
-        return; // Success, exit loop
+        return; // Success
       } catch (error) {
         if ((error as Error).name === 'AbortError') {
           return;
