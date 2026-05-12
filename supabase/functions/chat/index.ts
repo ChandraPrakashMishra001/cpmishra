@@ -47,7 +47,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { messages, companionName, memory, goals, personality, phdMode, roleplay, codexMode, language, userModel } = body;
+    const { messages, companionName, memory, diseaseHistory, goals, personality, phdMode, roleplay, codexMode, language, userModel } = body;
 
     if (!validateMessages(messages)) {
       return new Response(JSON.stringify({ error: "Invalid request format" }), {
@@ -76,6 +76,20 @@ serve(async (req) => {
     const goalsCtx = goals?.activeGoals > 0
       ? `Active goals: ${String(goals.activeGoalsList || "").slice(0, 200)}.`
       : "";
+
+    // Field disease history — past diagnoses recall (most recent 10)
+    let diseaseCtx = "";
+    if (Array.isArray(diseaseHistory) && diseaseHistory.length > 0) {
+      const lines = diseaseHistory.slice(0, 10).map((d: any) => {
+        const date = d?.date ? new Date(d.date).toISOString().slice(0, 10) : "";
+        const crop = d?.crop ? ` ${d.crop}` : "";
+        const loc = d?.location ? ` @${d.location}` : "";
+        const sev = d?.severity ? ` [${d.severity}]` : "";
+        const diag = d?.diagnosis ? ` — ${String(d.diagnosis).slice(0, 120)}` : ` — ${String(d?.title || "").slice(0, 80)}`;
+        return `• ${date}${crop}${loc}${sev}${diag}`;
+      });
+      diseaseCtx = `\n\nFIELD DISEASE HISTORY (this farmer's past diagnoses — reference when relevant, watch for recurrence/resistance, tailor advice to their crops & location):\n${lines.join("\n")}`;
+    }
 
     // Language directive
     const langDir = language === 'hi'
@@ -128,7 +142,7 @@ STRICT BREVITY:
 - Advisory: 3-4 bullet points max
 - Never repeat user's question. No preamble. No summary. Jump to answer.
 ${phdExt}${codexExt}${persCtx}${rpCtx}
-${memCtx}${goalsCtx}
+${memCtx}${goalsCtx}${diseaseCtx}
 
 LANGUAGE: ${langDir}`;
 

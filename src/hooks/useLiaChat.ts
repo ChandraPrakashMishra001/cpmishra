@@ -3,7 +3,17 @@ import { Message } from "@/components/ChatInterface";
 import { ReactionType, Reactions } from "@/components/MessageReactions";
 import { Emotion } from "@/components/LiaAvatar";
 import { useConversationMemory } from "./useConversationMemory";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+
+interface DiseaseHistoryEntry {
+  title: string;
+  crop: string | null;
+  location: string | null;
+  severity: string | null;
+  diagnosis: string | null;
+  date: string;
+}
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const IMAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-image`;
@@ -243,6 +253,41 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
   
   // Get enhanced memory context for AI
   const memoryContext = getMemoryContext();
+
+  // Field disease history — past diagnoses pulled from field_logs for AI recall
+  const [diseaseHistory, setDiseaseHistory] = useState<DiseaseHistoryEntry[]>([]);
+  useEffect(() => {
+    let active = true;
+    const load = async () => {
+      const { data, error } = await supabase
+        .from("field_logs")
+        .select("title, crop_name, location, severity, diagnosis_summary, created_at")
+        .order("created_at", { ascending: false })
+        .limit(25);
+      if (!error && active && data) {
+        setDiseaseHistory(
+          data.map((d: any) => ({
+            title: d.title,
+            crop: d.crop_name,
+            location: d.location,
+            severity: d.severity,
+            diagnosis: d.diagnosis_summary,
+            date: d.created_at,
+          }))
+        );
+      }
+    };
+    load();
+    // Refresh on field_logs changes (e.g., user saves a new log)
+    const channel = supabase
+      .channel("field_logs_memory")
+      .on("postgres_changes", { event: "*", schema: "public", table: "field_logs" }, load)
+      .subscribe();
+    return () => {
+      active = false;
+      supabase.removeChannel(channel);
+    };
+  }, []);
   
   // Initialize messages with stable logic
   const [messages, setMessages] = useState<Message[]>(() => {
@@ -293,6 +338,7 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
         messages: userMessages,
         companionName,
         memory: memoryContext,
+        diseaseHistory,
         goals: goalsSummary,
         personality: personalitySummary,
         phdMode: phdModeEnabled,
