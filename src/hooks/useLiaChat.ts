@@ -338,6 +338,7 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
         messages: userMessages,
         companionName,
         memory: memoryContext,
+        diseaseHistory,
         goals: goalsSummary,
         personality: personalitySummary,
         phdMode: phdModeEnabled,
