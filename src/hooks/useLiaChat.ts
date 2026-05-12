@@ -3,7 +3,17 @@ import { Message } from "@/components/ChatInterface";
 import { ReactionType, Reactions } from "@/components/MessageReactions";
 import { Emotion } from "@/components/LiaAvatar";
 import { useConversationMemory } from "./useConversationMemory";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+
+interface DiseaseHistoryEntry {
+  title: string;
+  crop: string | null;
+  location: string | null;
+  severity: string | null;
+  diagnosis: string | null;
+  date: string;
+}
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 const IMAGE_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/generate-image`;
