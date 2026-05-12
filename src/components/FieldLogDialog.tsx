@@ -115,26 +115,64 @@ const FieldLogDialog = ({ messages, companionName, trigger }: FieldLogDialogProp
                   <p className="text-xs mt-1">Save a diagnosis to start tracking your field history</p>
                 </div>
               )}
-              {logs.map(log => (
-                <div key={log.id} className="border border-border/50 rounded-lg p-3 hover:bg-muted/30 transition-colors cursor-pointer" onClick={() => setViewingLog(log)}>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-sm truncate">{log.title}</h4>
-                      <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground flex-wrap">
-                        <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{format(new Date(log.created_at), "MMM d, yyyy")}</span>
-                        {log.crop_name && <span className="flex items-center gap-1"><Leaf className="w-3 h-3" />{log.crop_name}</span>}
-                        {log.location && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{log.location}</span>}
-                      </div>
+              {logs.map(log => {
+                const open = expandedId === log.id;
+                const lastBot = (log.messages as unknown as Message[])?.slice().reverse().find(m => !m.isUser);
+                return (
+                  <Collapsible key={log.id} open={open} onOpenChange={(v) => setExpandedId(v ? log.id : null)}>
+                    <div className="border border-border/50 rounded-lg hover:bg-muted/30 transition-colors">
+                      <CollapsibleTrigger asChild>
+                        <button className="w-full text-left p-3 flex items-start gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground shrink-0 transition-transform ${open ? "rotate-180" : ""}`} />
+                              <h4 className="font-medium text-sm truncate">{log.title}</h4>
+                            </div>
+                            <div className="flex items-center gap-2 mt-1 ml-5 text-xs text-muted-foreground flex-wrap">
+                              <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{format(new Date(log.created_at), "MMM d, yyyy")}</span>
+                              {log.crop_name && <span className="flex items-center gap-1"><Leaf className="w-3 h-3" />{log.crop_name}</span>}
+                              {log.location && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{log.location}</span>}
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0">
+                            {log.severity && <Badge variant="outline" className={`text-[10px] ${severityColor[log.severity] || ""}`}>{log.severity}</Badge>}
+                            <span
+                              role="button"
+                              tabIndex={0}
+                              onClick={e => { e.stopPropagation(); deleteLog(log.id); }}
+                              onKeyDown={e => { if (e.key === "Enter") { e.stopPropagation(); deleteLog(log.id); } }}
+                              className="inline-flex items-center justify-center w-6 h-6 rounded-md hover:bg-destructive/20 cursor-pointer"
+                            >
+                              <Trash2 className="w-3 h-3" />
+                            </span>
+                          </div>
+                        </button>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        <div className="px-3 pb-3 ml-5 space-y-2 border-t border-border/30 pt-2">
+                          <div className="grid grid-cols-2 gap-2 text-xs">
+                            <div><span className="text-muted-foreground">Crop:</span> <span className="font-medium">{log.crop_name || "—"}</span></div>
+                            <div><span className="text-muted-foreground">Location:</span> <span className="font-medium">{log.location || "—"}</span></div>
+                            <div><span className="text-muted-foreground">Severity:</span> <span className="font-medium capitalize">{log.severity || "—"}</span></div>
+                            <div><span className="text-muted-foreground">Date:</span> <span className="font-medium">{format(new Date(log.created_at), "MMM d, yyyy h:mm a")}</span></div>
+                          </div>
+                          {(log.diagnosis_summary || lastBot?.content) && (
+                            <div className="text-xs bg-muted/40 rounded-md p-2">
+                              <div className="flex items-center gap-1 text-muted-foreground mb-1">
+                                <Stethoscope className="w-3 h-3" /> Diagnosis
+                              </div>
+                              <p className="whitespace-pre-wrap leading-relaxed">{log.diagnosis_summary || lastBot?.content?.slice(0, 400)}</p>
+                            </div>
+                          )}
+                          <Button variant="ghost" size="sm" className="text-xs h-7" onClick={() => setViewingLog(log)}>
+                            View full conversation →
+                          </Button>
+                        </div>
+                      </CollapsibleContent>
                     </div>
-                    <div className="flex items-center gap-1">
-                      {log.severity && <Badge variant="outline" className={`text-[10px] ${severityColor[log.severity] || ""}`}>{log.severity}</Badge>}
-                      <Button variant="ghost" size="icon" className="w-6 h-6 hover:bg-destructive/20" onClick={e => { e.stopPropagation(); deleteLog(log.id); }}>
-                        <Trash2 className="w-3 h-3" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                  </Collapsible>
+                );
+              })}
             </div>
           )}
 
