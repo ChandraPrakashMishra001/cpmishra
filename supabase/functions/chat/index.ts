@@ -77,6 +77,20 @@ serve(async (req) => {
       ? `Active goals: ${String(goals.activeGoalsList || "").slice(0, 200)}.`
       : "";
 
+    // Field disease history — past diagnoses recall (most recent 10)
+    let diseaseCtx = "";
+    if (Array.isArray(diseaseHistory) && diseaseHistory.length > 0) {
+      const lines = diseaseHistory.slice(0, 10).map((d: any) => {
+        const date = d?.date ? new Date(d.date).toISOString().slice(0, 10) : "";
+        const crop = d?.crop ? ` ${d.crop}` : "";
+        const loc = d?.location ? ` @${d.location}` : "";
+        const sev = d?.severity ? ` [${d.severity}]` : "";
+        const diag = d?.diagnosis ? ` — ${String(d.diagnosis).slice(0, 120)}` : ` — ${String(d?.title || "").slice(0, 80)}`;
+        return `• ${date}${crop}${loc}${sev}${diag}`;
+      });
+      diseaseCtx = `\n\nFIELD DISEASE HISTORY (this farmer's past diagnoses — reference when relevant, watch for recurrence/resistance, tailor advice to their crops & location):\n${lines.join("\n")}`;
+    }
+
     // Language directive
     const langDir = language === 'hi'
       ? "Respond ENTIRELY in Hindi (Devanagari). Technical terms in English. Headers: पहचान, स्वास्थ्य, निदान, तत्काल कार्रवाई, रोकथाम, उपयोगिता."
