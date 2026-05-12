@@ -31,6 +31,7 @@ const FieldLogDialog = ({ messages, companionName, trigger }: FieldLogDialogProp
   const [location, setLocation] = useState("");
   const [severity, setSeverity] = useState("");
   const [viewingLog, setViewingLog] = useState<FieldLog | null>(null);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const handleSave = async () => {
     if (!title.trim()) return;
