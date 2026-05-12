@@ -142,7 +142,7 @@ STRICT BREVITY:
 - Advisory: 3-4 bullet points max
 - Never repeat user's question. No preamble. No summary. Jump to answer.
 ${phdExt}${codexExt}${persCtx}${rpCtx}
-${memCtx}${goalsCtx}
+${memCtx}${goalsCtx}${diseaseCtx}
 
 LANGUAGE: ${langDir}`;
 
