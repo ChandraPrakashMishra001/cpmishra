@@ -10,6 +10,7 @@ import MoodIndicator from "@/components/MoodIndicator";
 import FieldLogDialog from "@/components/FieldLogDialog";
 import DiseaseGallery from "@/components/DiseaseGallery";
 import ToolbarMenu from "@/components/ToolbarMenu";
+import AuthGate from "@/components/AuthGate";
 import { useLiaChat } from "@/hooks/useLiaChat";
 import { useCompanionSettings } from "@/hooks/useCompanionSettings";
 import { usePersonalitySettings } from "@/hooks/usePersonalitySettings";
@@ -71,6 +72,7 @@ const Index = () => {
   
 
   return (
+    <AuthGate>
     <HelmetProvider>
       <Helmet>
         <title>{settings.name} — BloomSense Agricultural Intelligence</title>
@@ -346,6 +348,7 @@ const Index = () => {
         </div>
       </div>
     </HelmetProvider>
+    </AuthGate>
   );
 };
 

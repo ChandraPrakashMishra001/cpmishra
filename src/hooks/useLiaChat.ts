@@ -3,7 +3,17 @@ import { Message } from "@/components/ChatInterface";
 import { ReactionType, Reactions } from "@/components/MessageReactions";
 import { Emotion } from "@/components/LiaAvatar";
 import { useConversationMemory } from "./useConversationMemory";
-import { supabase } from "@/integrations/supabase/client";
+import { useFirebaseAuth } from "./useFirebaseAuth";
+import {
+  collection,
+  query,
+  where,
+  orderBy,
+  limit,
+  onSnapshot,
+  Timestamp,
+} from "firebase/firestore";
+import { db, FIELD_LOGS_COLLECTION } from "@/integrations/firebase/client";
 import { toast } from "sonner";
 
 interface DiseaseHistoryEntry {
@@ -254,40 +264,37 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
   // Get enhanced memory context for AI
   const memoryContext = getMemoryContext();
 
-  // Field disease history — past diagnoses pulled from field_logs for AI recall
+  // Field disease history — past diagnoses pulled from Firestore for AI recall
+  const { user: fbUser } = useFirebaseAuth();
   const [diseaseHistory, setDiseaseHistory] = useState<DiseaseHistoryEntry[]>([]);
   useEffect(() => {
-    let active = true;
-    const load = async () => {
-      const { data, error } = await supabase
-        .from("field_logs")
-        .select("title, crop_name, location, severity, diagnosis_summary, created_at")
-        .order("created_at", { ascending: false })
-        .limit(25);
-      if (!error && active && data) {
-        setDiseaseHistory(
-          data.map((d: any) => ({
-            title: d.title,
-            crop: d.crop_name,
-            location: d.location,
-            severity: d.severity,
-            diagnosis: d.diagnosis_summary,
-            date: d.created_at,
-          }))
-        );
-      }
-    };
-    load();
-    // Refresh on field_logs changes (e.g., user saves a new log)
-    const channel = supabase
-      .channel("field_logs_memory")
-      .on("postgres_changes", { event: "*", schema: "public", table: "field_logs" }, load)
-      .subscribe();
-    return () => {
-      active = false;
-      supabase.removeChannel(channel);
-    };
-  }, []);
+    if (!fbUser) {
+      setDiseaseHistory([]);
+      return;
+    }
+    const q = query(
+      collection(db, FIELD_LOGS_COLLECTION),
+      where("uid", "==", fbUser.uid),
+      orderBy("created_at", "desc"),
+      limit(25),
+    );
+    const unsub = onSnapshot(q, (snap) => {
+      const next: DiseaseHistoryEntry[] = snap.docs.map((d) => {
+        const data = d.data() as Record<string, unknown>;
+        const ts = data.created_at as Timestamp | undefined;
+        return {
+          title: (data.title as string) ?? "",
+          crop: (data.crop_name as string) ?? null,
+          location: (data.location as string) ?? null,
+          severity: (data.severity as string) ?? null,
+          diagnosis: (data.diagnosis_summary as string) ?? null,
+          date: ts?.toDate?.().toISOString() ?? new Date().toISOString(),
+        };
+      });
+      setDiseaseHistory(next);
+    });
+    return () => unsub();
+  }, [fbUser]);
   
   // Initialize messages with stable logic
   const [messages, setMessages] = useState<Message[]>(() => {

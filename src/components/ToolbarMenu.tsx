@@ -1,4 +1,4 @@
-import { Sun, Moon, Target, Bell, Menu, Globe, Cpu } from "lucide-react";
+import { Sun, Moon, Target, Bell, Menu, Globe, Cpu, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -13,6 +13,7 @@ import { NotificationsDialog } from "./NotificationsDialog";
 import { useState } from "react";
 import { LANGUAGE_LABELS, type AppLanguage } from "@/hooks/useLanguage";
 import { AI_MODELS, type AIModel } from "@/hooks/useModelSelection";
+import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
 
 interface ToolbarMenuProps {
   isNight: boolean;
@@ -30,6 +31,7 @@ const languages: AppLanguage[] = ["en", "hi", "od"];
 const ToolbarMenu = ({ isNight, onToggleTheme, companionName, compact = false, language, onChangeLanguage, selectedModel, onChangeModel }: ToolbarMenuProps) => {
   const [goalsOpen, setGoalsOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const { user, signOut } = useFirebaseAuth();
 
   return (
     <>
@@ -107,6 +109,18 @@ const ToolbarMenu = ({ isNight, onToggleTheme, companionName, compact = false, l
               </button>
             ))}
           </div>
+          {user && (
+            <>
+              <DropdownMenuSeparator />
+              <div className="px-2 py-1 text-[10px] text-muted-foreground truncate" title={user.email ?? ""}>
+                {user.email}
+              </div>
+              <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer gap-2 text-destructive focus:text-destructive">
+                <LogOut className="w-4 h-4" />
+                <span>Sign out</span>
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
