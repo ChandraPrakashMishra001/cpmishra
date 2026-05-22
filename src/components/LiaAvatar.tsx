@@ -26,7 +26,8 @@ interface LiaAvatarProps {
 }
 
 const LiaAvatar = ({ emotion, isTalking, customAvatarUrl, compact = false }: LiaAvatarProps) => {
-  const avatarSrc = customAvatarUrl || liaAvatar;
+  const [imgError, setImgError] = useState(false);
+  const avatarSrc = (!imgError && customAvatarUrl) ? customAvatarUrl : liaAvatar;
   const [prevEmotion, setPrevEmotion] = useState(emotion);
   const [isTransitioning, setIsTransitioning] = useState(false);
 
@@ -224,6 +225,9 @@ const LiaAvatar = ({ emotion, isTalking, customAvatarUrl, compact = false }: Lia
           <img
             src={avatarSrc}
             alt="AI Companion"
+            onError={() => setImgError(true)}
+            loading="eager"
+            decoding="async"
             className={`${avatarSize} object-cover rounded-full glow-avatar transition-all duration-500 ease-out ${getEmotionStyles()}`}
           />
           
