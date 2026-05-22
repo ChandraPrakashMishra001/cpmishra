@@ -39,10 +39,10 @@ export const useFieldLog = () => {
       return;
     }
     setLoading(true);
+    // Avoid composite-index requirement: filter by uid only, sort client-side.
     const q = query(
       collection(db, FIELD_LOGS_COLLECTION),
       where("uid", "==", user.uid),
-      orderBy("created_at", "desc"),
     );
     const unsub = onSnapshot(
       q,
@@ -61,6 +61,7 @@ export const useFieldLog = () => {
             severity: (data.severity as string) ?? null,
           };
         });
+        next.sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
         setLogs(next);
         setLoading(false);
       },
