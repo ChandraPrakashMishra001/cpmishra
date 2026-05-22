@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 
-export type AIModel = "auto" | "gemini3-flash" | "gemini31-pro" | "gemini25-pro" | "gpt5";
+export type AIModel = "auto" | "gemini3-flash" | "gemini35-flash" | "gemini31-pro" | "gemini25-pro" | "gpt5";
 
 export interface ModelInfo {
   id: AIModel;
