@@ -11,6 +11,7 @@ export interface ModelInfo {
 
 export const AI_MODELS: ModelInfo[] = [
   { id: "auto", label: "Auto", description: "Smart routing per query", apiModel: "auto" },
+  { id: "gemini35-flash", label: "G3.5 Flash", description: "Faster & sharper responses", apiModel: "google/gemini-3.5-flash" },
   { id: "gemini3-flash", label: "G3 Flash", description: "Fast & balanced", apiModel: "google/gemini-3-flash-preview" },
   { id: "gemini31-pro", label: "G3.1 Pro", description: "Deep reasoning (Gemini)", apiModel: "google/gemini-3.1-pro-preview" },
   { id: "gemini25-pro", label: "G2.5 Pro", description: "Big context multimodal", apiModel: "google/gemini-2.5-pro" },
