@@ -150,6 +150,18 @@ const Index = () => {
                   </Button>
                 }
               />
+              <ConversationStoreDialog
+                conversations={savedConversations}
+                currentMessages={messages}
+                onSave={saveConversation}
+                onLoad={loadMessages}
+                onDelete={deleteConversation}
+                trigger={
+                  <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-primary/20">
+                    <Archive className="w-3.5 h-3.5 text-primary" />
+                  </Button>
+                }
+              />
               <DiseaseGallery
                 trigger={
                   <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-primary/20">
