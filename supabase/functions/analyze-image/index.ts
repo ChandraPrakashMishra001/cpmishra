@@ -75,12 +75,71 @@ serve(async (req) => {
   try {
     const { imageUrl, message, companionName = "Amanai" } = await req.json();
 
-    if (!imageUrl) {
+    if (!imageUrl || typeof imageUrl !== "string") {
       return new Response(JSON.stringify({ error: "No image provided" }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    // Validate imageUrl: allow https:// URLs or data:image/* base64 URIs, with size limits.
+    const MAX_DATA_URI_BYTES = 14 * 1024 * 1024; // ~10MB raw image after base64 decode
+    const MAX_REMOTE_URL_LEN = 2048;
+    const isDataUri = imageUrl.startsWith("data:image/");
+    const isHttps = imageUrl.startsWith("https://");
+
+    if (!isDataUri && !isHttps) {
+      return new Response(JSON.stringify({ error: "Invalid image URL" }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (isDataUri) {
+      if (imageUrl.length > MAX_DATA_URI_BYTES) {
+        return new Response(JSON.stringify({ error: "Image too large" }), {
+          status: 413,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    } else {
+      if (imageUrl.length > MAX_REMOTE_URL_LEN) {
+        return new Response(JSON.stringify({ error: "Image URL too long" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      try {
+        const u = new URL(imageUrl);
+        const host = u.hostname.toLowerCase();
+        // Block SSRF to private/loopback/link-local ranges
+        const blocked =
+          host === "localhost" ||
+          host.endsWith(".localhost") ||
+          host === "0.0.0.0" ||
+          /^127\./.test(host) ||
+          /^10\./.test(host) ||
+          /^192\.168\./.test(host) ||
+          /^169\.254\./.test(host) ||
+          /^172\.(1[6-9]|2\d|3[0-1])\./.test(host) ||
+          host === "::1" ||
+          host.startsWith("fc") ||
+          host.startsWith("fd") ||
+          host.startsWith("fe80");
+        if (blocked) {
+          return new Response(JSON.stringify({ error: "Invalid image URL" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      } catch {
+        return new Response(JSON.stringify({ error: "Invalid image URL" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     
