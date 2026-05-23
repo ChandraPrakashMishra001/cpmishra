@@ -859,6 +859,25 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
     setCurrentEmotion("excited");
   }, [companionName, clearMemory]);
 
+  const loadMessages = useCallback((next: Message[]) => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    setIsTyping(false);
+    setIsTalking(false);
+    setMessages(
+      next.length > 0
+        ? next.map((m) => ({ ...m, timestamp: new Date(m.timestamp) }))
+        : [{
+            id: "welcome-loaded",
+            content: `Hello again. How can I assist you?`,
+            isUser: false,
+            timestamp: new Date(),
+          }],
+    );
+    setCurrentEmotion("happy");
+  }, []);
+
   return {
     messages,
     sendMessage,
@@ -867,6 +886,7 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
     isTalking,
     memory,
     resetConversation,
+    loadMessages,
     handleReaction,
     handleBookmark,
     quickReplies,

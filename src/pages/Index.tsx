@@ -11,6 +11,7 @@ import FieldLogDialog from "@/components/FieldLogDialog";
 import DiseaseGallery from "@/components/DiseaseGallery";
 import ToolbarMenu from "@/components/ToolbarMenu";
 import AuthGate from "@/components/AuthGate";
+import ConversationStoreDialog from "@/components/ConversationStoreDialog";
 import { useLiaChat } from "@/hooks/useLiaChat";
 import { useCompanionSettings } from "@/hooks/useCompanionSettings";
 import { usePersonalitySettings } from "@/hooks/usePersonalitySettings";
@@ -21,8 +22,9 @@ import { useTheme } from "@/hooks/useTheme";
 import { useRoleplay } from "@/hooks/useRoleplay";
 import { useLanguage, type AppLanguage } from "@/hooks/useLanguage";
 import { useModelSelection } from "@/hooks/useModelSelection";
+import { useSavedConversations } from "@/hooks/useSavedConversations";
 import liaAvatar from "@/assets/amanai-avatar.png";
-import { Trash2, Brain, Code2, BookOpen, Bug } from "lucide-react";
+import { Trash2, Brain, Code2, BookOpen, Bug, Archive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -62,12 +64,14 @@ const Index = () => {
     isTalking, 
     memory, 
     resetConversation, 
+    loadMessages,
     handleReaction,
     handleBookmark,
     quickReplies,
     showCelebration,
     setShowCelebration,
   } = useLiaChat(settings.name, goalsSummary, personalitySummary, phdModeEnabled, roleplayPrompt, codexModeEnabled, language, getModelInfo().apiModel);
+  const { conversations: savedConversations, saveConversation, deleteConversation } = useSavedConversations();
 
   
 
@@ -143,6 +147,18 @@ const Index = () => {
                 trigger={
                   <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-primary/20">
                     <BookOpen className="w-3.5 h-3.5 text-primary" />
+                  </Button>
+                }
+              />
+              <ConversationStoreDialog
+                conversations={savedConversations}
+                currentMessages={messages}
+                onSave={saveConversation}
+                onLoad={loadMessages}
+                onDelete={deleteConversation}
+                trigger={
+                  <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-primary/20">
+                    <Archive className="w-3.5 h-3.5 text-primary" />
                   </Button>
                 }
               />
@@ -227,6 +243,13 @@ const Index = () => {
               <FieldLogDialog
                 messages={messages}
                 companionName={settings.name}
+              />
+              <ConversationStoreDialog
+                conversations={savedConversations}
+                currentMessages={messages}
+                onSave={saveConversation}
+                onLoad={loadMessages}
+                onDelete={deleteConversation}
               />
               <DiseaseGallery onAskAbout={(name) => sendMessage(`Tell me about ${name} disease - diagnosis and treatment`)} />
               <AlertDialog>
