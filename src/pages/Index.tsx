@@ -64,12 +64,14 @@ const Index = () => {
     isTalking, 
     memory, 
     resetConversation, 
+    loadMessages,
     handleReaction,
     handleBookmark,
     quickReplies,
     showCelebration,
     setShowCelebration,
   } = useLiaChat(settings.name, goalsSummary, personalitySummary, phdModeEnabled, roleplayPrompt, codexModeEnabled, language, getModelInfo().apiModel);
+  const { conversations: savedConversations, saveConversation, deleteConversation } = useSavedConversations();
 
   
 
