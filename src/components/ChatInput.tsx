@@ -71,7 +71,7 @@ const ChatInput = forwardRef<HTMLDivElement, ChatInputProps>(({ onSend, disabled
       reader.onloadend = () => {
         const result = reader.result as string;
         const base64Size = result.length * 0.75;
-        if (base64Size > 4 * 1024 * 1024) {
+        if (base64Size > 14 * 1024 * 1024) {
           toast.error("Image too large after processing. Please use a smaller image~ 📷");
           return;
         }
