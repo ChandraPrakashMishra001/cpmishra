@@ -11,6 +11,7 @@ import FieldLogDialog from "@/components/FieldLogDialog";
 import DiseaseGallery from "@/components/DiseaseGallery";
 import ToolbarMenu from "@/components/ToolbarMenu";
 import AuthGate from "@/components/AuthGate";
+import ConversationStoreDialog from "@/components/ConversationStoreDialog";
 import { useLiaChat } from "@/hooks/useLiaChat";
 import { useCompanionSettings } from "@/hooks/useCompanionSettings";
 import { usePersonalitySettings } from "@/hooks/usePersonalitySettings";
@@ -21,8 +22,9 @@ import { useTheme } from "@/hooks/useTheme";
 import { useRoleplay } from "@/hooks/useRoleplay";
 import { useLanguage, type AppLanguage } from "@/hooks/useLanguage";
 import { useModelSelection } from "@/hooks/useModelSelection";
+import { useSavedConversations } from "@/hooks/useSavedConversations";
 import liaAvatar from "@/assets/amanai-avatar.png";
-import { Trash2, Brain, Code2, BookOpen, Bug } from "lucide-react";
+import { Trash2, Brain, Code2, BookOpen, Bug, Archive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
