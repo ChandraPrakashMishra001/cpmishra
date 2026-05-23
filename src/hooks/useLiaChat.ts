@@ -628,6 +628,7 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
     let pendingChunk = "";
     let rafId: number | null = null;
     let lastEmotionLen = 0;
+    let firstTokenReceived = false;
     setIsTalking(true);
 
     const flushChunk = () => {
@@ -636,9 +637,11 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
       assistantContent += pendingChunk;
       pendingChunk = "";
 
-      if (assistantContent.length - lastEmotionLen > 80) {
+      // Throttle emotion detection — every ~200 chars and only scan tail
+      if (assistantContent.length - lastEmotionLen > 200) {
         lastEmotionLen = assistantContent.length;
-        setCurrentEmotion(detectEmotionFromResponse(assistantContent));
+        const tail = assistantContent.slice(-400);
+        setCurrentEmotion(detectEmotionFromResponse(tail));
       }
 
       const snapshot = assistantContent;
@@ -659,6 +662,15 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
 
     const updateAssistantMessage = (nextChunk: string) => {
       pendingChunk += nextChunk;
+      // First token: kill the "is analyzing..." indicator immediately so the
+      // user sees text the instant it arrives.
+      if (!firstTokenReceived) {
+        firstTokenReceived = true;
+        setIsTyping(false);
+        // Synchronously render the first token — no rAF wait
+        flushChunk();
+        return;
+      }
       if (rafId === null) {
         rafId = requestAnimationFrame(flushChunk);
       }
@@ -670,6 +682,7 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
         assistantContent = "";
         pendingChunk = "";
         lastEmotionLen = 0;
+        firstTokenReceived = false;
         await streamChat(
           conversationHistory,
           updateAssistantMessage,
@@ -682,9 +695,6 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
             if (pendingChunk) {
               assistantContent += pendingChunk;
               pendingChunk = "";
-            }
-            // Ensure the assistant message is rendered (even if rAF never fired)
-            if (assistantContent) {
               const snapshot = assistantContent;
               setMessages(prev => {
                 const idx = prev.findIndex(m => m.id === assistantMsgId);
@@ -702,9 +712,8 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
             }
             setIsTyping(false);
             setIsTalking(false);
-            setCurrentEmotion(detectEmotionFromResponse(assistantContent));
-
             if (assistantContent) {
+              setCurrentEmotion(detectEmotionFromResponse(assistantContent.slice(-400)));
               const finalMessage: Message = {
                 id: assistantMsgId,
                 content: assistantContent,
@@ -717,6 +726,7 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
           abortControllerRef.current!.signal
         );
         return; // Success
+
       } catch (error) {
         if ((error as Error).name === 'AbortError') {
           return;
