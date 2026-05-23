@@ -244,6 +244,13 @@ const Index = () => {
                 messages={messages}
                 companionName={settings.name}
               />
+              <ConversationStoreDialog
+                conversations={savedConversations}
+                currentMessages={messages}
+                onSave={saveConversation}
+                onLoad={loadMessages}
+                onDelete={deleteConversation}
+              />
               <DiseaseGallery onAskAbout={(name) => sendMessage(`Tell me about ${name} disease - diagnosis and treatment`)} />
               <AlertDialog>
                 <AlertDialogTrigger asChild>
