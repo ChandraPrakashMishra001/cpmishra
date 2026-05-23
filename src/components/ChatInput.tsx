@@ -4,7 +4,7 @@ import { toast } from "sonner";
 
 // Constants for validation
 const MAX_MESSAGE_LENGTH = 2000;
-const MAX_IMAGE_SIZE_MB = 3;
+const MAX_IMAGE_SIZE_MB = 10;
 const MAX_IMAGE_SIZE_BYTES = MAX_IMAGE_SIZE_MB * 1024 * 1024;
 
 interface ChatInputProps {
