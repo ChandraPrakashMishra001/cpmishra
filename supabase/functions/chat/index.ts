@@ -148,7 +148,7 @@ LANGUAGE: ${langDir}`;
 
     // Model selection: user override > auto-select
     const VALID_MODELS = [
-      "google/gemini-3.5-flash",
+      "google/gemini-3.1-flash",
       "google/gemini-3-flash-preview",
       "google/gemini-3.1-pro-preview",
       "google/gemini-2.5-pro",
@@ -158,10 +158,10 @@ LANGUAGE: ${langDir}`;
     if (typeof userModel === "string" && VALID_MODELS.includes(userModel)) {
       model = userModel;
     } else {
-      // Auto: deep tasks → Pro 3.1, standard → Flash 3.5
+      // Auto: deep tasks → Pro 3.1, standard → Flash 3.1
       model = (needsDeepThinking || codexMode === true)
         ? "google/gemini-3.1-pro-preview"
-        : "google/gemini-3.5-flash";
+        : "google/gemini-3.1-flash";
     }
 
     // Only send last 15 messages for speed
