@@ -403,9 +403,9 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
             const parsed = JSON.parse(jsonStr);
             const content = parsed.choices?.[0]?.delta?.content as string | undefined;
             if (content) onDelta(content);
-          } catch {
-            textBuffer = line + "\n" + textBuffer;
-            break;
+          } catch (e) {
+            console.warn("Invalid JSON in chat stream", jsonStr);
+            continue;
           }
         }
       }

@@ -168,9 +168,9 @@ LANGUAGE: ${langDir}`;
     const recentMessages = messages.slice(-15);
 
     const isOpenAI = model.startsWith("openai/");
-    const tokenLimit = needsDeepThinking ? 800 : 350;
+    const tokenLimit = needsDeepThinking ? 4000 : 2000;
     // GPT-5 reasoning consumes tokens before output — give it more headroom
-    const openAITokenLimit = needsDeepThinking ? 2000 : 1200;
+    const openAITokenLimit = needsDeepThinking ? 4000 : 2000;
     const requestBody: Record<string, unknown> = {
       model,
       messages: [
