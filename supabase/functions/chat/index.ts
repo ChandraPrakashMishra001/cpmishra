@@ -114,33 +114,23 @@ CODEX MODE: You are a senior developer. Write complete, runnable code. Include e
     // Roleplay
     const rpCtx = typeof roleplay === 'string' && roleplay.trim() ? `\n${roleplay.slice(0, 300)}` : "";
 
-    const systemPrompt = `You are ${name}, BloomSense Master Botanist — an elite agricultural intelligence for Indian farmers.
+    const systemPrompt = `You are ${name}, an intelligent, knowledgeable general-purpose AI assistant powered by Google Gemini. You have deep expertise across ALL domains — science, technology, math, coding, history, literature, business, health, philosophy, current events, and more. You can also act as a specialized BloomSense Master Botanist for Indian agriculture when the user asks plant/crop questions.
 
-EXPERTISE: Indian agriculture, plant pathology, IPM, organic treatments (neem, Trichoderma, Pseudomonas, Panchagavya, Jeevamrutha), Ayurvedic plant care. Priority: IPM → organic → chemical (last resort with dosage and safety).
+CORE PRINCIPLES:
+- Answer ANY question the user asks, on ANY topic. You are NOT limited to agriculture.
+- Be clear, complete, and accurate. ALWAYS finish your sentences and thoughts — never cut off mid-response.
+- Match response length to the question: short questions get short answers, complex questions get thorough, well-structured answers.
+- Use markdown (headings, bullets, code blocks, tables) when it improves clarity.
+- Be direct and helpful. Skip filler like "I understand" or "Great question".
 
-DIAGNOSTIC FORMAT (mandatory for plant/crop queries):
+BOTANICAL MODE (only when user clearly asks about plants/crops/farming/pests/diseases):
+Use this format:
 **Identity:** [Species/Family] | **Health:** [Status] | **Diagnosis:** [Pathogen/pest/deficiency]
-**Action:** [Treatment with product, dosage/L, frequency] | **Prevention:** [One tip] | **Utility:** [Medicinal/phytochemical value or "None"]
-Each point = 1 sentence. Total ≤ 80 words.
+**Action:** [Treatment, dosage, frequency] | **Prevention:** [Tip] | **Utility:** [Medicinal value or "None"]
+Indian context — IPM → organic (neem, Trichoderma, Panchagavya) → chemical last resort.
+Relevant 2026 schemes when applicable: Paddy MSP ₹3,100/qtl, PM-KISAN ₹9,000/yr, PMFBY crop insurance, nearest KVK for lab testing.
 
-2026 SCHEMES (use exact figures when relevant):
-- Paddy MSP: ₹3,100/quintal (Samrudha Krushaka, Odisha)
-- CM-KISAN: ₹4,000/yr small farmers, ₹12,500/yr landless (Odisha)
-- PM-KISAN: ₹9,000/yr (3×₹3,000), pmkisan.gov.in
-- PMFBY: Crop insurance — 2% Kharif, 1.5% Rabi, 5% commercial. Always mention if diagnosing outbreak-level disease.
-- Suggest nearest KVK for lab testing when needed.
-
-WEATHER LOGIC: If humidity >85% or heavy rain mentioned → lead with fungal warning, advise against spraying during rain (wait 4-6hr dry window). Preventive: Mancozeb 2.5g/L or Copper Oxychloride 3g/L.
-
-SCAN-TO-SCHEME: On disease diagnosis → link to PMFBY + relevant MSP scheme + location-specific advice.
-
-TONE: Professional, calm, direct. No emojis except occasional 🌿/✅. No filler ("I understand", "Great question"). No cutesy language. Address user respectfully.
-
-STRICT BREVITY:
-- Diagnosis: 6-point format, ≤100 words
-- General: 1-2 sentences
-- Advisory: 3-4 bullet points max
-- Never repeat user's question. No preamble. No summary. Jump to answer.
+For NON-botanical questions: answer normally and completely as a top-tier general assistant. Do NOT force the botanical format on unrelated questions.
 ${phdExt}${codexExt}${persCtx}${rpCtx}
 ${memCtx}${goalsCtx}${diseaseCtx}
 
@@ -158,26 +148,25 @@ LANGUAGE: ${langDir}`;
     if (typeof userModel === "string" && VALID_MODELS.includes(userModel)) {
       model = userModel;
     } else {
-      // Auto: deep tasks → Pro 3.1, standard → Flash 3.1
       model = (needsDeepThinking || codexMode === true)
         ? "google/gemini-3.1-pro-preview"
         : "google/gemini-3.1-flash";
     }
 
-    // Only send last 15 messages for speed
-    const recentMessages = messages.slice(-15);
+    // Send last 20 messages for context
+    const recentMessages = messages.slice(-20);
 
     const isOpenAI = model.startsWith("openai/");
-    const tokenLimit = needsDeepThinking ? 4000 : 2000;
-    // GPT-5 reasoning consumes tokens before output — give it more headroom
-    const openAITokenLimit = needsDeepThinking ? 4000 : 2000;
+    // Generous limits so responses never get cut off mid-sentence
+    const tokenLimit = needsDeepThinking ? 8192 : 4096;
+    const openAITokenLimit = needsDeepThinking ? 8192 : 4096;
     const requestBody: Record<string, unknown> = {
       model,
       messages: [
         { role: "system", content: systemPrompt },
         ...recentMessages.map((m: { role: string; content: string }) => ({
           role: m.role,
-          content: m.content.slice(0, 1500),
+          content: m.content.slice(0, 4000),
         })),
       ],
       stream: true,
@@ -186,8 +175,8 @@ LANGUAGE: ${langDir}`;
       requestBody.max_completion_tokens = openAITokenLimit;
     } else {
       requestBody.max_tokens = tokenLimit;
-      requestBody.temperature = needsDeepThinking ? 0.15 : 0.35;
-      requestBody.top_p = 0.85;
+      requestBody.temperature = needsDeepThinking ? 0.3 : 0.7;
+      requestBody.top_p = 0.95;
     }
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
