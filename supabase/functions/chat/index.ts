@@ -196,14 +196,17 @@ LANGUAGE: ${langDir}`;
       requestBody.top_p = 0.95;
     }
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(requestBody),
-    });
+    const callGateway = (bodyObj: Record<string, unknown>) =>
+      fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(bodyObj),
+      });
+
+    const response = await callGateway(requestBody);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -217,7 +220,99 @@ LANGUAGE: ${langDir}`;
       });
     }
 
-    return new Response(response.body, {
+    // ── Response-length guard ──────────────────────────────────────────────
+    // Re-stream upstream SSE to client, track finish_reason + accumulated text.
+    // If upstream stops with finish_reason === "length" OR text ends mid-sentence,
+    // automatically issue a continuation request (up to MAX_CONTINUATIONS times)
+    // and forward those deltas too. Only emit a single terminal [DONE].
+    const MAX_CONTINUATIONS = 3;
+    const encoder = new TextEncoder();
+    const decoder = new TextDecoder();
+
+    const endsCleanly = (s: string) => {
+      const trimmed = s.replace(/\s+$/, "");
+      if (!trimmed) return false;
+      // Sentence-ending punctuation, closing code fence, list/bullet end with newline
+      return /[.!?。！？”"')\]\}]$/.test(trimmed) || /```\s*$/.test(trimmed);
+    };
+
+    const stream = new ReadableStream({
+      async start(controller) {
+        let accumulated = "";
+        let continuations = 0;
+        let upstream: Response | null = response;
+
+        const pumpOne = async (resp: Response): Promise<{ finishReason: string | null }> => {
+          const reader = resp.body!.getReader();
+          let buf = "";
+          let finishReason: string | null = null;
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buf += decoder.decode(value, { stream: true });
+            let idx: number;
+            while ((idx = buf.indexOf("\n")) !== -1) {
+              let line = buf.slice(0, idx);
+              buf = buf.slice(idx + 1);
+              if (line.endsWith("\r")) line = line.slice(0, -1);
+              if (!line) continue;
+              if (line.startsWith(":")) continue;
+              if (!line.startsWith("data: ")) continue;
+              const payload = line.slice(6).trim();
+              if (payload === "[DONE]") { /* swallow — emit our own at the end */ continue; }
+              try {
+                const parsed = JSON.parse(payload);
+                const choice = parsed.choices?.[0];
+                const delta = choice?.delta?.content;
+                if (typeof delta === "string" && delta) accumulated += delta;
+                if (choice?.finish_reason) finishReason = choice.finish_reason;
+                controller.enqueue(encoder.encode(`data: ${payload}\n\n`));
+              } catch {
+                // partial JSON — put back and wait for more
+                buf = line + "\n" + buf;
+                break;
+              }
+            }
+          }
+          return { finishReason };
+        };
+
+        try {
+          let { finishReason } = await pumpOne(upstream);
+
+          while (
+            continuations < MAX_CONTINUATIONS &&
+            (finishReason === "length" || (finishReason !== "stop" && !endsCleanly(accumulated)))
+          ) {
+            continuations++;
+            const continueBody = {
+              ...requestBody,
+              messages: [
+                { role: "system", content: systemPrompt },
+                ...recentMessages.map((m: { role: string; content: string }) => ({
+                  role: m.role,
+                  content: m.content.slice(0, 4000),
+                })),
+                { role: "assistant", content: accumulated },
+                { role: "user", content: "Continue exactly where you left off. Do not repeat anything you already said. Finish your response with a complete final sentence." },
+              ],
+            };
+            const cont = await callGateway(continueBody);
+            if (!cont.ok || !cont.body) break;
+            const result = await pumpOne(cont);
+            finishReason = result.finishReason;
+            if (finishReason === "stop" && endsCleanly(accumulated)) break;
+          }
+        } catch (e) {
+          console.error("stream guard error:", e);
+        } finally {
+          controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+          controller.close();
+        }
+      },
+    });
+
+    return new Response(stream, {
       headers: {
         ...corsHeaders,
         "Content-Type": "text/event-stream",
