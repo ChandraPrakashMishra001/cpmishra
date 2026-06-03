@@ -153,13 +153,10 @@ ${memCtx}${goalsCtx}${diseaseCtx}
 
 LANGUAGE: ${langDir}`;
 
-    // Model selection: user override > auto-select
+    // Model selection: user override > auto-select. Only two supported models.
     const VALID_MODELS = [
-      "google/gemini-3.1-flash",
-      "google/gemini-3-flash-preview",
+      "google/gemini-3.5-flash",
       "google/gemini-3.1-pro-preview",
-      "google/gemini-2.5-pro",
-      "openai/gpt-5",
     ];
     let model: string;
     if (typeof userModel === "string" && VALID_MODELS.includes(userModel)) {
@@ -167,7 +164,7 @@ LANGUAGE: ${langDir}`;
     } else {
       model = (needsDeepThinking || codexMode === true)
         ? "google/gemini-3.1-pro-preview"
-        : "google/gemini-3.1-flash";
+        : "google/gemini-3.5-flash";
     }
 
     // Send last 20 messages for context
