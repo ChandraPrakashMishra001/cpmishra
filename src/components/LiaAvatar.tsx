@@ -44,38 +44,23 @@ const LiaAvatar = ({ emotion, isTalking, customAvatarUrl, compact = false }: Lia
   }, [emotion, prevEmotion]);
 
   const getEmotionStyles = () => {
-    const baseTransform = isTransitioning ? "scale-95" : "scale-100";
+    // User preference: no scale/rotate/translate transforms — only float animation.
     switch (emotion) {
-      case "happy":
-        return `brightness-110 saturate-110 ${baseTransform}`;
-      case "thinking":
-        return `brightness-95 hue-rotate-15 ${baseTransform}`;
-      case "surprised":
-        return `brightness-115 scale-110 rotate-2`;
-      case "sad":
-        return `brightness-85 saturate-75 grayscale-[0.2] ${baseTransform} -translate-y-1`;
-      case "excited":
-        return `brightness-120 saturate-125 scale-110`;
-      case "confused":
-        return `brightness-95 hue-rotate-30 -rotate-3 ${baseTransform}`;
-      case "shy":
-        return `brightness-100 saturate-120 hue-rotate-[-10deg] rotate-[-5deg] ${baseTransform}`;
-      case "loving":
-        return `brightness-105 saturate-130 hue-rotate-[-15deg] scale-105`;
-      case "curious":
-        return `brightness-105 scale-105 rotate-3 translate-x-1`;
-      case "sleepy":
-        return `brightness-80 saturate-70 blur-[0.5px] -rotate-2 ${baseTransform}`;
-      case "annoyed":
-        return `brightness-90 saturate-90 -rotate-2 scale-98`;
-      case "angry":
-        return `brightness-85 saturate-130 hue-rotate-[10deg] scale-105 -rotate-1`;
-      case "stressed":
-        return `brightness-90 saturate-80 scale-98 blur-[0.3px]`;
-      case "motivational":
-        return `brightness-115 saturate-120 scale-108`;
-      default:
-        return baseTransform;
+      case "happy": return "brightness-110 saturate-110";
+      case "thinking": return "brightness-95";
+      case "surprised": return "brightness-110";
+      case "sad": return "brightness-90 saturate-75";
+      case "excited": return "brightness-115 saturate-120";
+      case "confused": return "brightness-95";
+      case "shy": return "brightness-100 saturate-115";
+      case "loving": return "brightness-105 saturate-125";
+      case "curious": return "brightness-105";
+      case "sleepy": return "brightness-85 saturate-75";
+      case "annoyed": return "brightness-95 saturate-90";
+      case "angry": return "brightness-90 saturate-125";
+      case "stressed": return "brightness-90 saturate-85";
+      case "motivational": return "brightness-115 saturate-115";
+      default: return "";
     }
   };
 
@@ -145,39 +130,8 @@ const LiaAvatar = ({ emotion, isTalking, customAvatarUrl, compact = false }: Lia
   };
 
   const getAnimationClass = () => {
-    if (isTalking) return "animate-talking";
-    switch (emotion) {
-      case "excited":
-        return "animate-bounce-excited";
-      case "happy":
-        return "animate-happy-sway";
-      case "sad":
-        return "animate-sad-droop";
-      case "sleepy":
-        return "animate-sleepy-bob";
-      case "loving":
-        return "animate-loving-pulse";
-      case "curious":
-        return "animate-curious-tilt";
-      case "thinking":
-        return "animate-thinking-bob";
-      case "surprised":
-        return "animate-surprised-jump";
-      case "confused":
-        return "animate-confused-wobble";
-      case "shy":
-        return "animate-shy-hide";
-      case "annoyed":
-        return "animate-annoyed-shake";
-      case "angry":
-        return "animate-angry-shake";
-      case "stressed":
-        return "animate-stressed-pulse";
-      case "motivational":
-        return "animate-motivational-glow";
-      default:
-        return "animate-float";
-    }
+    // User preference: avatar should ONLY float — no vibration, shake, bounce, etc.
+    return "animate-float";
   };
 
   const avatarSize = compact ? "w-20 h-20" : "w-64 h-64";
