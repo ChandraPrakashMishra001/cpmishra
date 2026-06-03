@@ -1,6 +1,6 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
-export type AIModel = "auto" | "gemini3-flash" | "gemini31-flash" | "gemini31-pro" | "gemini25-pro" | "gpt5";
+export type AIModel = "auto" | "gemini35-flash" | "gemini31-pro";
 
 export interface ModelInfo {
   id: AIModel;
@@ -11,18 +11,24 @@ export interface ModelInfo {
 
 export const AI_MODELS: ModelInfo[] = [
   { id: "auto", label: "Auto", description: "Smart routing per query", apiModel: "auto" },
-  { id: "gemini31-flash", label: "G3.1 Flash", description: "Faster & sharper responses", apiModel: "google/gemini-3.1-flash" },
-  { id: "gemini3-flash", label: "G3 Flash", description: "Fast & balanced", apiModel: "google/gemini-3-flash-preview" },
-  { id: "gemini31-pro", label: "G3.1 Pro", description: "Deep reasoning (Gemini)", apiModel: "google/gemini-3.1-pro-preview" },
-  { id: "gemini25-pro", label: "G2.5 Pro", description: "Big context multimodal", apiModel: "google/gemini-2.5-pro" },
-  { id: "gpt5", label: "GPT-5", description: "Top-tier all-rounder", apiModel: "openai/gpt-5" },
+  { id: "gemini35-flash", label: "G3.5 Flash", description: "Fast everyday responses", apiModel: "google/gemini-3.5-flash" },
+  { id: "gemini31-pro", label: "G3.1 Pro", description: "Deep reasoning", apiModel: "google/gemini-3.1-pro-preview" },
 ];
 
 export const useModelSelection = () => {
   const [selectedModel, setSelectedModel] = useState<AIModel>(() => {
     const saved = localStorage.getItem("amanai-model");
-    return (saved as AIModel) || "auto";
+    if (saved && AI_MODELS.some(m => m.id === saved)) return saved as AIModel;
+    return "auto";
   });
+
+  // Migrate any old model IDs to valid ones
+  useEffect(() => {
+    if (!AI_MODELS.some(m => m.id === selectedModel)) {
+      setSelectedModel("auto");
+      localStorage.setItem("amanai-model", "auto");
+    }
+  }, [selectedModel]);
 
   const changeModel = useCallback((model: AIModel) => {
     setSelectedModel(model);
