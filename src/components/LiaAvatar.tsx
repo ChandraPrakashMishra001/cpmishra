@@ -145,39 +145,8 @@ const LiaAvatar = ({ emotion, isTalking, customAvatarUrl, compact = false }: Lia
   };
 
   const getAnimationClass = () => {
-    if (isTalking) return "animate-talking";
-    switch (emotion) {
-      case "excited":
-        return "animate-bounce-excited";
-      case "happy":
-        return "animate-happy-sway";
-      case "sad":
-        return "animate-sad-droop";
-      case "sleepy":
-        return "animate-sleepy-bob";
-      case "loving":
-        return "animate-loving-pulse";
-      case "curious":
-        return "animate-curious-tilt";
-      case "thinking":
-        return "animate-thinking-bob";
-      case "surprised":
-        return "animate-surprised-jump";
-      case "confused":
-        return "animate-confused-wobble";
-      case "shy":
-        return "animate-shy-hide";
-      case "annoyed":
-        return "animate-annoyed-shake";
-      case "angry":
-        return "animate-angry-shake";
-      case "stressed":
-        return "animate-stressed-pulse";
-      case "motivational":
-        return "animate-motivational-glow";
-      default:
-        return "animate-float";
-    }
+    // User preference: avatar should ONLY float — no vibration, shake, bounce, etc.
+    return "animate-float";
   };
 
   const avatarSize = compact ? "w-20 h-20" : "w-64 h-64";
