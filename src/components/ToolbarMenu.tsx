@@ -13,7 +13,6 @@ import { NotificationsDialog } from "./NotificationsDialog";
 import { useState } from "react";
 import { LANGUAGE_LABELS, type AppLanguage } from "@/hooks/useLanguage";
 import { AI_MODELS, type AIModel } from "@/hooks/useModelSelection";
-import { useFirebaseAuth } from "@/hooks/useFirebaseAuth";
 
 interface ToolbarMenuProps {
   isNight: boolean;
