@@ -108,18 +108,6 @@ const ToolbarMenu = ({ isNight, onToggleTheme, companionName, compact = false, l
               </button>
             ))}
           </div>
-          {user && (
-            <>
-              <DropdownMenuSeparator />
-              <div className="px-2 py-1 text-[10px] text-muted-foreground truncate" title={user.email ?? ""}>
-                {user.email}
-              </div>
-              <DropdownMenuItem onClick={() => signOut()} className="cursor-pointer gap-2 text-destructive focus:text-destructive">
-                <LogOut className="w-4 h-4" />
-                <span>Sign out</span>
-              </DropdownMenuItem>
-            </>
-          )}
         </DropdownMenuContent>
       </DropdownMenu>
 
