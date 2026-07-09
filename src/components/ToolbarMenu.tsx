@@ -30,7 +30,7 @@ const languages: AppLanguage[] = ["en", "hi", "od"];
 const ToolbarMenu = ({ isNight, onToggleTheme, companionName, compact = false, language, onChangeLanguage, selectedModel, onChangeModel }: ToolbarMenuProps) => {
   const [goalsOpen, setGoalsOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const { user, signOut } = useFirebaseAuth();
+  
 
   return (
     <>
