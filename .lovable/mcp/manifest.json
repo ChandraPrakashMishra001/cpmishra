@@ -1,0 +1,120 @@
+{
+  "version": 1,
+  "sdk_version": "0.26.2",
+  "path": "/functions/v1/mcp",
+  "auth": {
+    "type": "oauth",
+    "issuer": "https://kkiqgaxtfeswzfmqixfm.supabase.co/auth/v1",
+    "accepted_audiences": [
+      "authenticated"
+    ]
+  },
+  "mcp": {
+    "server": {
+      "name": "amania-bloomsense",
+      "version": "0.1.0",
+      "title": "Amania bloomsense"
+    },
+    "tools": [
+      {
+        "name": "ask_amanai",
+        "title": "Ask Amanai",
+        "description": "Ask Amanai, the BloomSense master botanist, any agronomy, crop, plant-health or general-knowledge question and get an expert answer.",
+        "annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "question": {
+              "type": "string",
+              "minLength": 1,
+              "description": "The question to ask Amanai."
+            },
+            "deep_reasoning": {
+              "type": "boolean",
+              "description": "Set true for complex analysis that needs the slower, deeper reasoning model."
+            },
+            "language": {
+              "type": "string",
+              "enum": [
+                "en",
+                "hi",
+                "od"
+              ],
+              "description": "Answer language: en (English), hi (Hindi), od (Odia). Defaults to English."
+            }
+          },
+          "required": [
+            "question"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "diagnose_crop",
+        "title": "Diagnose crop",
+        "description": "Get a structured BloomSense diagnosis (identity, health, diagnosis, action, prevention, utility) for a crop from described symptoms.",
+        "annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "crop": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Crop or plant name, e.g. 'tomato', 'paddy'."
+            },
+            "symptoms": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Observed symptoms, as detailed as possible."
+            },
+            "location": {
+              "type": "string",
+              "description": "Region or district, for climate-aware advice."
+            },
+            "growth_stage": {
+              "type": "string",
+              "description": "Crop growth stage, e.g. 'flowering', 'seedling'."
+            }
+          },
+          "required": [
+            "crop",
+            "symptoms"
+          ],
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "search_disease_library",
+        "title": "Search disease library",
+        "description": "Search the BloomSense plant disease library by disease name, Hindi name or crop, and return symptoms, cause, treatment and prevention.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "description": "Disease name, Hindi name or crop to search for. Omit to list the whole library."
+            }
+          },
+          "additionalProperties": false,
+          "$schema": "http://json-schema.org/draft-07/schema#"
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
