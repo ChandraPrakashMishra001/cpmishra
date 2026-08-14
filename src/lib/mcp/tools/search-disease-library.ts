@@ -1,6 +1,6 @@
 import { defineTool, ToolError } from "@lovable.dev/mcp-js";
 import { z } from "zod";
-import { diseases } from "@/data/diseases";
+import { diseases } from "../../../data/diseases";
 
 export default defineTool({
   name: "search_disease_library",
