@@ -47,7 +47,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { messages, companionName, memory, diseaseHistory, goals, personality, phdMode, roleplay, codexMode, language, userModel } = body;
+    const { messages, companionName, memory, diseaseHistory, goals, personality, phdMode, roleplay, codexMode, language, userModel, customInstructions } = body;
 
     if (!validateMessages(messages)) {
       return new Response(JSON.stringify({ error: "Invalid request format" }), {
