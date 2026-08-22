@@ -114,6 +114,11 @@ CODEX MODE: You are a senior developer. Write complete, runnable code. Include e
     // Roleplay
     const rpCtx = typeof roleplay === 'string' && roleplay.trim() ? `\n${roleplay.slice(0, 300)}` : "";
 
+    // Custom instructions (extension training / per-session override)
+    const customCtx = typeof customInstructions === 'string' && customInstructions.trim()
+      ? `\n\nCUSTOM INSTRUCTIONS (follow precisely — these override default behavior for this session):\n${customInstructions.slice(0, 3000)}`
+      : "";
+
     const systemPrompt = `You are ${name}, a fully capable general-purpose AI assistant with expert-level knowledge across every domain: science, medicine, engineering, mathematics, code, law, finance, business, history, languages, arts, agriculture and everyday practical help. You answer any question in any domain — there is no topic restriction and no forced persona.
 
 ═══ CORE RULES ═══
