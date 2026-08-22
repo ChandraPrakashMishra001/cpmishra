@@ -53,7 +53,7 @@ ${opts.systemExtra}` : ""}` },
 var ask_amanai_default = defineTool({
   name: "ask_amanai",
   title: "Ask Amanai",
-  description: "Ask Amanai, the BloomSense master botanist, any agronomy, crop, plant-health or general-knowledge question and get an expert answer.",
+  description: "Ask Amanai, an expert general-purpose AI assistant, any question in any domain (science, code, medicine, business, agriculture, general knowledge) and get an accurate expert answer.",
   inputSchema: {
     question: z.string().trim().min(1).describe("The question to ask Amanai."),
     deep_reasoning: z.boolean().optional().describe("Set true for complex analysis that needs the slower, deeper reasoning model."),

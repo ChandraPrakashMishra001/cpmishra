@@ -19,7 +19,7 @@
       {
         "name": "ask_amanai",
         "title": "Ask Amanai",
-        "description": "Ask Amanai, the BloomSense master botanist, any agronomy, crop, plant-health or general-knowledge question and get an expert answer.",
+        "description": "Ask Amanai, an expert general-purpose AI assistant, any question in any domain (science, code, medicine, business, agriculture, general knowledge) and get an accurate expert answer.",
         "annotations": {
           "readOnlyHint": true,
           "openWorldHint": false
