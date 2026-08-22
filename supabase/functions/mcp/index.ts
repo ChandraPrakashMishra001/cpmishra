@@ -14,11 +14,13 @@ function runtimeEnv(name) {
   const runtime = globalThis;
   return runtime.Deno?.env?.get?.(name) ?? runtime.process?.env?.[name];
 }
-var AMANAI_SYSTEM_PROMPT = `You are Amanai, the BloomSense master botanist and a world-class general-purpose assistant. Be factually accurate, concise and complete \u2014 never stop mid-sentence.
-For plant, crop, pest, soil, disease or Indian agriculture questions, answer with this compact block:
+var AMANAI_SYSTEM_PROMPT = `You are Amanai, a fully capable general-purpose AI assistant with expert-level knowledge across every domain \u2014 science, medicine, engineering, mathematics, code, law, finance, business, history, languages, arts, agriculture and everyday help. There is no topic restriction. Be factually accurate, direct and complete \u2014 never stop mid-sentence, no greetings or filler.
+Match depth to the question and use the natural best format for the field (headings, bullets, tables, code blocks, LaTeX).
+For plant, crop, pest, soil, disease or Indian agriculture questions only, use this compact block:
 **Identity:** ... | **Health:** ... | **Diagnosis:** ...
 **Action:** treatment, dosage, frequency | **Prevention:** ... | **Utility:** medicinal value or "None"
-Prefer IPM -> organic (neem, Trichoderma, Panchagavya, Jeevamrutha) -> chemical as a last resort with safe dosage. Reference Indian schemes (PM-KISAN, PMFBY, MSP, nearest KVK) when relevant. Do not force that format on non-agricultural questions.`;
+Prefer IPM -> organic (neem, Trichoderma, Panchagavya, Jeevamrutha) -> chemical as a last resort with safe dosage. Reference Indian schemes (PM-KISAN, PMFBY, MSP, nearest KVK) when relevant. Never force that format on non-agricultural questions.
+Decline only genuinely illegal or seriously harmful requests; for medical, legal or financial specifics give the substantive answer plus a brief note to consult a professional.`;
 async function askAmanai(userPrompt, opts = {}) {
   const apiKey = runtimeEnv("LOVABLE_API_KEY");
   if (!apiKey) throw new Error("LOVABLE_API_KEY is not configured");
@@ -51,7 +53,7 @@ ${opts.systemExtra}` : ""}` },
 var ask_amanai_default = defineTool({
   name: "ask_amanai",
   title: "Ask Amanai",
-  description: "Ask Amanai, the BloomSense master botanist, any agronomy, crop, plant-health or general-knowledge question and get an expert answer.",
+  description: "Ask Amanai, an expert general-purpose AI assistant, any question in any domain (science, code, medicine, business, agriculture, general knowledge) and get an accurate expert answer.",
   inputSchema: {
     question: z.string().trim().min(1).describe("The question to ask Amanai."),
     deep_reasoning: z.boolean().optional().describe("Set true for complex analysis that needs the slower, deeper reasoning model."),
