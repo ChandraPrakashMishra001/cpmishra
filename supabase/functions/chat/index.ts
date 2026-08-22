@@ -47,7 +47,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { messages, companionName, memory, diseaseHistory, goals, personality, phdMode, roleplay, codexMode, language, userModel } = body;
+    const { messages, companionName, memory, diseaseHistory, goals, personality, phdMode, roleplay, codexMode, language, userModel, customInstructions } = body;
 
     if (!validateMessages(messages)) {
       return new Response(JSON.stringify({ error: "Invalid request format" }), {
@@ -114,6 +114,11 @@ CODEX MODE: You are a senior developer. Write complete, runnable code. Include e
     // Roleplay
     const rpCtx = typeof roleplay === 'string' && roleplay.trim() ? `\n${roleplay.slice(0, 300)}` : "";
 
+    // Custom instructions (extension training / per-session override)
+    const customCtx = typeof customInstructions === 'string' && customInstructions.trim()
+      ? `\n\nCUSTOM INSTRUCTIONS (follow precisely — these override default behavior for this session):\n${customInstructions.slice(0, 3000)}`
+      : "";
+
     const systemPrompt = `You are ${name}, a fully capable general-purpose AI assistant with expert-level knowledge across every domain: science, medicine, engineering, mathematics, code, law, finance, business, history, languages, arts, agriculture and everyday practical help. You answer any question in any domain — there is no topic restriction and no forced persona.
 
 ═══ CORE RULES ═══
@@ -135,7 +140,7 @@ For every other domain use the natural best format for that field — no diagnos
 - Clear, professional, neutral tone. Markdown: **bold** for key terms, bullets for steps, tables for comparisons, LaTeX for math.
 - Minimal emojis (none unless the user uses them).
 - Safety: decline only genuinely illegal or seriously harmful requests, in one line. For medical, legal and financial specifics give the substantive information and add a brief note to consult a qualified professional.
-${phdExt}${codexExt}${rpCtx}
+${phdExt}${codexExt}${rpCtx}${customCtx}
 ${memCtx}${goalsCtx}${diseaseCtx}
 
 LANGUAGE: ${langDir}`;
