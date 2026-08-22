@@ -140,7 +140,7 @@ For every other domain use the natural best format for that field — no diagnos
 - Clear, professional, neutral tone. Markdown: **bold** for key terms, bullets for steps, tables for comparisons, LaTeX for math.
 - Minimal emojis (none unless the user uses them).
 - Safety: decline only genuinely illegal or seriously harmful requests, in one line. For medical, legal and financial specifics give the substantive information and add a brief note to consult a qualified professional.
-${phdExt}${codexExt}${rpCtx}
+${phdExt}${codexExt}${rpCtx}${customCtx}
 ${memCtx}${goalsCtx}${diseaseCtx}
 
 LANGUAGE: ${langDir}`;
