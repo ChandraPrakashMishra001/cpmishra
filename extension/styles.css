@@ -243,11 +243,15 @@ body {
 .skill-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
 .skill-card-name { font-size: 13px; font-weight: 600; }
 .skill-card-desc { font-size: 11px; color: var(--text-muted); line-height: 1.4; margin-bottom: 8px; }
-.skill-card-actions { display: flex; gap: 8px; align-items: center; }
+.skill-card-actions { display: flex; gap: 6px; align-items: center; }
 .skill-toggle { transform: scale(0.8); }
+.skill-order { font-size: 10px; color: var(--text-muted); margin-right: auto; }
 .skill-card-btn { font-size: 11px; background: none; border: 1px solid var(--border); color: var(--text-muted); padding: 3px 10px; border-radius: 12px; cursor: pointer; }
-.skill-card-btn:hover { color: var(--text); border-color: var(--primary); }
+.skill-card-btn.icon { padding: 3px 8px; line-height: 1; font-size: 12px; }
+.skill-card-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.skill-card-btn:hover:not(:disabled) { color: var(--text); border-color: var(--primary); }
 .skill-card-btn.delete:hover { color: var(--danger); border-color: var(--danger); }
+
 
 /* Skill Editor */
 .skill-editor { padding: 0 16px 16px; }
