@@ -482,6 +482,12 @@ async function sendMessage(text) {
 const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition = null;
 let listening = false;
+let pttHeld = false;
+let lastTranscript = '';
+
+function micIdleLabel() {
+  return settings.pushToTalk ? 'Hold to talk (Space)' : 'Tap to speak';
+}
 
 function initRecognition() {
   if (!SR) {
@@ -496,16 +502,20 @@ function initRecognition() {
 
   recognition.onstart = () => {
     listening = true;
+    lastTranscript = '';
     el.micBtn.classList.add('recording');
-    el.micLabel.textContent = 'Listening…';
+    el.micLabel.textContent = settings.pushToTalk ? 'Release to send' : 'Listening…';
     setStatus('Listening', 'listening');
   };
   recognition.onresult = (event) => {
     let transcript = '';
     for (let i = 0; i < event.results.length; i++) transcript += event.results[i][0].transcript;
+    lastTranscript = transcript;
     el.textInput.value = transcript;
-    if (event.results[event.results.length - 1].isFinal && settings.autoSend) {
+    const isFinal = event.results[event.results.length - 1].isFinal;
+    if (isFinal && !settings.pushToTalk && settings.autoSend) {
       const final = transcript.trim();
+      lastTranscript = '';
       el.textInput.value = '';
       sendMessage(final);
     }
@@ -517,10 +527,94 @@ function initRecognition() {
   recognition.onend = () => {
     listening = false;
     el.micBtn.classList.remove('recording');
-    el.micLabel.textContent = 'Tap to speak';
+    el.micLabel.textContent = micIdleLabel();
     if (el.statusLabel.textContent === 'Listening') setStatus('Ready', '');
+    // Push-to-talk: send whatever was captured when the key/button was released
+    if (settings.pushToTalk && settings.autoSend && lastTranscript.trim()) {
+      const final = lastTranscript.trim();
+      lastTranscript = '';
+      el.textInput.value = '';
+      sendMessage(final);
+    }
   };
 }
+
+function startListening() {
+  if (!recognition || listening) return;
+  recognition.continuous = !!settings.pushToTalk;
+  try {
+    recognition.start();
+  } catch {
+    /* already started */
+  }
+}
+
+function stopListening() {
+  if (!recognition || !listening) return;
+  try {
+    recognition.stop();
+  } catch {
+    /* not running */
+  }
+}
+
+function toggleListening() {
+  if (listening) stopListening();
+  else startListening();
+}
+
+function isTypingTarget(target) {
+  const tag = target?.tagName;
+  return tag === 'INPUT' || tag === 'TEXTAREA' || target?.isContentEditable;
+}
+
+function wireHotkeys() {
+  document.addEventListener('keydown', (e) => {
+    // Ctrl/Cmd + Shift + Space: toggle listening from anywhere in the popup
+    if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.code === 'Space') {
+      e.preventDefault();
+      toggleListening();
+      return;
+    }
+    // Escape: stop mic + speech
+    if (e.key === 'Escape') {
+      stopListening();
+      speechSynthesis.cancel();
+      return;
+    }
+    // Space held: push-to-talk (only when not typing)
+    if (e.code === 'Space' && settings.pushToTalk && !isTypingTarget(e.target)) {
+      e.preventDefault();
+      if (!e.repeat && !pttHeld) {
+        pttHeld = true;
+        startListening();
+      }
+    }
+  });
+
+  document.addEventListener('keyup', (e) => {
+    if (e.code === 'Space' && pttHeld) {
+      pttHeld = false;
+      stopListening();
+    }
+  });
+
+  window.addEventListener('blur', () => {
+    if (pttHeld) {
+      pttHeld = false;
+      stopListening();
+    }
+  });
+}
+
+async function consumeAutoListenFlag() {
+  const ts = await storage.get('amanai_autolisten', 0);
+  if (!ts) return;
+  await chrome.storage.local.remove('amanai_autolisten');
+  // Only honour a very recent hotkey trigger
+  if (Date.now() - ts < 5000 && !settings.pushToTalk) startListening();
+}
+
 
 // ── Page reading ─────────────────────────────────────────────
 async function readCurrentPage() {
