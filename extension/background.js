@@ -1,6 +1,19 @@
 // Amanai Voice Navigator — Background Service Worker
 
+// Global hotkey: open the popup with a flag that triggers voice capture
+chrome.commands.onCommand.addListener(async (command) => {
+  if (command !== 'start-voice') return;
+  await chrome.storage.local.set({ amanai_autolisten: Date.now() });
+  try {
+    await chrome.action.openPopup();
+  } catch {
+    // openPopup is unavailable in some contexts/versions — the flag is consumed
+    // the next time the user opens the popup manually.
+  }
+});
+
 // Handle messages from popup
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   const handle = async () => {
     switch (message.type) {
