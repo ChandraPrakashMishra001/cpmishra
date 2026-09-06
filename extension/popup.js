@@ -16,6 +16,7 @@ const DEFAULT_SETTINGS = {
   companionName: 'Amanai',
   autoNavigate: true,
   autoSend: true,
+  pushToTalk: false,
 };
 
 const DEFAULT_SKILLS = [
@@ -101,6 +102,7 @@ const el = {
   companionName: $('companion-name'),
   autoNavigate: $('auto-navigate'),
   autoSend: $('auto-send'),
+  pushToTalk: $('push-to-talk'),
 };
 
 function setStatus(label, state) {
