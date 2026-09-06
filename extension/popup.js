@@ -296,8 +296,10 @@ async function loadSettings() {
   el.companionName.value = settings.companionName;
   el.autoNavigate.checked = settings.autoNavigate;
   el.autoSend.checked = settings.autoSend;
+  el.pushToTalk.checked = settings.pushToTalk;
   el.headerName.textContent = settings.companionName;
   el.modelBadge.textContent = settings.model.includes('pro') ? 'Pro' : 'Flash';
+  if (!listening) el.micLabel.textContent = micIdleLabel();
 }
 
 async function saveSettings() {
@@ -331,6 +333,12 @@ function wireSettings() {
   });
   el.autoSend.addEventListener('change', () => {
     settings.autoSend = el.autoSend.checked;
+    saveSettings();
+  });
+  el.pushToTalk.addEventListener('change', () => {
+    settings.pushToTalk = el.pushToTalk.checked;
+    if (!settings.pushToTalk) pttHeld = false;
+    if (!listening) el.micLabel.textContent = micIdleLabel();
     saveSettings();
   });
 }
