@@ -670,16 +670,22 @@ function wireEvents() {
     }
   });
   el.micBtn.addEventListener('click', () => {
-    if (!recognition) return;
-    if (listening) recognition.stop();
-    else {
-      try {
-        recognition.start();
-      } catch {
-        /* already started */
-      }
-    }
+    if (settings.pushToTalk) return; // handled by press-and-hold below
+    toggleListening();
   });
+  el.micBtn.addEventListener('mousedown', (e) => {
+    if (!settings.pushToTalk || e.button !== 0) return;
+    e.preventDefault();
+    pttHeld = true;
+    startListening();
+  });
+  const releasePtt = () => {
+    if (!pttHeld) return;
+    pttHeld = false;
+    stopListening();
+  };
+  el.micBtn.addEventListener('mouseup', releasePtt);
+  el.micBtn.addEventListener('mouseleave', releasePtt);
   el.readPageBtn.addEventListener('click', readCurrentPage);
   el.clearBtn.addEventListener('click', () => {
     history = [];
@@ -697,8 +703,10 @@ function wireEvents() {
   wireTabs();
   wireEvents();
   wireSettings();
+  wireHotkeys();
   initRecognition();
   await loadSettings();
   await loadSkills();
   setStatus('Ready', '');
+  await consumeAutoListenFlag();
 })();
