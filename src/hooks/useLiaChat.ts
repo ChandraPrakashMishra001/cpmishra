@@ -615,6 +615,24 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
       }
     }
 
+    // Offline-first: no connection → queue the question and answer locally
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      enqueuePrompt(trimmedContent);
+      setIsTyping(false);
+      setIsTalking(false);
+      setCurrentEmotion("thinking");
+      const offlineMessage: Message = {
+        id: assistantMsgId,
+        content: buildOfflineAnswer(trimmedContent, diseaseHistoryRef.current),
+        isUser: false,
+        timestamp: new Date(),
+      };
+      setMessages(prev => [...prev, offlineMessage]);
+      addMessage(offlineMessage);
+      toast("Saved offline — I'll answer fully when you're back online 📴");
+      return;
+    }
+
     // Regular chat flow — read from ref to keep callback identity stable
     const recentMessages = messagesRef.current
       .filter(msg => !msg.id.startsWith("welcome") && !msg.id.startsWith("error"))
@@ -746,13 +764,16 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
         setIsTalking(false);
         setCurrentEmotion("sad");
         
+        // Network failure → queue it and give provisional offline guidance
+        enqueuePrompt(trimmedContent);
         const errorMessage: Message = {
-          id: `error-${Date.now()}`,
-          content: "I'm having trouble connecting right now. Please check your internet and try again 🔄",
+          id: `offline-${Date.now()}`,
+          content: buildOfflineAnswer(trimmedContent, diseaseHistoryRef.current),
           isUser: false,
           timestamp: new Date(),
         };
         setMessages(prev => [...prev, errorMessage]);
+        addMessage(errorMessage);
       }
     }
   }, [companionName, goalsSummary, personalitySummary, phdModeEnabled, roleplayPrompt, codexModeEnabled, language, userModel, addMessage, setUserName, addTopics, memoryContext]);
