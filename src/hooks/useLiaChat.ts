@@ -15,6 +15,8 @@ import {
 } from "firebase/firestore";
 import { db, FIELD_LOGS_COLLECTION } from "@/integrations/firebase/client";
 import { toast } from "sonner";
+import { enqueuePrompt, dequeuePrompt, peekQueue, type QueuedPrompt } from "./useOfflineQueue";
+import { buildOfflineAnswer } from "@/lib/offlineAdvisor";
 
 interface DiseaseHistoryEntry {
   title: string;
