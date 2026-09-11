@@ -2,7 +2,13 @@
 // Web API key is a public identifier; security is enforced via Firestore rules.
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import {
+  initializeFirestore,
+  getFirestore,
+  persistentLocalCache,
+  persistentMultipleTabManager,
+  type Firestore,
+} from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAiawVZrk5pifFBoDuJSibbvuw0Kv3Yvcc",
@@ -17,6 +23,19 @@ const firebaseConfig = {
 
 export const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
 export const auth = getAuth(firebaseApp);
-export const db = getFirestore(firebaseApp);
+
+// Offline-first: keep field logs in an IndexedDB-backed cache so reads work with
+// zero internet and writes queue locally until the device reconnects.
+let firestore: Firestore;
+try {
+  firestore = initializeFirestore(firebaseApp, {
+    localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+  });
+} catch {
+  // Already initialized (HMR) or persistence unsupported in this browser.
+  firestore = getFirestore(firebaseApp);
+}
+
+export const db = firestore;
 
 export const FIELD_LOGS_COLLECTION = "amanai_field_logs";
