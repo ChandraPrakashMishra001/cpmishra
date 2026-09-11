@@ -905,9 +905,94 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
     setCurrentEmotion("happy");
   }, []);
 
+  // ---- Offline queue draining -------------------------------------------
+  const answerQueued = async (item: QueuedPrompt): Promise<boolean> => {
+    const history = messagesRef.current
+      .filter(msg => !msg.id.startsWith("welcome") && !msg.id.startsWith("error") && !msg.id.startsWith("offline"))
+      .slice(-20)
+      .map(msg => ({
+        role: msg.isUser ? ("user" as const) : ("assistant" as const),
+        content: msg.content,
+      }));
+    if (history[history.length - 1]?.content !== item.content) {
+      history.push({ role: "user", content: item.content });
+    }
+
+    const id = `assistant-sync-${item.id}`;
+    let acc = "";
+    setMessages(prev => [
+      ...prev,
+      {
+        id,
+        content: `🔄 Now online — answering your queued question: "${item.content.slice(0, 60)}"…`,
+        isUser: false,
+        timestamp: new Date(),
+      },
+    ]);
+
+    const controller = new AbortController();
+    try {
+      await streamChat(
+        history,
+        (delta) => {
+          acc += delta;
+          const snapshot = acc;
+          setMessages(prev => prev.map(m => (m.id === id ? { ...m, content: snapshot } : m)));
+        },
+        () => {},
+        controller.signal,
+      );
+      if (acc) {
+        addMessage({ id, content: acc, isUser: false, timestamp: new Date() });
+      }
+      dequeuePrompt(item.id);
+      return true;
+    } catch (err) {
+      console.warn("Queued prompt sync failed:", err);
+      setMessages(prev => prev.filter(m => m.id !== id));
+      return false;
+    }
+  };
+
+  const drainingRef = useRef(false);
+  const syncQueuedRef = useRef<() => Promise<void>>(async () => {});
+  syncQueuedRef.current = async () => {
+    if (drainingRef.current) return;
+    const pending = peekQueue();
+    if (pending.length === 0) return;
+    if (typeof navigator !== "undefined" && !navigator.onLine) return;
+
+    drainingRef.current = true;
+    toast(`Back online — syncing ${pending.length} pending question${pending.length > 1 ? "s" : ""} 🔄`);
+    try {
+      for (const item of pending) {
+        const ok = await answerQueued(item);
+        if (!ok) break;
+      }
+    } finally {
+      drainingRef.current = false;
+    }
+  };
+
+  const syncQueued = useCallback(() => syncQueuedRef.current(), []);
+
+  useEffect(() => {
+    const onReconnect = () => {
+      void syncQueuedRef.current();
+    };
+    window.addEventListener("online", onReconnect);
+    // Also try on mount in case the app was reopened with signal restored
+    const t = setTimeout(onReconnect, 1500);
+    return () => {
+      window.removeEventListener("online", onReconnect);
+      clearTimeout(t);
+    };
+  }, []);
+
   return {
     messages,
     sendMessage,
+    syncQueued,
     isTyping,
     currentEmotion,
     isTalking,
