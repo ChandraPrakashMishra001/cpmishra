@@ -269,6 +269,10 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
   // Field disease history — past diagnoses pulled from Firestore for AI recall
   const { user: fbUser } = useFirebaseAuth();
   const [diseaseHistory, setDiseaseHistory] = useState<DiseaseHistoryEntry[]>([]);
+  const diseaseHistoryRef = useRef<DiseaseHistoryEntry[]>([]);
+  useEffect(() => {
+    diseaseHistoryRef.current = diseaseHistory;
+  }, [diseaseHistory]);
   useEffect(() => {
     if (!fbUser) {
       setDiseaseHistory([]);
