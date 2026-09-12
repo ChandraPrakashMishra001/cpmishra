@@ -132,6 +132,7 @@ const FieldLogDialog = ({ messages, companionName, trigger }: FieldLogDialogProp
                               <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{format(new Date(log.created_at), "MMM d, yyyy")}</span>
                               {log.crop_name && <span className="flex items-center gap-1"><Leaf className="w-3 h-3" />{log.crop_name}</span>}
                               {log.location && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{log.location}</span>}
+                              {log.pendingSync && <span className="text-primary/80">· Waiting to sync</span>}
                             </div>
                           </div>
                           <div className="flex items-center gap-1 shrink-0">
