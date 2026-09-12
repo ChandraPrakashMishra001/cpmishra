@@ -25,6 +25,8 @@ export interface FieldLog {
   created_at: string;
   location: string | null;
   severity: string | null;
+  /** true while the log is saved on-device but not yet uploaded */
+  pendingSync?: boolean;
 }
 
 export const useFieldLog = () => {
