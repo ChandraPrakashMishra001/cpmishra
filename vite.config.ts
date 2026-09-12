@@ -17,8 +17,9 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: "autoUpdate",
+      injectRegister: null,
       devOptions: {
-        enabled: true,
+        enabled: false,
       },
       includeAssets: ["favicon.ico", "lia-icon-192.png", "lia-icon-512.png", "robots.txt"],
       manifest: {
@@ -66,8 +67,29 @@ export default defineConfig(({ mode }) => ({
         navigateFallbackDenylist: [/^\/~oauth/, /^\/\.lovable\//],
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/ai\.gateway\.lovable\.dev\/.*/i,
+            // AI + backend calls must always hit the network
+            urlPattern: /^https:\/\/(ai\.gateway\.lovable\.dev|[a-z0-9-]+\.supabase\.co)\/.*/i,
             handler: "NetworkOnly",
+          },
+          {
+            // HTML navigations: fresh when online, cached shell when offline
+            urlPattern: ({ request }) => request.mode === "navigate",
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "amanai-pages",
+              networkTimeoutSeconds: 4,
+            },
+          },
+          {
+            // Hashed same-origin build assets and icons
+            urlPattern: ({ request, sameOrigin }) =>
+              sameOrigin &&
+              ["script", "style", "font", "image"].includes(request.destination),
+            handler: "CacheFirst",
+            options: {
+              cacheName: "amanai-assets",
+              expiration: { maxEntries: 120, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
           },
         ],
       },

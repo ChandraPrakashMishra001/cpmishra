@@ -25,6 +25,8 @@ export interface FieldLog {
   created_at: string;
   location: string | null;
   severity: string | null;
+  /** true while the log is saved on-device but not yet uploaded */
+  pendingSync?: boolean;
 }
 
 export const useFieldLog = () => {
@@ -46,6 +48,7 @@ export const useFieldLog = () => {
     );
     const unsub = onSnapshot(
       q,
+      { includeMetadataChanges: true },
       (snap) => {
         const next: FieldLog[] = snap.docs.map((d) => {
           const data = d.data() as Record<string, unknown>;
@@ -59,6 +62,7 @@ export const useFieldLog = () => {
             created_at: ts?.toDate?.().toISOString() ?? new Date().toISOString(),
             location: (data.location as string) ?? null,
             severity: (data.severity as string) ?? null,
+            pendingSync: d.metadata.hasPendingWrites,
           };
         });
         next.sort((a, b) => (a.created_at < b.created_at ? 1 : -1));
@@ -87,7 +91,9 @@ export const useFieldLog = () => {
         return false;
       }
       try {
-        await addDoc(collection(db, FIELD_LOGS_COLLECTION), {
+        // Do not await: offline writes resolve only after reconnect, but the
+        // local cache already holds the log so the UI can move on immediately.
+        void addDoc(collection(db, FIELD_LOGS_COLLECTION), {
           uid: user.uid,
           title,
           messages: JSON.parse(JSON.stringify(messages)),
@@ -96,8 +102,12 @@ export const useFieldLog = () => {
           location: location || null,
           severity: severity || null,
           created_at: serverTimestamp(),
-        });
-        toast.success("Saved to Field History! 🌿");
+        }).catch((err) => console.warn("Field log upload pending/failed:", err));
+        toast.success(
+          navigator.onLine
+            ? "Saved to Field History! 🌿"
+            : "Saved on device — will upload when you're back online 📴",
+        );
         return true;
       } catch (err) {
         console.error("Failed to save field log:", err);

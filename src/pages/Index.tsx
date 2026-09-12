@@ -12,6 +12,7 @@ import DiseaseGallery from "@/components/DiseaseGallery";
 import ToolbarMenu from "@/components/ToolbarMenu";
 
 import ConversationStoreDialog from "@/components/ConversationStoreDialog";
+import OfflineStatusBar from "@/components/OfflineStatusBar";
 import { useLiaChat } from "@/hooks/useLiaChat";
 import { useCompanionSettings } from "@/hooks/useCompanionSettings";
 import { usePersonalitySettings } from "@/hooks/usePersonalitySettings";
@@ -70,8 +71,10 @@ const Index = () => {
     quickReplies,
     showCelebration,
     setShowCelebration,
+    syncQueued,
   } = useLiaChat(settings.name, goalsSummary, personalitySummary, phdModeEnabled, roleplayPrompt, codexModeEnabled, language, getModelInfo().apiModel);
   const { conversations: savedConversations, saveConversation, deleteConversation } = useSavedConversations();
+
 
   
 
@@ -356,6 +359,7 @@ const Index = () => {
 
           {/* Chat Section */}
           <div className="flex-1 lg:w-1/2 flex flex-col bg-card/40 backdrop-blur-sm lg:border-l border-border/50 shadow-lg min-h-0 lg:h-screen">
+            <OfflineStatusBar onSyncNow={syncQueued} />
             <ChatInterface
               messages={messages}
               onSendMessage={sendMessage}
