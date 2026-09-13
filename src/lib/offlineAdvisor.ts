@@ -8,45 +8,83 @@ export interface OfflineHistoryEntry {
   date: string;
 }
 
+// Words that appear in almost every question or every disease description.
+// They add noise, not signal, so they are ignored when scoring.
+const STOP_WORDS = new Set([
+  "the", "and", "for", "are", "with", "from", "this", "that", "have", "has",
+  "was", "were", "will", "what", "why", "how", "when", "not", "but", "its",
+  "can", "could", "should", "would", "there", "their", "them", "they", "then",
+  "than", "also", "been", "being", "about", "into", "over", "under", "after",
+  "before", "between", "through", "during", "some", "any", "all", "very",
+  "just", "like", "more", "most", "many", "much", "each", "other", "such",
+  // generic farming words that match nearly every entry
+  "plant", "plants", "leaf", "leaves", "crop", "crops", "field", "soil",
+  "water", "growth", "growing", "days", "weeks", "getting", "turning",
+  "showing", "appearing", "spread", "spreading", "affected", "seen",
+  "problem", "disease", "damage", "tell", "help", "please",
+]);
+
 const tokenize = (text: string) =>
   text
     .toLowerCase()
     .replace(/[^a-z\u0900-\u097F\s]/g, " ")
     .split(/\s+/)
-    .filter((w) => w.length > 2);
+    .filter((w) => w.length > 2 && !STOP_WORDS.has(w));
 
+/**
+ * Score a disease against question tokens.
+ * Symptom matches weigh heaviest — a farmer describes what they SEE,
+ * so symptom text is the strongest signal. Name/crop matches are strong
+ * intent signals. Cause/prevention matches are weak and capped.
+ */
 const scoreDisease = (tokens: string[], d: Disease): number => {
-  const haystack = [
-    d.name,
-    d.hindiName,
-    d.crops.join(" "),
-    d.symptoms,
-    d.cause,
-    d.prevention,
-  ]
-    .join(" ")
-    .toLowerCase();
+  const symptomText = d.symptoms.toLowerCase();
+  const causeText = `${d.cause} ${d.prevention}`.toLowerCase();
+  const nameText = d.name.toLowerCase();
+  const hindiText = d.hindiName;
+  const cropTexts = d.crops.map((c) => c.toLowerCase());
 
   let score = 0;
+  let causeHits = 0;
+
   for (const t of tokens) {
-    if (haystack.includes(t)) score += 1;
-    if (d.name.toLowerCase().includes(t)) score += 3;
-    if (d.crops.some((c) => c.toLowerCase().includes(t))) score += 2;
+    if (nameText.includes(t)) score += 6;
+    if (hindiText.includes(t)) score += 6;
+    if (cropTexts.some((c) => c.includes(t) || t.includes(c))) score += 4;
+    if (symptomText.includes(t)) score += 5;
+    if (causeText.includes(t)) causeHits += 1;
   }
+
+  // Cause/prevention matches capped: they contain generic words like
+  // "fungus", "nitrogen", "soil" that otherwise muddy the ranking.
+  score += Math.min(causeHits, 2);
+
+  // Require at least one symptom or name/crop hit for a confident score:
+  // a disease that only matches generic cause words should not win.
   return score;
 };
 
-/** Best-effort matches from the on-device disease library. */
-export const matchDiseases = (queryText: string, max = 2): Disease[] => {
+export interface ScoredMatch {
+  disease: Disease;
+  score: number;
+  confident: boolean;
+}
+
+/** Best-effort matches from the on-device disease library, with confidence. */
+export const matchDiseasesScored = (queryText: string, max = 2): ScoredMatch[] => {
   const tokens = tokenize(queryText);
   if (tokens.length === 0) return [];
   return diseases
-    .map((d) => ({ d, s: scoreDisease(tokens, d) }))
-    .filter((x) => x.s >= 2)
-    .sort((a, b) => b.s - a.s)
+    .map((d) => ({ disease: d, score: scoreDisease(tokens, d) }))
+    .filter((x) => x.score >= 5)
+    .sort((a, b) => b.score - a.score)
     .slice(0, max)
-    .map((x) => x.d);
+    .map((x) => ({ ...x, confident: x.score >= 10 }));
 };
+
+/** Best-effort matches from the on-device disease library. */
+export const matchDiseases = (queryText: string, max = 2): Disease[] =>
+  matchDiseasesScored(queryText, max).map((m) => m.disease);
 
 /**
  * Builds a provisional, clearly-labelled answer using only local data,
@@ -56,7 +94,7 @@ export const buildOfflineAnswer = (
   queryText: string,
   history: OfflineHistoryEntry[] = [],
 ): string => {
-  const matches = matchDiseases(queryText);
+  const matches = matchDiseasesScored(queryText);
   const lines: string[] = [];
 
   lines.push("**📴 Offline guidance (provisional)**");
@@ -65,12 +103,24 @@ export const buildOfflineAnswer = (
   );
   lines.push("");
 
-  if (matches.length === 0) {
-    lines.push(
-      "No confident match in the offline library. Your question is queued and will be answered as soon as there is signal.",
-    );
+  const confident = matches.filter((m) => m.confident);
+
+  if (confident.length === 0) {
+    if (matches.length > 0) {
+      lines.push(
+        `Low-confidence match — possibly **${matches[0].disease.emoji} ${matches[0].disease.name}** (${matches[0].disease.hindiName}), but I am not sure from the description alone.`,
+      );
+      lines.push(`- Check symptoms: ${matches[0].disease.symptoms}`);
+      lines.push(`- If it matches: ${matches[0].disease.treatment}`);
+      lines.push("");
+    } else {
+      lines.push(
+        "No confident match in the offline library. Your question is queued and will be answered as soon as there is signal.",
+      );
+    }
   } else {
-    matches.forEach((d, i) => {
+    confident.forEach((m, i) => {
+      const d = m.disease;
       lines.push(`${i === 0 ? "**Most likely**" : "**Also consider**"}: ${d.emoji} ${d.name} (${d.hindiName})`);
       lines.push(`- Crops: ${d.crops.join(", ")}`);
       lines.push(`- Symptoms: ${d.symptoms}`);
@@ -82,9 +132,9 @@ export const buildOfflineAnswer = (
     });
   }
 
+  const tokens = tokenize(queryText);
   const related = history
     .filter((h) => {
-      const tokens = tokenize(queryText);
       const hay = `${h.title} ${h.crop ?? ""} ${h.diagnosis ?? ""}`.toLowerCase();
       return tokens.some((t) => hay.includes(t));
     })
