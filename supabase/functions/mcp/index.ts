@@ -28,7 +28,7 @@ async function askAmanai(userPrompt, opts = {}) {
     method: "POST",
     headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: opts.deep ? "google/gemini-3.1-pro-preview" : "google/gemini-3.5-flash",
+      model: opts.deep ? "google/gemini-3.1-pro-preview" : "google/gemini-3.8-flash",
       messages: [
         { role: "system", content: `${AMANAI_SYSTEM_PROMPT}${opts.systemExtra ? `
 ${opts.systemExtra}` : ""}` },
