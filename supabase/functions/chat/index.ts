@@ -148,7 +148,7 @@ LANGUAGE: ${langDir}`;
 
     // Model selection: user override > auto-select. Only two supported models.
     const VALID_MODELS = [
-      "google/gemini-3.5-flash",
+      "google/gemini-3.8-flash",
       "google/gemini-3.1-pro-preview",
     ];
     let model: string;
@@ -157,7 +157,7 @@ LANGUAGE: ${langDir}`;
     } else {
       model = (needsDeepThinking || codexMode === true)
         ? "google/gemini-3.1-pro-preview"
-        : "google/gemini-3.5-flash";
+        : "google/gemini-3.8-flash";
     }
 
     // Send last 20 messages for context
