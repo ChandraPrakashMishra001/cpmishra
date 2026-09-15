@@ -25,7 +25,8 @@ import { useLanguage, type AppLanguage } from "@/hooks/useLanguage";
 import { useModelSelection } from "@/hooks/useModelSelection";
 import { useSavedConversations } from "@/hooks/useSavedConversations";
 import liaAvatar from "@/assets/amanai-avatar.png";
-import { Trash2, Brain, Code2, BookOpen, Bug, Archive } from "lucide-react";
+import { Trash2, Brain, Code2, BookOpen, Bug, Archive, Sprout } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
