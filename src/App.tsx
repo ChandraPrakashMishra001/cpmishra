@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Install from "./pages/Install";
 import Embed from "./pages/Embed";
 import Login from "./pages/Login";
+import PlantJourney from "./pages/PlantJourney";
 import OAuthConsent from "./pages/OAuthConsent";
 import NotFound from "./pages/NotFound";
 
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/install" element={<Install />} />
           <Route path="/embed" element={<Embed />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/journey" element={<PlantJourney />} />
           <Route path="/.lovable/oauth/consent" element={<OAuthConsent />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
