@@ -173,6 +173,11 @@ const Index = () => {
                 }
                 onAskAbout={(name) => sendMessage(`Tell me about ${name} disease - diagnosis and treatment`)}
               />
+              <Button asChild variant="ghost" size="icon" className="w-7 h-7 hover:bg-primary/20">
+                <Link to="/journey" aria-label="Plant Journey" title="Plant Journey">
+                  <Sprout className="w-3.5 h-3.5 text-primary" />
+                </Link>
+              </Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-destructive/20">
