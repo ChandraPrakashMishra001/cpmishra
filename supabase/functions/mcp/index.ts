@@ -197,6 +197,204 @@ var diseases = [
     prevention: "Use virus-free seedlings, silver mulch to repel whitefly, resistant hybrids",
     severity: "high",
     emoji: "\u{1F336}\uFE0F"
+  },
+  {
+    name: "Early Blight",
+    hindiName: "\u0905\u0917\u0947\u0924\u0940 \u091D\u0941\u0932\u0938\u093E",
+    crops: ["Tomato", "Potato", "Brinjal"],
+    symptoms: "Brown spots with concentric rings (target/bullseye pattern) on older lower leaves, yellow halo around spots, leaves drop from bottom upward",
+    cause: "Alternaria solani (fungus), favoured by warm humid weather and alternating wet-dry spells",
+    treatment: "Mancozeb 2.5g/L or Chlorothalonil 2g/L at 10-day intervals. Organic: Trichoderma + neem oil 5ml/L",
+    prevention: "Mulch to stop soil splash, remove lower infected foliage, 3-year rotation, stake plants",
+    severity: "high",
+    emoji: "\u{1F3AF}"
+  },
+  {
+    name: "Rice Blast",
+    hindiName: "\u0930\u093F\u091A \u091D\u094B\u0902\u0915\u093E / \u092C\u094D\u0932\u093E\u0938\u094D\u091F",
+    crops: ["Rice", "Finger Millet"],
+    symptoms: "Diamond/spindle-shaped spots with grey centre and brown margin on leaves; blackened rotting node; neck of panicle breaks and grain fills poorly",
+    cause: "Magnaporthe oryzae (Pyricularia oryzae), severe in cool nights with heavy dew and high nitrogen",
+    treatment: "Tricyclazole 0.6g/L or Isoprothiolane 1.5ml/L at boot-leaf and heading stage. Seed treat with Carbendazim 2g/kg",
+    prevention: "Split nitrogen doses, avoid dense planting, resistant varieties, drain field periodically",
+    severity: "high",
+    emoji: "\u{1F33E}"
+  },
+  {
+    name: "Wheat Rust",
+    hindiName: "\u0917\u0947\u0930\u0941\u0906 \u0930\u094B\u0917",
+    crops: ["Wheat", "Barley", "Oats"],
+    symptoms: "Orange-brown or yellow powdery pustules in stripes or scattered dots on leaves and stem; rusty powder rubs off on fingers and clothes",
+    cause: "Puccinia species (stripe, leaf and stem rust), spreads on wind in cool moist weather",
+    treatment: "Propiconazole 1ml/L or Tebuconazole 1ml/L, repeat after 15 days if pustules persist",
+    prevention: "Sow rust-resistant varieties, timely sowing, destroy volunteer wheat plants",
+    severity: "high",
+    emoji: "\u{1F7E0}"
+  },
+  {
+    name: "Mosaic Virus",
+    hindiName: "\u092E\u094B\u091C\u0947\u0915 \u0935\u093F\u0937\u093E\u0923\u0941",
+    crops: ["Tomato", "Okra", "Cucurbits", "Papaya", "Tobacco"],
+    symptoms: "Mottled light-and-dark green patchwork on leaves, blistered puckered surface, narrow strap-like distorted new leaves, stunted plant, poor fruit set",
+    cause: "Tobacco/Cucumber mosaic virus and Yellow Vein Mosaic, spread by aphids, whitefly and handling",
+    treatment: "No chemical cure. Uproot and burn infected plants. Control vectors: Imidacloprid 0.3ml/L or neem oil 5ml/L",
+    prevention: "Virus-free seed, wash hands and tools, no tobacco use near crop, barrier crop of maize",
+    severity: "high",
+    emoji: "\u{1F9E9}"
+  },
+  {
+    name: "Anthracnose",
+    hindiName: "\u0936\u094D\u092F\u093E\u092E\u0935\u0930\u094D\u0923 / \u090F\u0928\u094D\u0925\u094D\u0930\u0947\u0915\u094D\u0928\u094B\u091C",
+    crops: ["Chilli", "Mango", "Beans", "Banana"],
+    symptoms: "Sunken circular dark spots on fruit with pink spore masses in the centre, fruit rots and dries; twig dieback in mango",
+    cause: "Colletotrichum species, spreads in rain splash at fruit maturity",
+    treatment: "Carbendazim 1g/L or Mancozeb 2.5g/L sprays at flowering and fruit set",
+    prevention: "Harvest dry fruit, remove mummified fruit, avoid overhead irrigation, proper spacing",
+    severity: "medium",
+    emoji: "\u{1F336}\uFE0F"
+  },
+  {
+    name: "Damping Off",
+    hindiName: "\u0906\u0930\u094D\u0926\u094D\u0930 \u0917\u0932\u0928",
+    crops: ["Nursery seedlings", "Tomato", "Chilli", "Brinjal", "Cabbage"],
+    symptoms: "Seedlings collapse and topple at soil line, stem base water-soaked and pinched thin, patches of dead seedlings in nursery bed",
+    cause: "Pythium and Rhizoctonia in overwatered, poorly drained, crowded nursery beds",
+    treatment: "Drench with Copper oxychloride 3g/L or Metalaxyl 2g/L; reduce watering immediately",
+    prevention: "Raised nursery beds, soil solarisation, Trichoderma 10g/kg soil, thin sowing",
+    severity: "high",
+    emoji: "\u{1F331}"
+  },
+  {
+    name: "Stem Borer",
+    hindiName: "\u0924\u0928\u093E \u091B\u0947\u0926\u0915",
+    crops: ["Rice", "Maize", "Sugarcane", "Brinjal"],
+    symptoms: "Dead heart in young plants \u2014 central shoot dries and pulls out easily; white empty panicles (white ear) later; bore holes with frass on stem",
+    cause: "Scirpophaga incertulas / Chilo species (moth larvae tunnelling inside the stem)",
+    treatment: "Cartap hydrochloride 4G 18kg/ha or Chlorantraniliprole 0.3ml/L. Release Trichogramma cards",
+    prevention: "Clip seedling tips before transplanting, pheromone traps, destroy stubble after harvest",
+    severity: "high",
+    emoji: "\u{1F41B}"
+  },
+  {
+    name: "Fruit & Shoot Borer",
+    hindiName: "\u092B\u0932 \u090F\u0935\u0902 \u092A\u094D\u0930\u0930\u094B\u0939 \u091B\u0947\u0926\u0915",
+    crops: ["Brinjal", "Okra", "Tomato"],
+    symptoms: "Young shoots wilt and droop, bore hole plugged with excreta on fruit, tunnels and larva inside the fruit when cut open",
+    cause: "Leucinodes orbonalis / Earias species",
+    treatment: "Emamectin benzoate 0.4g/L or Spinosad 0.3ml/L. Handpick and destroy bored fruit",
+    prevention: "Pheromone traps 5/acre, remove wilted shoots weekly, resistant long-fruited varieties",
+    severity: "medium",
+    emoji: "\u{1F346}"
+  },
+  {
+    name: "Whitefly",
+    hindiName: "\u0938\u092B\u0947\u0926 \u092E\u0915\u094D\u0916\u0940",
+    crops: ["Cotton", "Tomato", "Chilli", "Brinjal", "Pulses"],
+    symptoms: "Tiny white insects fly up in a cloud when plant is shaken, undersides of leaves sticky, black sooty mould, leaves yellow and curl, virus spreads fast",
+    cause: "Bemisia tabaci (sucking pest and virus vector)",
+    treatment: "Diafenthiuron 1g/L or Spiromesifen 1ml/L; organic: neem oil 5ml/L + sticky yellow traps",
+    prevention: "Yellow sticky traps 10/acre, silver reflective mulch, avoid excess nitrogen, border maize rows",
+    severity: "high",
+    emoji: "\u{1F99F}"
+  },
+  {
+    name: "Thrips",
+    hindiName: "\u0925\u094D\u0930\u093F\u092A\u094D\u0938",
+    crops: ["Chilli", "Onion", "Cotton", "Grapes"],
+    symptoms: "Leaves curl upward like a boat (leaf curl), silvery streaks and scratch marks, buds drop, flowers dry and fall",
+    cause: "Scirtothrips dorsalis / Thrips tabaci (rasping-sucking pest, severe in dry heat)",
+    treatment: "Fipronil 1.5ml/L or Spinosad 0.3ml/L; organic: neem oil 5ml/L + blue sticky traps",
+    prevention: "Blue sticky traps, sprinkler irrigation to raise humidity, remove weed hosts",
+    severity: "medium",
+    emoji: "\u{1F336}\uFE0F"
+  },
+  {
+    name: "Bacterial Wilt",
+    hindiName: "\u091C\u0940\u0935\u093E\u0923\u0941 \u0909\u0915\u0920\u093E",
+    crops: ["Tomato", "Brinjal", "Potato", "Chilli", "Ginger"],
+    symptoms: "Sudden wilting of a green healthy-looking plant without yellowing; cut stem placed in water oozes milky white bacterial threads",
+    cause: "Ralstonia solanacearum (soil and water-borne bacterium)",
+    treatment: "No cure. Uproot and burn affected plants, drench pit with bleaching powder 15kg/ha or Copper oxychloride 3g/L",
+    prevention: "Rotate with cereals for 3 years, grafted resistant rootstock, raised beds and good drainage",
+    severity: "high",
+    emoji: "\u{1F954}"
+  },
+  {
+    name: "Citrus Greening (HLB)",
+    hindiName: "\u0928\u0940\u0902\u092C\u0942 \u0939\u0930\u093F\u0924\u0924\u093E \u0930\u094B\u0917",
+    crops: ["Citrus", "Orange", "Lemon", "Kinnow"],
+    symptoms: "Blotchy asymmetric yellow mottling across the leaf midrib, twig dieback, small lopsided bitter fruit that drops early",
+    cause: "Candidatus Liberibacter, spread by citrus psyllid (Diaphorina citri)",
+    treatment: "No cure. Remove infected trees. Control psyllid with Imidacloprid 0.3ml/L; tetracycline trunk injection gives temporary relief",
+    prevention: "Certified disease-free saplings, monitor and spray psyllid on new flush, remove curry leaf hosts",
+    severity: "high",
+    emoji: "\u{1F34A}"
+  },
+  {
+    name: "Nitrogen Deficiency",
+    hindiName: "\u0928\u093E\u0907\u091F\u094D\u0930\u094B\u091C\u0928 \u0915\u0940 \u0915\u092E\u0940",
+    crops: ["All crops", "Rice", "Wheat", "Maize", "Vegetables"],
+    symptoms: "Uniform pale yellow older lower leaves with yellowing starting from the leaf tip along the midrib, thin stems, slow stunted growth, no spots or lesions",
+    cause: "Insufficient nitrogen, leaching after heavy rain, or unfinished organic matter tying up nitrogen",
+    treatment: "Top-dress Urea 40-50kg/ha or spray 2% urea solution for a quick recovery within a week",
+    prevention: "Split nitrogen application, green manure, FYM 10t/ha, soil test before the season",
+    severity: "medium",
+    emoji: "\u{1F49B}"
+  },
+  {
+    name: "Zinc Deficiency",
+    hindiName: "\u091C\u093F\u0902\u0915 \u0915\u0940 \u0915\u092E\u0940 (\u0916\u0948\u0930\u093E \u0930\u094B\u0917)",
+    crops: ["Rice", "Maize", "Wheat", "Citrus"],
+    symptoms: "Rusty brown patches on middle leaves of young rice (khaira), white or pale bands between veins, shortened internodes, small bunched leaves at the tip",
+    cause: "Low available zinc, common in alkaline, calcareous and continuously flooded soils",
+    treatment: "Spray Zinc sulphate 0.5% (5g/L) with lime twice at 10-day gap; soil apply 25kg ZnSO4/ha",
+    prevention: "Apply zinc every 2-3 seasons, avoid continuous flooding, add organic manure",
+    severity: "medium",
+    emoji: "\u{1F9EA}"
+  },
+  {
+    name: "Iron Deficiency",
+    hindiName: "\u0932\u094C\u0939 \u0924\u0924\u094D\u0935 \u0915\u0940 \u0915\u092E\u0940",
+    crops: ["Citrus", "Groundnut", "Soybean", "Vegetables"],
+    symptoms: "Youngest top leaves turn pale yellow or white while veins stay bright green (interveinal chlorosis); older leaves remain normal",
+    cause: "Iron locked up in high-pH calcareous soil or waterlogged roots, not a true shortage",
+    treatment: "Spray Ferrous sulphate 0.5% (5g/L) + citric acid 1g/L, two to three sprays at weekly gaps",
+    prevention: "Improve drainage, add organic matter, avoid over-liming, use chelated iron in alkaline soil",
+    severity: "low",
+    emoji: "\u{1F34B}"
+  },
+  {
+    name: "Fall Armyworm",
+    hindiName: "\u092B\u0949\u0932 \u0906\u0930\u094D\u092E\u0940\u0935\u0930\u094D\u092E",
+    crops: ["Maize", "Sorghum", "Sugarcane", "Millets"],
+    symptoms: "Ragged window-pane holes and shot holes in whorl leaves, moist sawdust-like frass in the funnel, large larva with inverted Y on head",
+    cause: "Spodoptera frugiperda (invasive caterpillar)",
+    treatment: "Emamectin benzoate 0.4g/L or Spinetoram 0.5ml/L poured into the whorl in the evening. Sand + lime in whorl for small larvae",
+    prevention: "Early uniform sowing, pheromone traps 5/acre, intercrop with pulses, encourage birds",
+    severity: "high",
+    emoji: "\u{1F33D}"
+  },
+  {
+    name: "Sheath Blight",
+    hindiName: "\u0936\u0940\u0925 \u092C\u094D\u0932\u093E\u0907\u091F",
+    crops: ["Rice"],
+    symptoms: "Oval greenish-grey water-soaked patches on the leaf sheath near the water line, later becoming straw-coloured with brown borders; sheath rots and tillers lodge",
+    cause: "Rhizoctonia solani, worst in dense crops with heavy nitrogen and high humidity",
+    treatment: "Validamycin 2ml/L or Hexaconazole 2ml/L directed at the base of the plant",
+    prevention: "Wider spacing, balanced nitrogen, remove weeds and stubble, alternate wet-dry irrigation",
+    severity: "medium",
+    emoji: "\u{1F33E}"
+  },
+  {
+    name: "Red Rot of Sugarcane",
+    hindiName: "\u0932\u093E\u0932 \u0938\u0921\u093C\u0928 \u0930\u094B\u0917",
+    crops: ["Sugarcane"],
+    symptoms: "Third and fourth leaves yellow and dry, split cane shows red internal tissue with crosswise white patches and a sour alcoholic smell",
+    cause: "Colletotrichum falcatum, spread through infected setts and irrigation water",
+    treatment: "No cure for a standing infected clump. Uproot and burn, drench the pit with Carbendazim 1g/L",
+    prevention: "Disease-free setts, hot water treatment of setts at 52\xB0C, resistant varieties, crop rotation",
+    severity: "high",
+    emoji: "\u{1F38B}"
   }
 ];
 
