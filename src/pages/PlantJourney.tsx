@@ -1,12 +1,15 @@
-import { useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { HelmetProvider, Helmet } from "react-helmet-async";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import {
+  AlertTriangle,
   ArrowLeft,
   Camera,
+  CloudOff,
   ImagePlus,
   Loader2,
+  RefreshCw,
   Sprout,
   Trash2,
   TrendingUp,
@@ -15,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -26,9 +30,14 @@ import {
   usePlantJourney,
   downscaleImage,
   daysBetween,
+  measureBrightness,
+  MIN_FORECAST_CHECKINS,
+  MIN_FORECAST_SPAN_DAYS,
   type JourneyEntry,
+  type PlantJourney as Journey,
 } from "@/hooks/usePlantJourney";
 import { readGrowthPhoto, predictYield } from "@/lib/journeyAi";
+import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 const today = () => new Date().toISOString().slice(0, 10);
 
@@ -46,12 +55,15 @@ const PlantJourney = () => {
     deleteEntry,
   } = usePlantJourney();
 
+  const isOnline = useOnlineStatus();
   const [form, setForm] = useState({ crop: "", variety: "", sownOn: today(), location: "" });
   const [note, setNote] = useState("");
   const [uploading, setUploading] = useState(false);
   const [predicting, setPredicting] = useState(false);
+  const [consistencyWarning, setConsistencyWarning] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const cameraRef = useRef<HTMLInputElement>(null);
+  const readingNow = useRef<Set<string>>(new Set());
 
   const handleCreate = () => {
     if (!form.crop.trim()) {
@@ -63,6 +75,58 @@ const PlantJourney = () => {
     toast.success("Journey started 🌱");
   };
 
+  /** Read one entry's photo; on failure leave it marked as waiting. */
+  const readEntry = useCallback(
+    async (journey: Journey, entry: JourneyEntry) => {
+      if (readingNow.current.has(entry.id)) return false;
+      readingNow.current.add(entry.id);
+      patchEntry(journey.id, entry.id, { analyzing: true });
+      try {
+        const reading = await readGrowthPhoto({
+          image: entry.image,
+          crop: journey.crop,
+          variety: journey.variety,
+          dayNumber: daysBetween(journey.sownOn, entry.date),
+          note: entry.note,
+        });
+        patchEntry(journey.id, entry.id, { reading, analyzing: false, pendingReading: false });
+        return true;
+      } catch {
+        patchEntry(journey.id, entry.id, { analyzing: false, pendingReading: true });
+        return false;
+      } finally {
+        readingNow.current.delete(entry.id);
+      }
+    },
+    [patchEntry],
+  );
+
+  // Auto-read queued check-ins when the connection returns (sequentially).
+  useEffect(() => {
+    if (!isOnline) return;
+    const pending = journeys.flatMap((j) =>
+      j.entries.filter((e) => e.pendingReading && !e.analyzing).map((e) => ({ j, e })),
+    );
+    if (pending.length === 0) return;
+    let cancelled = false;
+    (async () => {
+      let done = 0;
+      for (const { j, e } of pending) {
+        if (cancelled) break;
+        if (await readEntry(j, e)) done++;
+        else break; // stop on first failure; retry next reconnect / manual
+      }
+      if (done > 0) toast.success(`${done} offline check-in${done > 1 ? "s" : ""} read 🌿`);
+    })();
+    return () => {
+      cancelled = true;
+    };
+    // run only on connectivity change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOnline]);
+
+  const lastEntry = active?.entries[active.entries.length - 1];
+
   const handlePhoto = async (file: File | undefined) => {
     if (!file || !active) return;
     if (file.size > 10 * 1024 * 1024) {
@@ -72,6 +136,17 @@ const PlantJourney = () => {
     setUploading(true);
     try {
       const image = await downscaleImage(file);
+      const brightness = await measureBrightness(image);
+      const prev = active.entries[active.entries.length - 1];
+      if (prev?.brightness != null && prev.brightness >= 0 && brightness >= 0) {
+        const diff = Math.abs(brightness - prev.brightness) / Math.max(prev.brightness, 1);
+        setConsistencyWarning(
+          diff > 0.35
+            ? `Lighting differs a lot from the last photo (${brightness > prev.brightness ? "brighter" : "darker"}). Readings may look different for that reason, not the plant. Try the same time of day.`
+            : null,
+        );
+      } else setConsistencyWarning(null);
+
       const date = new Date().toISOString();
       const entry: JourneyEntry = {
         id: crypto.randomUUID(),
@@ -79,30 +154,20 @@ const PlantJourney = () => {
         image,
         note: note.trim(),
         reading: null,
-        analyzing: true,
+        analyzing: false,
+        pendingReading: true,
+        brightness,
       };
       addEntry(active.id, entry);
       setNote("");
 
       if (!navigator.onLine) {
-        patchEntry(active.id, entry.id, {
-          analyzing: false,
-          reading: "Saved offline — reading will be added when you are back online.",
-        });
-        toast.success("Photo saved on device 📴");
+        toast.success("Photo saved on device 📴 — it will be read when you're online");
         return;
       }
-
-      const dayNumber = daysBetween(active.sownOn, date);
-      const reading = await readGrowthPhoto({
-        image,
-        crop: active.crop,
-        variety: active.variety,
-        dayNumber,
-        note: entry.note,
-      });
-      patchEntry(active.id, entry.id, { reading, analyzing: false });
-      toast.success("Check-in recorded 🌿");
+      const ok = await readEntry(active, entry);
+      if (ok) toast.success("Check-in recorded 🌿");
+      else toast.warning("Photo saved — reading failed, will retry automatically");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not add the photo");
     } finally {
@@ -112,12 +177,20 @@ const PlantJourney = () => {
     }
   };
 
+  const basisOf = (j: Journey) => {
+    const count = j.entries.length;
+    const spanDays = count > 1 ? daysBetween(j.entries[0].date, j.entries[count - 1].date) : 0;
+    const early = count < MIN_FORECAST_CHECKINS || spanDays < MIN_FORECAST_SPAN_DAYS;
+    return { count, spanDays, early };
+  };
+
   const handlePredict = async () => {
     if (!active) return;
     if (active.entries.length === 0) {
       toast.error("Add at least one photo first");
       return;
     }
+    const basis = basisOf(active);
     setPredicting(true);
     try {
       const prediction = await predictYield({
@@ -125,21 +198,30 @@ const PlantJourney = () => {
         variety: active.variety,
         location: active.location,
         sownOn: active.sownOn,
+        early: basis.early,
+        spanDays: basis.spanDays,
         timeline: active.entries.map((e) => ({
           day: daysBetween(active.sownOn, e.date),
           date: e.date,
           note: e.note,
-          reading: e.reading,
+          reading: e.pendingReading ? null : e.reading,
         })),
       });
-      patchJourney(active.id, { prediction, predictedAt: new Date().toISOString() });
-      toast.success("Forecast ready");
+      patchJourney(active.id, {
+        prediction,
+        predictedAt: new Date().toISOString(),
+        predictionBasis: basis,
+      });
+      toast.success(basis.early ? "Early observation ready" : "Forecast ready");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not build the forecast");
     } finally {
       setPredicting(false);
     }
   };
+
+  const pendingCount = active?.entries.filter((e) => e.pendingReading).length ?? 0;
+  const currentBasis = active ? basisOf(active) : null;
 
   return (
     <HelmetProvider>
