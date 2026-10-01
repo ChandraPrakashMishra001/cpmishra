@@ -7,6 +7,10 @@ export interface JourneyEntry {
   note: string;
   reading: string | null; // Amanai's observation for this photo
   analyzing?: boolean;
+  /** saved offline (or reading failed) — will be read when back online */
+  pendingReading?: boolean;
+  /** average brightness 0-255, used for framing consistency checks */
+  brightness?: number;
 }
 
 export interface PlantJourney {
@@ -18,8 +22,34 @@ export interface PlantJourney {
   entries: JourneyEntry[];
   prediction: string | null;
   predictedAt: string | null;
+  /** what the last forecast was based on */
+  predictionBasis?: { count: number; spanDays: number; early: boolean } | null;
   createdAt: string;
 }
+
+/** Minimum data before a full yield forecast is allowed. */
+export const MIN_FORECAST_CHECKINS = 4;
+export const MIN_FORECAST_SPAN_DAYS = 7;
+
+/** Average brightness of a data-URL image (0-255). */
+export const measureBrightness = (dataUrl: string): Promise<number> =>
+  new Promise((resolve) => {
+    const img = new Image();
+    img.onerror = () => resolve(-1);
+    img.onload = () => {
+      const c = document.createElement("canvas");
+      c.width = 32;
+      c.height = 32;
+      const ctx = c.getContext("2d");
+      if (!ctx) return resolve(-1);
+      ctx.drawImage(img, 0, 0, 32, 32);
+      const d = ctx.getImageData(0, 0, 32, 32).data;
+      let sum = 0;
+      for (let i = 0; i < d.length; i += 4) sum += 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
+      resolve(sum / (d.length / 4));
+    };
+    img.src = dataUrl;
+  });
 
 const STORAGE_KEY = "amanai_plant_journeys";
 const MAX_JOURNEYS = 12;
