@@ -343,9 +343,35 @@ const PlantJourney = () => {
                     <h2 className="mb-1 font-display text-lg font-semibold">
                       Today&apos;s check-in — day {daysBetween(active.sownOn, new Date().toISOString())}
                     </h2>
-                    <p className="mb-3 text-xs text-muted-foreground">
-                      Take the photo from the same distance and angle each time for a comparable timeline.
-                    </p>
+                    <div className="mb-3 flex gap-3 rounded-lg border border-border/50 bg-muted/40 p-3">
+                      {lastEntry && (
+                        <figure className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border-2 border-dashed border-primary/60">
+                          <img
+                            src={lastEntry.image}
+                            alt="Last check-in, use it to match framing"
+                            className="h-full w-full object-cover opacity-60"
+                          />
+                          <span className="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-primary/70" />
+                          <span className="pointer-events-none absolute inset-y-0 left-1/2 w-px bg-primary/70" />
+                        </figure>
+                      )}
+                      <div className="text-xs text-muted-foreground">
+                        <p className="mb-1 font-semibold text-foreground">
+                          {lastEntry ? "Match the last photo's framing" : "Set the framing you'll repeat"}
+                        </p>
+                        <ul className="list-disc space-y-0.5 pl-4">
+                          <li>Same spot, same height (phone at plant mid-height), plant centred.</li>
+                          <li>Same time of day, no direct sun behind the plant.</li>
+                          <li>Keep a fixed reference (stake, bottle, hand) in frame for size.</li>
+                        </ul>
+                      </div>
+                    </div>
+                    {consistencyWarning && (
+                      <p className="mb-3 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 p-2 text-xs text-destructive">
+                        <AlertTriangle className="mt-0.5 h-3.5 w-3.5 flex-shrink-0" />
+                        {consistencyWarning}
+                      </p>
+                    )}
                     <Textarea
                       value={note}
                       maxLength={300}
@@ -389,10 +415,18 @@ const PlantJourney = () => {
 
                   {/* Timeline */}
                   <section className="mb-6">
-                    <h2 className="mb-3 font-display text-lg font-semibold">
-                      Growth timeline ({active.entries.length} check-in
-                      {active.entries.length === 1 ? "" : "s"})
-                    </h2>
+                    <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                      <h2 className="font-display text-lg font-semibold">
+                        Growth timeline ({active.entries.length} check-in
+                        {active.entries.length === 1 ? "" : "s"})
+                      </h2>
+                      {pendingCount > 0 && (
+                        <Badge variant="outline" className="gap-1">
+                          <CloudOff className="h-3 w-3" /> {pendingCount} waiting to read
+                          {isOnline ? "" : " · offline"}
+                        </Badge>
+                      )}
+                    </div>
                     {active.entries.length === 0 ? (
                       <p className="rounded-xl border border-dashed border-border/60 p-6 text-center text-sm text-muted-foreground">
                         No photos yet for this plant.
@@ -438,6 +472,27 @@ const PlantJourney = () => {
                                       <Loader2 className="h-3.5 w-3.5 animate-spin" /> Reading the
                                       photo…
                                     </p>
+                                  ) : entry.pendingReading ? (
+                                    <div className="rounded-md border border-dashed border-primary/50 bg-primary/5 p-2">
+                                      <p className="mb-1 flex items-center gap-1.5 text-sm font-medium text-primary">
+                                        <CloudOff className="h-3.5 w-3.5" /> Photo saved · waiting to read
+                                      </p>
+                                      <p className="mb-2 text-xs text-muted-foreground">
+                                        {isOnline
+                                          ? "The reading didn't finish. It retries automatically, or read it now."
+                                          : "Taken offline. Amanai reads it automatically when you're back online."}
+                                      </p>
+                                      {isOnline && (
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          className="h-7 text-xs"
+                                          onClick={() => readEntry(active, entry)}
+                                        >
+                                          <RefreshCw className="mr-1 h-3 w-3" /> Read now
+                                        </Button>
+                                      )}
+                                    </div>
                                   ) : (
                                     <p className="whitespace-pre-wrap text-sm leading-relaxed">
                                       {entry.reading}
@@ -456,17 +511,40 @@ const PlantJourney = () => {
                   <section className="mb-10 rounded-xl border border-border/60 bg-card/60 p-4 backdrop-blur-sm">
                     <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                       <h2 className="font-display text-lg font-semibold">Yield forecast</h2>
-                      <Button onClick={handlePredict} disabled={predicting}>
+                      <Button onClick={handlePredict} disabled={predicting || !isOnline}>
                         {predicting ? (
                           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                         ) : (
                           <TrendingUp className="mr-2 h-4 w-4" />
                         )}
-                        {active.prediction ? "Refresh forecast" : "Predict growth & yield"}
+                        {currentBasis?.early
+                          ? "Get early observation"
+                          : active.prediction
+                            ? "Refresh forecast"
+                            : "Predict growth & yield"}
                       </Button>
                     </div>
+                    {currentBasis?.early && (
+                      <p className="mb-3 text-xs text-muted-foreground">
+                        A yield forecast unlocks after {MIN_FORECAST_CHECKINS} check-ins spread over at least{" "}
+                        {MIN_FORECAST_SPAN_DAYS} days. You have {currentBasis.count} over {currentBasis.spanDays}{" "}
+                        day{currentBasis.spanDays === 1 ? "" : "s"}.
+                      </p>
+                    )}
+                    {pendingCount > 0 && (
+                      <p className="mb-3 text-xs text-muted-foreground">
+                        {pendingCount} photo{pendingCount > 1 ? "s are" : " is"} not read yet and will be left out.
+                      </p>
+                    )}
                     {active.prediction ? (
                       <>
+                        {active.predictionBasis && (
+                          <Badge variant={active.predictionBasis.early ? "outline" : "secondary"} className="mb-2">
+                            {active.predictionBasis.early ? "Early observation" : "Forecast"} · based on{" "}
+                            {active.predictionBasis.count} check-in{active.predictionBasis.count === 1 ? "" : "s"} over{" "}
+                            {active.predictionBasis.spanDays} day{active.predictionBasis.spanDays === 1 ? "" : "s"}
+                          </Badge>
+                        )}
                         <p className="whitespace-pre-wrap text-sm leading-relaxed">
                           {active.prediction}
                         </p>
