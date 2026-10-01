@@ -43,8 +43,10 @@ export const predictYield = async (params: {
   location: string;
   sownOn: string;
   timeline: { day: number; date: string; note: string; reading: string | null }[];
+  early?: boolean;
+  spanDays?: number;
 }): Promise<string> => {
-  const { crop, variety, location, sownOn, timeline } = params;
+  const { crop, variety, location, sownOn, timeline, early, spanDays = 0 } = params;
   const timelineText = timeline
     .map(
       (t) =>
@@ -54,13 +56,25 @@ export const predictYield = async (params: {
     )
     .join("\n");
 
-  const prompt = `Growth-trend forecast request. Do not greet. Use only these sections.
-
-Crop: ${crop}${variety ? ` | Variety: ${variety}` : ""}
+  const header = `Crop: ${crop}${variety ? ` | Variety: ${variety}` : ""}
 Location: ${location || "not given"}
 Sown on: ${new Date(sownOn).toLocaleDateString()}
-Check-ins:
-${timelineText}
+Check-ins (${timeline.length} over ${spanDays} days):
+${timelineText}`;
+
+  const prompt = early
+    ? `Early growth observation request. Do not greet. Only ${timeline.length} check-in(s) over ${spanDays} day(s) exist — far too little data for a trend or yield estimate.
+
+${header}
+
+STRICT RULES: Do NOT give any yield number, yield range, percentage, or harvest date. Do NOT describe a trend. Respond exactly in this structure, one sentence per line:
+Current state: <what the latest photo(s) show about stage and vigour>
+Watch for: <the main risk to monitor at this stage>
+Next 7 days: <the specific actions to take now>
+Data needed: <how many more check-ins over how many days are needed before a yield forecast is meaningful>`
+    : `Growth-trend forecast request. Do not greet. Use only these sections.
+
+${header}
 
 Respond exactly in this structure, one to two sentences per line:
 Trend: <is growth ahead, on track, or behind the normal curve for this crop, and why>
@@ -68,7 +82,7 @@ Risk: <the single biggest risk visible in this trend, with the window it will hi
 Projected yield: <range per acre/hectare with the confidence level and what it assumes>
 Harvest window: <expected date range>
 Next 7 days: <the specific actions that would most improve the outcome>
-Confidence note: <state plainly how limited ${timeline.length} check-in(s) make this estimate>`;
+Confidence note: <state plainly how limited ${timeline.length} check-in(s) over ${spanDays} days make this estimate; widen ranges if data is thin or readings are missing>`;
 
   const resp = await fetch(CHAT_URL, {
     method: "POST",
