@@ -53,7 +53,7 @@ export default function Install() {
         <div className="mb-6">
           <img 
             src="/lia-icon-192.png" 
-            alt="Amanai" 
+            alt="Amanai — AI plant doctor by BloomSense, leaf-and-shield app icon" 
             className="w-24 h-24 mx-auto rounded-2xl shadow-lg"
           />
         </div>

@@ -109,9 +109,9 @@ const Index = () => {
               compact
             />
             <div className="flex-1 min-w-0">
-              <h1 className="text-sm font-display font-bold text-gradient truncate leading-tight">
+              <div className="text-sm font-display font-bold text-gradient truncate leading-tight">
                 {settings.name}
-              </h1>
+              </div>
               <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                 <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
                 <span>Online</span>
@@ -139,7 +139,7 @@ const Index = () => {
                 companionName={settings.name}
                 onClearMemory={resetConversation}
                 trigger={
-                  <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-primary/20">
+                  <Button variant="ghost" size="icon" aria-label="View memory" title="View memory" className="w-7 h-7 hover:bg-primary/20">
                     <Brain className="w-3.5 h-3.5 text-primary" />
                   </Button>
                 }
@@ -148,7 +148,7 @@ const Index = () => {
                 messages={messages}
                 companionName={settings.name}
                 trigger={
-                  <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-primary/20">
+                  <Button variant="ghost" size="icon" aria-label="Field history log" title="Field history log" className="w-7 h-7 hover:bg-primary/20">
                     <BookOpen className="w-3.5 h-3.5 text-primary" />
                   </Button>
                 }
@@ -160,14 +160,14 @@ const Index = () => {
                 onLoad={loadMessages}
                 onDelete={deleteConversation}
                 trigger={
-                  <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-primary/20">
+                  <Button variant="ghost" size="icon" aria-label="Saved conversations" title="Saved conversations" className="w-7 h-7 hover:bg-primary/20">
                     <Archive className="w-3.5 h-3.5 text-primary" />
                   </Button>
                 }
               />
               <DiseaseGallery
                 trigger={
-                  <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-primary/20">
+                   <Button variant="ghost" size="icon" aria-label="Plant disease library" title="Plant disease library" className="w-7 h-7 hover:bg-primary/20">
                     <Bug className="w-3.5 h-3.5 text-primary" />
                   </Button>
                 }
@@ -180,7 +180,7 @@ const Index = () => {
               </Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="ghost" size="icon" className="w-7 h-7 hover:bg-destructive/20">
+                  <Button variant="ghost" size="icon" aria-label="Clear conversation memory" title="Clear conversation memory" className="w-7 h-7 hover:bg-destructive/20">
                     <Trash2 className="w-3.5 h-3.5" />
                   </Button>
                 </AlertDialogTrigger>
@@ -242,6 +242,8 @@ const Index = () => {
                   <Button
                     variant="ghost"
                     size="icon"
+                    aria-label="View memory"
+                    title="View memory"
                     className="bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-primary/20 shadow-sm"
                   >
                     <Brain className="w-4 h-4 text-primary" />
@@ -275,6 +277,8 @@ const Index = () => {
                   <Button
                     variant="ghost"
                     size="icon"
+                    aria-label="Clear conversation memory"
+                    title="Clear conversation memory"
                     className="bg-card/60 backdrop-blur-sm border border-border/50 hover:bg-destructive/20 shadow-sm"
                   >
                     <Trash2 className="w-4 h-4" />
