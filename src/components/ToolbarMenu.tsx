@@ -39,6 +39,7 @@ const ToolbarMenu = ({ isNight, onToggleTheme, companionName, compact = false, l
           <Button
             variant="ghost"
             size="icon"
+            aria-label="Menu"
             className={
               compact
                 ? "w-7 h-7 hover:bg-primary/20"
