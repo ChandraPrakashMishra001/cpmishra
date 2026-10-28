@@ -1,0 +1,25 @@
+# BloomSense Amanai
+
+> AI plant doctor and farming assistant by BloomSense. Diagnoses crop diseases from photos, gives IPM-based treatment plans, tracks plant growth with yield forecasts, remembers field history, and works fully offline for rural users.
+
+Amanai (https://cpmishra.lovable.app) is a professional agricultural intelligence tool built for farmers, agronomists and agricultural extension workers, primarily in India.
+
+## What Amanai does
+
+- **Plant diagnosis**: answer a short triage (crop, symptoms, onset, environment) or upload a plant photo; Amanai identifies the problem and returns a structured 6-point report — Identity, Health, Diagnosis, Immediate Action, Prevention, Utility.
+- **Treatment plans**: Integrated Pest Management (IPM) first, with chemical options and dosages, plus Indian government scheme references (PM-KISAN and similar).
+- **Plant Journey** (https://cpmishra.lovable.app/journey): farmers photograph the same plant on a schedule; Amanai reads each check-in, tracks growth stage and vigour over time, and produces a yield forecast once enough data exists.
+- **Field history log**: past diagnoses are stored per field and injected into future answers, so Amanai remembers what your field had before.
+- **Offline mode**: an on-device disease library of 26 common crop problems (early blight, rice blast, wheat rust, mosaic virus, fall armyworm and more) answers questions with zero internet and syncs when back online.
+- **Voice interface**: speak to Amanai hands-free.
+- **MCP server**: external assistants (including a Chrome extension voice model) can call Amanai's tools — `ask_amanai`, `diagnose_crop`, `search_disease_library` — through an OAuth-protected MCP endpoint.
+
+## Pages
+
+- `/` — chat with Amanai, disease library, field log, memory viewer.
+- `/journey` — Plant Journey: growth timeline, photo check-ins, yield prediction.
+- `/install` — install the app as a PWA on phones and desktop.
+
+## Audience
+
+Farmers and agricultural professionals; supports English, Hindi and Odia.

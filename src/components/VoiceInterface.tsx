@@ -97,6 +97,7 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({
           onClick={startConversation}
           variant="ghost"
           size="icon"
+          aria-label="Start voice chat"
           className="bg-lia-pink/20 hover:bg-lia-pink/30 text-lia-pink border border-lia-pink/30"
           title="Start voice chat"
         >
@@ -109,6 +110,7 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({
           variant="ghost"
           size="icon"
           disabled
+          aria-label="Connecting"
           className="bg-lia-pink/20 text-lia-pink border border-lia-pink/30"
         >
           <Loader2 className="w-4 h-4 animate-spin" />
@@ -121,6 +123,7 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({
             onClick={toggleMute}
             variant="ghost"
             size="icon"
+            aria-label={isMuted ? 'Unmute microphone' : 'Mute microphone'}
             className={`border ${isMuted ? 'bg-muted text-muted-foreground border-border' : 'bg-green-500/20 text-green-500 border-green-500/30'}`}
             title={isMuted ? 'Unmute' : 'Mute'}
           >
@@ -131,6 +134,7 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({
             onClick={endConversation}
             variant="ghost"
             size="icon"
+            aria-label="End voice chat"
             className="bg-destructive/20 hover:bg-destructive/30 text-destructive border border-destructive/30"
             title="End voice chat"
           >
