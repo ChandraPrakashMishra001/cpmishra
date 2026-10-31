@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 
-export type AIModel = "auto" | "gemini38-flash" | "gemini31-pro";
+export type AIModel = "auto" | "gemini38-flash" | "gemini4-argon";
 
 export interface ModelInfo {
   id: AIModel;
@@ -12,7 +12,7 @@ export interface ModelInfo {
 export const AI_MODELS: ModelInfo[] = [
   { id: "auto", label: "Auto", description: "Smart routing per query", apiModel: "auto" },
   { id: "gemini38-flash", label: "G3.8 Flash", description: "Fast everyday responses", apiModel: "google/gemini-3.8-flash" },
-  { id: "gemini31-pro", label: "G3.1 Pro", description: "Deep reasoning", apiModel: "google/gemini-3.1-pro-preview" },
+  { id: "gemini4-argon", label: "G4 Argon", description: "Frontier deep reasoning", apiModel: "google/gemini-4-argon" },
 ];
 
 export const useModelSelection = () => {
