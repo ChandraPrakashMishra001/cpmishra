@@ -149,14 +149,14 @@ LANGUAGE: ${langDir}`;
     // Model selection: user override > auto-select. Only two supported models.
     const VALID_MODELS = [
       "google/gemini-3.8-flash",
-      "google/gemini-3.1-pro-preview",
+      "google/gemini-4-argon",
     ];
     let model: string;
     if (typeof userModel === "string" && VALID_MODELS.includes(userModel)) {
       model = userModel;
     } else {
       model = (needsDeepThinking || codexMode === true)
-        ? "google/gemini-3.1-pro-preview"
+        ? "google/gemini-4-argon"
         : "google/gemini-3.8-flash";
     }
 
