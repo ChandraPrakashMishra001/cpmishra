@@ -1,4 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
+
+// ── Per-visitor fair-use budget ────────────────────────────────────────────
+// Each visitor gets their own private daily budget (keyed by device ID).
+// Visitors without a device ID (private browsing) fall back to an IP-keyed
+// budget, so the shared backend wallet can never be drained by one person.
+const DAILY_CHAT_LIMIT = 50;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
