@@ -14,13 +14,43 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      chat_usage: {
+        Row: {
+          id: string
+          last_used_at: string
+          usage_day: string
+          usage_key: string
+          used_count: number
+        }
+        Insert: {
+          id?: string
+          last_used_at?: string
+          usage_day?: string
+          usage_key: string
+          used_count?: number
+        }
+        Update: {
+          id?: string
+          last_used_at?: string
+          usage_day?: string
+          usage_key?: string
+          used_count?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      consume_chat_quota: {
+        Args: { p_day: string; p_key: string; p_limit: number }
+        Returns: number
+      }
+      get_chat_quota: {
+        Args: { p_day: string; p_key: string; p_limit: number }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never

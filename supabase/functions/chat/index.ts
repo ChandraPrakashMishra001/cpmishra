@@ -1,4 +1,11 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
+
+// ── Per-visitor fair-use budget ────────────────────────────────────────────
+// Each visitor gets their own private daily budget (keyed by device ID).
+// Visitors without a device ID (private browsing) fall back to an IP-keyed
+// budget, so the shared backend wallet can never be drained by one person.
+const DAILY_CHAT_LIMIT = 50;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -47,12 +54,49 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { messages, companionName, memory, diseaseHistory, goals, personality, phdMode, roleplay, codexMode, language, userModel, customInstructions } = body;
+    const { messages, companionName, memory, diseaseHistory, goals, personality, phdMode, roleplay, codexMode, language, userModel, customInstructions, deviceId } = body;
 
     if (!validateMessages(messages)) {
       return new Response(JSON.stringify({ error: "Invalid request format" }), {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
+    }
+
+    // ── Per-visitor fair-use quota ──────────────────────────────────────────
+    // Private daily budget per visitor: device ID when available, IP fallback
+    // for private browsing. Fails open if the counter store is unavailable.
+    const quotaDay = new Date().toISOString().slice(0, 10);
+    const deviceKey =
+      typeof deviceId === "string" && /^[a-f0-9-]{8,64}$/i.test(deviceId)
+        ? `device:${deviceId}`
+        : null;
+    const quotaKey = deviceKey ?? `ip:${clientIp}`;
+    let quotaRemaining: number | null = null;
+
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    const supabaseAdmin: SupabaseClient | null =
+      SUPABASE_URL && SUPABASE_SERVICE_KEY
+        ? createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY, { auth: { persistSession: false } })
+        : null;
+
+    if (supabaseAdmin) {
+      const { data: used, error: quotaErr } = await supabaseAdmin.rpc("get_chat_quota", {
+        p_key: quotaKey, p_day: quotaDay, p_limit: DAILY_CHAT_LIMIT,
+      });
+      if (quotaErr) console.error("quota check error:", quotaErr);
+      if (typeof used === "number" && used >= DAILY_CHAT_LIMIT) {
+        const resetAt = `${new Date(Date.now() + 86400000).toISOString().slice(0, 10)}T00:00:00Z`;
+        return new Response(
+          JSON.stringify({
+            error: `Daily chat limit reached (${DAILY_CHAT_LIMIT} messages). Your Amanai resets at midnight.`,
+            quotaExceeded: true,
+            limit: DAILY_CHAT_LIMIT,
+            resetAt,
+          }),
+          { status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -210,6 +254,19 @@ LANGUAGE: ${langDir}`;
       });
     }
 
+    // Count this message against the visitor's private daily budget — only on
+    // a successful upstream response, so failed requests never burn quota.
+    if (supabaseAdmin) {
+      try {
+        const { data: remaining } = await supabaseAdmin.rpc("consume_chat_quota", {
+          p_key: quotaKey, p_day: quotaDay, p_limit: DAILY_CHAT_LIMIT,
+        });
+        if (typeof remaining === "number" && remaining >= 0) quotaRemaining = remaining;
+      } catch (quotaErr) {
+        console.error("quota consume error:", quotaErr);
+      }
+    }
+
     // ── Response-length guard ──────────────────────────────────────────────
     // Re-stream upstream SSE to client, track finish_reason + accumulated text.
     // If upstream stops with finish_reason === "length" OR text ends mid-sentence,
@@ -302,15 +359,19 @@ LANGUAGE: ${langDir}`;
       },
     });
 
-    return new Response(stream, {
-      headers: {
-        ...corsHeaders,
-        "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache, no-transform",
-        "Connection": "keep-alive",
-        "X-Accel-Buffering": "no",
-      },
-    });
+    const streamHeaders: Record<string, string> = {
+      ...corsHeaders,
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache, no-transform",
+      "Connection": "keep-alive",
+      "X-Accel-Buffering": "no",
+    };
+    if (quotaRemaining !== null) {
+      streamHeaders["X-Chat-Quota-Remaining"] = String(quotaRemaining);
+      streamHeaders["X-Chat-Quota-Limit"] = String(DAILY_CHAT_LIMIT);
+    }
+
+    return new Response(stream, { headers: streamHeaders });
   } catch (error) {
     console.error("Chat function error:", error);
     return new Response(JSON.stringify({ error: "Something went wrong. Please try again." }), {
