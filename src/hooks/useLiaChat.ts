@@ -17,6 +17,8 @@ import { db, FIELD_LOGS_COLLECTION } from "@/integrations/firebase/client";
 import { toast } from "sonner";
 import { enqueuePrompt, dequeuePrompt, peekQueue, type QueuedPrompt } from "./useOfflineQueue";
 import { buildOfflineAnswer } from "@/lib/offlineAdvisor";
+import { getDeviceId } from "@/lib/deviceIdentity";
+import { chatQuotaStore } from "./useChatQuota";
 
 interface DiseaseHistoryEntry {
   title: string;
@@ -359,6 +361,7 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
         codexMode: codexModeEnabled,
         language,
         userModel: userModel !== "auto" ? userModel : undefined,
+        deviceId: getDeviceId(),
       }),
       signal,
     });
@@ -367,7 +370,12 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
       const errorData = await resp.json().catch(() => ({}));
       const errorMsg = errorData.error || "";
       if (resp.status === 429) {
-        toast.error("Whoa, too fast! Give me a sec~ 💫");
+        if (errorData.quotaExceeded) {
+          chatQuotaStore.setExceeded(errorData.resetAt ?? null, typeof errorData.limit === "number" ? errorData.limit : undefined);
+          toast.error("Daily chat limit reached — your Amanai resets at midnight 🌙");
+        } else {
+          toast.error("Whoa, too fast! Give me a sec~ 💫");
+        }
       } else if (resp.status === 402) {
         toast.error("Usage limit reached. Please add credits to continue! 💖");
       } else if (resp.status === 503) {
@@ -377,6 +385,27 @@ export const useLiaChat = (companionName: string = "Lia", goalsSummary?: GoalsSu
         toast.error("Hmm, let me try that again... 🔄");
       }
       throw new Error(errorMsg || "Failed to get response");
+    }
+
+    // Track the visitor's private daily budget from response headers
+    const remainingHeader = resp.headers.get("X-Chat-Quota-Remaining");
+    if (remainingHeader !== null) {
+      const remaining = parseInt(remainingHeader, 10);
+      if (Number.isFinite(remaining)) {
+        const limitHeader = resp.headers.get("X-Chat-Quota-Limit");
+        chatQuotaStore.setRemaining(remaining, limitHeader ? parseInt(limitHeader, 10) : undefined);
+        if (remaining > 0 && remaining <= 5) {
+          const warnKey = `amanai_quota_warned_${new Date().toISOString().slice(0, 10)}`;
+          try {
+            if (localStorage.getItem(warnKey) !== "1") {
+              localStorage.setItem(warnKey, "1");
+              toast.warning(remaining === 1 ? "Only 1 chat left today — resets at midnight 🌙" : `Only ${remaining} chats left today — resets at midnight 🌙`);
+            }
+          } catch {
+            // storage unavailable (private browsing) — skip the one-time warning
+          }
+        }
+      }
     }
 
     if (!resp.body) throw new Error("No response body");

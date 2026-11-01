@@ -1,6 +1,7 @@
 import { useState, KeyboardEvent, useRef, useEffect, useCallback, forwardRef } from "react";
 import { Send, Sparkles, ImagePlus, X, Camera } from "lucide-react";
 import { toast } from "sonner";
+import { useChatQuota } from "@/hooks/useChatQuota";
 
 // Constants for validation
 const MAX_MESSAGE_LENGTH = 2000;
@@ -14,6 +15,7 @@ interface ChatInputProps {
 }
 
 const ChatInput = forwardRef<HTMLDivElement, ChatInputProps>(({ onSend, disabled, companionName = "Lia" }, _outerRef) => {
+  const quota = useChatQuota();
   const [message, setMessage] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -40,7 +42,7 @@ const ChatInput = forwardRef<HTMLDivElement, ChatInputProps>(({ onSend, disabled
       return;
     }
     
-    if ((trimmedMessage || imagePreview) && !disabled) {
+    if ((trimmedMessage || imagePreview) && !disabled && !quota.exceeded) {
       onSend(trimmedMessage, imagePreview || undefined);
       setMessage("");
       setImagePreview(null);
@@ -113,6 +115,20 @@ const ChatInput = forwardRef<HTMLDivElement, ChatInputProps>(({ onSend, disabled
         </div>
       )}
       
+      {quota.remaining !== null && (
+        <div className="flex justify-end mb-1.5 pr-1">
+          {quota.exceeded ? (
+            <span className="text-[10px] sm:text-xs px-2.5 py-1 rounded-full bg-destructive/15 text-destructive font-medium">
+              Daily limit reached · resets at midnight
+            </span>
+          ) : (
+            <span className={`text-[10px] sm:text-xs px-2.5 py-1 rounded-full font-medium ${quota.remaining <= 5 ? "bg-amber-500/15 text-amber-600" : "bg-primary/10 text-primary"}`}>
+              💬 {quota.remaining} chat{quota.remaining === 1 ? "" : "s"} left today
+            </span>
+          )}
+        </div>
+      )}
+      
       <div className="flex items-end gap-1.5 sm:gap-2.5 p-2 sm:p-3 bg-card/50 backdrop-blur-md rounded-2xl border border-border/30 shadow-sm transition-all duration-300 focus-within:border-primary/40 focus-within:shadow-md focus-within:shadow-primary/5">
         <input
           type="file"
@@ -177,7 +193,7 @@ const ChatInput = forwardRef<HTMLDivElement, ChatInputProps>(({ onSend, disabled
         
         <button
           onClick={handleSend}
-          disabled={(!message.trim() && !imagePreview) || disabled || isOverLimit}
+          disabled={(!message.trim() && !imagePreview) || disabled || isOverLimit || quota.exceeded}
           className="flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-lia-pink hover:bg-lia-pink-glow active:scale-95 disabled:opacity-40 disabled:hover:bg-lia-pink transition-all duration-200 glow-pink touch-manipulation shrink-0"
         >
           {disabled ? (
