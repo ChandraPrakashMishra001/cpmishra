@@ -43,24 +43,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      consume_chat_quota:
-        | {
-            Args: { p_day: string; p_key: string; p_limit: number }
-            Returns: number
-          }
-        | {
-            Args: { p_day: string; p_key: string; p_limit: number }
-            Returns: number
-          }
-      get_chat_quota:
-        | {
-            Args: { p_day: string; p_key: string; p_limit: number }
-            Returns: number
-          }
-        | {
-            Args: { p_day: string; p_key: string; p_limit: number }
-            Returns: number
-          }
+      consume_chat_quota: {
+        Args: { p_day: string; p_key: string; p_limit: number }
+        Returns: number
+      }
+      get_chat_quota: {
+        Args: { p_day: string; p_key: string; p_limit: number }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never
