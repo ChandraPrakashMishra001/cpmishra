@@ -16,7 +16,7 @@ const STORAGE_KEY = "amanai_chat_quota";
 const today = () => new Date().toISOString().slice(0, 10);
 
 function readStored(): ChatQuotaState {
-  const base: ChatQuotaState = { remaining: null, limit: 50, exceeded: false, resetAt: null };
+  const base: ChatQuotaState = { remaining: null, limit: 30, exceeded: false, resetAt: null };
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return base;
@@ -25,7 +25,7 @@ function readStored(): ChatQuotaState {
     if (parsed.day !== today() || typeof parsed.remaining !== "number") return base;
     return {
       remaining: parsed.remaining,
-      limit: typeof parsed.limit === "number" ? parsed.limit : 50,
+      limit: typeof parsed.limit === "number" ? parsed.limit : 30,
       exceeded: parsed.exceeded === true,
       resetAt: parsed.resetAt ?? null,
     };
