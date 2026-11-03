@@ -5,7 +5,7 @@ import { createClient, type SupabaseClient } from "npm:@supabase/supabase-js@2";
 // Each visitor gets their own private daily budget (keyed by device ID).
 // Visitors without a device ID (private browsing) fall back to an IP-keyed
 // budget, so the shared backend wallet can never be drained by one person.
-const DAILY_CHAT_LIMIT = 50;
+const DAILY_CHAT_LIMIT = 30;
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
